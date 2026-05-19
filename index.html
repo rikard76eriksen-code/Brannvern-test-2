@@ -1625,28 +1625,53 @@ function emailReport() {
 
 
 // ── Reset ─────────────────────────────────────────────────────────────────────
-function resetAll() {
-  if (!confirm('Nullstille alle registreringer?')) return;
-  st = {}; km = {}; ig = {};
-  var items = document.querySelectorAll('.item');
-  for (var i = 0; i < items.length; i++) {
-    items[i].className = 'item';
-    var id = items[i].id.replace('row-', '');
-    var btns = [{'id':'ok-'+id,'s':'ok'},{'id':'av-'+id,'s':'av'},{'id':'ia-'+id,'s':'ia'}];
-    for (var j = 0; j < btns.length; j++) {
-      var b = document.getElementById(btns[j].id);
-      if (b) b.className = 'sb ' + btns[j].s;
-    }
-  }
-  document.querySelectorAll('.imgf,.komf').forEach(function(f) { f.classList.remove('open'); });
-  document.querySelectorAll('.komf textarea').forEach(function(t) { t.value = ''; });
-  document.querySelectorAll('.igrid').forEach(function(g) { g.innerHTML = ''; });
-  document.querySelectorAll('.ib').forEach(function(b) {
-    b.classList.remove('a');
-    if (b.id && b.id.indexOf('imgb') === 0) b.textContent = 'Bilde';
+function showConfirm(msg, onYes) {
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:flex-end;justify-content:center;';
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;width:100%;max-width:500px;border-radius:12px 12px 0 0;padding:24px 20px 36px;font-family:Lato,Arial,sans-serif;';
+  box.innerHTML =
+    '<div style="width:36px;height:4px;background:#C8D6CF;border-radius:2px;margin:0 auto 18px;"></div>'
+    + '<div style="font-size:16px;font-weight:700;color:#1A2B25;margin-bottom:18px;text-align:center;">' + msg + '</div>'
+    + '<button id="conf-yes" style="width:100%;background:#C0392B;color:#fff;border:none;border-radius:6px;padding:14px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">Nullstill</button>'
+    + '<button id="conf-no" style="width:100%;background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF;border-radius:6px;padding:14px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Avbryt</button>';
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  document.getElementById('conf-yes').addEventListener('click', function() {
+    document.body.removeChild(overlay);
+    onYes();
   });
-  updateP();
-  dirty();
+  document.getElementById('conf-no').addEventListener('click', function() {
+    document.body.removeChild(overlay);
+  });
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) document.body.removeChild(overlay);
+  });
+}
+
+function resetAll() {
+  showConfirm('Nullstille alle registreringer?', function() {
+    st = {}; km = {}; ig = {};
+    var items = document.querySelectorAll('.item');
+    for (var i = 0; i < items.length; i++) {
+      items[i].className = 'item';
+      var id = items[i].id.replace('row-', '');
+      var btns = [{'id':'ok-'+id,'s':'ok'},{'id':'av-'+id,'s':'av'},{'id':'ia-'+id,'s':'ia'}];
+      for (var j = 0; j < btns.length; j++) {
+        var b = document.getElementById(btns[j].id);
+        if (b) b.className = 'sb ' + btns[j].s;
+      }
+    }
+    document.querySelectorAll('.imgf,.komf').forEach(function(f) { f.classList.remove('open'); });
+    document.querySelectorAll('.komf textarea').forEach(function(t) { t.value = ''; });
+    document.querySelectorAll('.igrid').forEach(function(g) { g.innerHTML = ''; });
+    document.querySelectorAll('.ib').forEach(function(b) {
+      b.classList.remove('a');
+      if (b.id && b.id.indexOf('imgb') === 0) b.textContent = 'Bilde';
+    });
+    updateP();
+    dirty();
+  });
 }
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
