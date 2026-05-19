@@ -108,8 +108,8 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-
 <div class="sbar">
   <div class="ss"><div class="sdot" id="sdot"></div><span id="stxt">Klar</span></div>
   <div class="sa">
-    <button class="bsave" onclick="saveLocal()">Lagre fremdrift</button>
-    <button class="bsp" onclick="openModal()">Lagre rapport til SharePoint</button>
+    <button class="bsave" data-action="saveLocal">Lagre fremdrift</button>
+    <button class="bsp" data-action="openModal">Lagre rapport til SharePoint</button>
   </div>
 </div>
 <div class="pbar">
@@ -124,7 +124,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-
     <label>Eiendom / adresse</label>
     <div class="locwrap">
       <input type="text" id="f-e" placeholder="Adresse eller navn" oninput="dirty()">
-      <button class="locbtn" id="locbtn" onclick="getPos()">&#128205;</button>
+      <button class="locbtn" id="locbtn" data-action="getPos">&#128205;</button>
     </div>
   </div>
   <div class="field"><label>Ansvarlig</label><input type="text" id="f-a" placeholder="Fullt navn" oninput="dirty()"></div>
@@ -267,8 +267,8 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-
     <textarea id="f-k" style="width:100%;border:1px solid #C8D6CF;border-radius:2px;padding:9px 11px;font-family:Lato,Arial,sans-serif;font-size:14px;color:#1A2B25;resize:vertical;min-height:76px;outline:none;background:#F5F7F5;" placeholder="&#216;vrige observasjoner og tiltak..." oninput="dirty()"></textarea>
   </div>
   <div class="acts">
-    <button class="btng" onclick="resetAll()">Nullstill</button>
-    <button class="btnp" onclick="openModal()">Lagre rapport til SharePoint</button>
+    <button class="btng" data-action="resetAll">Nullstill</button>
+    <button class="btnp" data-action="openModal">Lagre rapport til SharePoint</button>
   </div>
 </div>
 <div class="mov" id="spm">
@@ -280,8 +280,8 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-
     <div class="mspin" id="msp"><div class="sring"></div><div style="font-size:13px;color:#5A7268">Laster opp...</div></div>
     <div class="mres" id="mre"><div class="mok" id="mok"></div><div class="mlnk" id="mlk"></div></div>
     <div class="macts" id="mac">
-      <button class="btng" onclick="closeModal()">Avbryt</button>
-      <button class="btnp" onclick="doUpload()">Last opp</button>
+      <button class="btng" data-action="closeModal">Avbryt</button>
+      <button class="btnp" data-action="doUpload">Last opp</button>
     </div>
   </div>
 </div>
@@ -447,7 +447,7 @@ function openModal(){
   document.getElementById('msp').className='mspin';
   document.getElementById('mre').className='mres';
   document.getElementById('mnw').style.display='block';
-  document.getElementById('mac').innerHTML='<button class="btng" onclick="closeModal()">Avbryt</button><button class="btnp" onclick="doUpload()">Last opp</button>';
+  document.getElementById('mac').innerHTML='<button class="btng" data-action="closeModal">Avbryt</button><button class="btnp" data-action="doUpload">Last opp</button>';
   document.getElementById('spm').className='mov open';
 }
 function closeModal(){document.getElementById('spm').className='mov';}
@@ -495,8 +495,8 @@ function doUpload(){
     document.getElementById('mok').innerHTML='<span style="color:#003F2D">Logg inn med Microsoft for aa laste opp</span>';
     document.getElementById('mlk').textContent='Du blir sendt til Microsoft-innlogging og kommer tilbake automatisk.';
     document.getElementById('mac').innerHTML=
-      '<button class="btng" onclick="closeModal()">Avbryt</button>' +
-      '<button class="btnp" onclick="window.location.href='' + authUrl.replace(/'/g,"\'") + ''">Logg inn med Microsoft</button>';
+      '<button class="btng" data-action="closeModal">Avbryt</button>' +
+      '<button class="btnp" data-action="msLogin"\'") + ''">Logg inn med Microsoft</button>';
   }
 }
 
@@ -519,7 +519,7 @@ function uploadWithToken(token, fn, html, uploadUrl) {
     document.getElementById('mlk').innerHTML = webUrl
       ? '<a href="'+webUrl+'" target="_blank">Apne i SharePoint</a>'
       : 'Filen er lastet opp til SharePoint.';
-    document.getElementById('mac').innerHTML='<button class="btng" onclick="closeModal()">Lukk</button>'
+    document.getElementById('mac').innerHTML='<button class="btng" data-action="closeModal">Lukk</button>'
       + (webUrl ? '<a href="'+webUrl+'" target="_blank" class="btnp" style="text-decoration:none">Apne fil</a>' : '');
     saved();
   }).catch(function(err){
@@ -527,7 +527,7 @@ function uploadWithToken(token, fn, html, uploadUrl) {
     document.getElementById('mre').className='mres show';
     document.getElementById('mok').innerHTML='<span style="color:#b33">Opplasting feilet</span>';
     document.getElementById('mlk').textContent=err.message||'Ukjent feil';
-    document.getElementById('mac').innerHTML='<button class="btng" onclick="closeModal()">Lukk</button><button class="btnp" onclick="dlHtml()">Last ned lokalt</button>';
+    document.getElementById('mac').innerHTML='<button class="btng" data-action="closeModal">Lukk</button><button class="btnp" data-action="dlHtml">Last ned lokalt</button>';
   });
 }
 
@@ -581,29 +581,45 @@ function showToast(msg){var el=document.getElementById('toast');el.textContent=m
   var d=new Date();
   document.getElementById('f-d').value=d.toISOString().split('T')[0];
 
-  // Event delegation for all item buttons - works reliably on Safari iOS
+  // Single global click handler for ALL buttons
   document.addEventListener('click',function(e){
+    // Walk up DOM in case click landed on child element
     var el=e.target;
-    // Status buttons (Ok/Avvik/I/A)
-    if(el.classList&&el.classList.contains('sb')&&el.getAttribute('data-id')){
-      setS(el.getAttribute('data-id'),el.getAttribute('data-s'));
-      return;
-    }
-    // Image/Kommentar toggle buttons
-    if(el.classList&&el.classList.contains('ib')&&el.getAttribute('data-action')){
-      var id=el.getAttribute('data-id');
-      var act=el.getAttribute('data-action');
-      if(act==='img'){
-        document.getElementById('imgf-'+id).classList.toggle('open');
-        el.classList.toggle('a');
-      } else if(act==='kom'){
-        document.getElementById('komf-'+id).classList.toggle('open');
-        el.classList.toggle('a');
+    while(el && el.tagName !== 'BODY') {
+      // Status buttons (Ok/Avvik/I/A)
+      if(el.classList&&el.classList.contains('sb')&&el.getAttribute('data-id')){
+        setS(el.getAttribute('data-id'),el.getAttribute('data-s'));
+        return;
       }
-      return;
+      // Image/Kommentar toggle buttons
+      if(el.classList&&el.classList.contains('ib')&&el.getAttribute('data-action')){
+        var id=el.getAttribute('data-id');
+        var act=el.getAttribute('data-action');
+        if(act==='img'){
+          document.getElementById('imgf-'+id).classList.toggle('open');
+          el.classList.toggle('a');
+        } else if(act==='kom'){
+          document.getElementById('komf-'+id).classList.toggle('open');
+          el.classList.toggle('a');
+        }
+        return;
+      }
+      // All other data-action buttons
+      var action = el.getAttribute && el.getAttribute('data-action');
+      if(action){
+        if(action==='saveLocal')    { saveLocal(); return; }
+        if(action==='openModal')    { openModal(); return; }
+        if(action==='closeModal')   { closeModal(); return; }
+        if(action==='doUpload')     { doUpload(); return; }
+        if(action==='dlHtml')       { dlHtml(); return; }
+        if(action==='getPos')       { getPos(); return; }
+        if(action==='resetAll')     { resetAll(); return; }
+        if(action==='msLogin')      { if(window._authUrl) window.location.href=window._authUrl; return; }
+      }
+      // Modal overlay background click
+      if(el.id==='spm'){ closeModal(); return; }
+      el = el.parentElement;
     }
-    // Modal overlay close
-    if(el.id==='spm'){closeModal();}
   });
 
   loadLocal();
