@@ -3,771 +3,1466 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CBRE – Brannvernrunde</title>
+<title>CBRE Brannvernrunde</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;600;700&display=swap');
-  :root {
-    --g:   #003F2D; --gm: #005C41; --mint: #17E88F; --ml: #E6FBF2;
-    --w:   #FFFFFF; --l:  #F5F7F5; --b:   #C8D6CF;
-    --t:   #1A2B25; --mu: #5A7268; --wa:  #F0F4F2;
-    --ck:  #E6FBF2; --cv: #00A664; --warn:#E8A020;
-    --ok:  #1A7A4A; --av: #C0392B; --ia:  #6B7280;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Lato',sans-serif;background:var(--l);color:var(--t);min-height:100vh;padding-bottom:64px}
-
-  /* HEADER */
-  .header{background:var(--g);position:relative;overflow:hidden}
-  .header::before{content:'';position:absolute;inset:0;pointer-events:none;
-    background-image:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(23,232,143,.04) 80px,rgba(23,232,143,.04) 81px),
-    repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(23,232,143,.04) 80px,rgba(23,232,143,.04) 81px)}
-  .header-inner{position:relative;z-index:1;padding:28px 48px 32px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
-  .cbre-logo{font-family:'Playfair Display',serif;font-size:12px;font-weight:700;letter-spacing:.35em;text-transform:uppercase;color:var(--mint);margin-bottom:16px;display:flex;align-items:center;gap:10px}
-  .cbre-logo::before{content:'';display:inline-block;width:28px;height:2px;background:var(--mint)}
-  .header-title{font-family:'Playfair Display',serif;font-size:clamp(32px,6vw,54px);font-weight:700;color:#fff;line-height:1.08}
-  .header-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:7px;font-weight:300;letter-spacing:.04em}
-  .header-right{text-align:right;flex-shrink:0}
-  .doc-ref{font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
-  .doc-ref strong{color:var(--mint);font-size:13px}
-  .hstripe{height:4px;background:linear-gradient(90deg,var(--mint) 0%,rgba(23,232,143,.3) 60%,transparent 100%)}
-
-  /* SAVE BAR */
-  .save-bar{background:var(--gm);padding:8px 48px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.08)}
-  .save-status{font-size:11px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:7px}
-  .sdot{width:7px;height:7px;border-radius:50%;background:var(--mint);flex-shrink:0;transition:background .3s}
-  .sdot.unsaved{background:var(--warn);animation:pulse 1.5s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-  .save-acts{display:flex;gap:8px;align-items:center}
-  .bsave{font-family:'Lato',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 16px;border-radius:2px;cursor:pointer;transition:all .15s;background:rgba(255,255,255,.11);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15)}
-  .bsave:hover{background:rgba(255,255,255,.2);color:#fff}
-  .bsp{font-family:'Lato',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 16px;border:none;border-radius:2px;cursor:pointer;background:var(--mint);color:var(--g);display:flex;align-items:center;gap:6px;transition:all .15s}
-  .bsp:hover{background:#0fd47e}
-
-  /* PROGRESS */
-  .prog-wrap{background:var(--g)}
-  .prog-bg{height:3px;background:rgba(255,255,255,.12)}
-  .prog-fill{height:100%;background:var(--mint);transition:width .4s ease;width:0%}
-  .prog-info{background:var(--g);padding:9px 48px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.08)}
-  .prog-info .pl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-  .prog-info .pv{font-size:12px;color:var(--mint);font-weight:700;letter-spacing:.05em}
-
-  /* META */
-  .meta{background:#fff;border-bottom:1px solid var(--b);padding:20px 48px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .field label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mu);display:block;margin-bottom:5px;font-weight:700}
-  .field input{width:100%;border:1px solid var(--b);background:var(--l);padding:9px 12px;font-family:'Lato',sans-serif;font-size:14px;color:var(--t);border-radius:2px;outline:none;transition:border-color .2s,background .2s}
-  .field input:focus{border-color:var(--g);background:#fff}
-  .loc-wrap{position:relative}
-  .loc-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;padding:2px 4px;color:var(--mu);transition:color .15s}
-  .loc-btn:hover{color:var(--g)}
-  .loc-spin{display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;border:2px solid var(--b);border-top-color:var(--g);border-radius:50%;animation:spin .7s linear infinite}
-  @keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
-
-  /* CONTENT */
-  .content{max-width:920px;margin:0 auto;padding:36px 24px}
-
-  /* SECTION */
-  .section{margin-bottom:24px;border:1px solid var(--b);border-radius:2px;overflow:hidden;background:#fff;box-shadow:0 1px 4px rgba(0,63,45,.05)}
-  .sec-hdr{background:var(--g);padding:13px 22px;display:flex;align-items:center;gap:14px}
-  .sec-num{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--mint);line-height:1;min-width:26px}
-  .sec-ttl{font-family:'Lato',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff}
-  .sec-icon{margin-left:auto;font-size:17px;opacity:.6}
-
-  /* ITEM */
-  .item{display:flex;align-items:flex-start;gap:12px;padding:12px 22px;border-bottom:1px solid var(--b);user-select:none}
-  .item:last-child{border-bottom:none}
-
-  /* STATUS BUTTONS */
-  .status-btns{display:flex;gap:4px;flex-shrink:0;margin-top:1px}
-  .sb{font-family:'Lato',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:2px;cursor:pointer;border:1.5px solid var(--b);background:none;color:var(--mu);transition:all .15s}
-  .sb:hover{border-color:var(--g)}
-  .sb.ok-active{background:var(--ok);border-color:var(--ok);color:#fff}
-  .sb.av-active{background:var(--av);border-color:var(--av);color:#fff}
-  .sb.ia-active{background:var(--ia);border-color:var(--ia);color:#fff}
-
-  .item-content{flex:1;padding-top:2px}
-  .item-text{font-size:14px;color:var(--t);line-height:1.5}
-  .item-note{font-size:11px;color:var(--mu);margin-top:2px;font-style:italic}
-  .item-acts{display:flex;gap:5px;flex-shrink:0;margin-top:1px;flex-direction:column;align-items:flex-end}
-
-  .itbtn{font-family:'Lato',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);border:1px solid var(--b);background:none;padding:3px 9px;border-radius:2px;cursor:pointer;transition:all .15s;white-space:nowrap}
-  .itbtn:hover{border-color:var(--g);color:var(--g)}
-  .itbtn.has-img{color:var(--g);border-color:var(--g);background:var(--ml)}
-  .itbtn.has-avvik{color:var(--av);border-color:var(--av);background:#fdf2f2}
-
-  /* AVVIK */
-  .avvik-field{display:none;padding:10px 22px 14px 22px;background:#fdf9f9;border-bottom:1px solid var(--b)}
-  .avvik-field.open{display:block}
-  .sub-lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:6px}
-  .sub-lbl.red{color:var(--av)}
-  .sub-lbl.grn{color:var(--g)}
-  .avvik-field textarea{width:100%;border:1px solid #e8c5c5;border-radius:2px;padding:8px 11px;font-family:'Lato',sans-serif;font-size:13px;color:var(--t);resize:vertical;min-height:58px;outline:none;background:#fff}
-  .avvik-field textarea:focus{border-color:var(--av)}
-
-  /* IMAGE */
-  .img-field{display:none;padding:12px 22px 16px 22px;background:var(--l);border-bottom:1px solid var(--b)}
-  .img-field.open{display:block}
-  .dropzone{border:2px dashed var(--b);border-radius:3px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;position:relative}
-  .dropzone:hover,.dropzone.drag-over{border-color:var(--g);background:var(--ml)}
-  .dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-  .drop-txt{font-size:12px;color:var(--mu)}.drop-txt strong{color:var(--g)}
-  .img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:10px}
-  .ithumb{position:relative;border-radius:2px;overflow:hidden;border:1px solid var(--b);aspect-ratio:1;background:#eee}
-  .ithumb img{width:100%;height:100%;object-fit:cover;display:block}
-  .rm-img{position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center}
-  .rm-img:hover{background:#c00}
-
-  /* BOTTOM */
-  .bsec{background:#fff;border:1px solid var(--b);border-radius:2px;padding:24px 28px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,63,45,.05)}
-  .bsec-ttl{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--g);margin-bottom:16px;padding-bottom:11px;border-bottom:1px solid var(--b)}
-  .acts{display:flex;gap:12px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
-  .btn{font-family:'Lato',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:11px 26px;border:none;border-radius:2px;cursor:pointer;transition:all .15s}
-  .btn-p{background:var(--g);color:#fff}.btn-p:hover{background:var(--gm)}
-  .btn-g{background:none;color:var(--g);border:1px solid var(--b)}.btn-g:hover{border-color:var(--g);background:var(--wa)}
-
-  /* TOAST */
-  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--g);color:#fff;padding:11px 22px;border-radius:3px;font-size:13px;font-weight:700;letter-spacing:.05em;box-shadow:0 4px 20px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:all .3s ease;z-index:9999;display:flex;align-items:center;gap:8px}
-  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  #toast.err{background:#b33}
-
-  /* MODAL */
-  .moverlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center}
-  .moverlay.open{display:flex}
-  .modal{background:#fff;border-radius:3px;padding:32px 36px;max-width:460px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-  .m-ttl{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--g);margin-bottom:7px}
-  .m-sub{font-size:13px;color:var(--mu);margin-bottom:18px;line-height:1.6}
-  .m-path{background:var(--l);border:1px solid var(--b);border-radius:2px;padding:9px 13px;font-size:11px;color:var(--g);font-family:monospace;margin-bottom:18px;line-height:1.6}
-  .m-spin{display:none;text-align:center;padding:18px 0}
-  .m-spin.show{display:block}
-  .spin-ring{width:34px;height:34px;border:3px solid var(--b);border-top-color:var(--g);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
-  .m-result{display:none;padding:10px 0}
-  .m-result.show{display:block}
-  .m-ok{font-weight:700;font-size:14px;color:var(--cv);margin-bottom:7px}
-  .m-link{font-size:13px;color:var(--g);word-break:break-all}
-  .m-link a{color:var(--g)}
-  .m-acts{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
-
-  /* FOOTER */
-  .footer{background:var(--g);color:rgba(255,255,255,.35);font-size:11px;letter-spacing:.08em;text-align:center;padding:13px 24px;margin-top:40px}
-  .footer span{color:var(--mint)}
-
-  @media(max-width:600px){
-    .meta{grid-template-columns:1fr}
-    .header-inner,.meta,.prog-info,.save-bar{padding-left:20px;padding-right:20px}
-    .content{padding:20px 14px}
-    .item{flex-wrap:wrap}
-    .item-acts{flex-direction:row}
-  }
-  @media print{
-    .save-bar,.acts,.itbtn,.footer,#toast,.moverlay{display:none!important}
-    .avvik-field,.img-field{display:block!important}
-    body{background:#fff}
-    .header,.sec-hdr{print-color-adjust:exact;-webkit-print-color-adjust:exact}
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-bottom:60px}
+.hdr{background:#003F2D;padding:24px 32px 28px}
+.logo{font-size:11px;font-weight:700;letter-spacing:.3em;color:#17E88F;margin-bottom:14px}
+.htitle{font-family:"Playfair Display",Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.1}
+.hsub{font-size:13px;color:rgba(255,255,255,.5);margin-top:6px}
+.hstripe{height:4px;background:linear-gradient(90deg,#17E88F,transparent)}
+.sbar{background:#005C41;padding:8px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.ss{font-size:11px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:7px}
+.sdot{width:7px;height:7px;border-radius:50%;background:#17E88F;flex-shrink:0}
+.sdot.u{background:#E8A020}
+.sa{display:flex;gap:6px;flex-wrap:wrap}
+.bsave{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:7px 12px;border-radius:3px;cursor:pointer;background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2)}
+.bsp{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:7px 12px;border-radius:3px;cursor:pointer;background:#17E88F;color:#003F2D;border:none}
+.bsp2{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:7px 12px;border-radius:3px;cursor:pointer;background:#005C41;color:#17E88F;border:1px solid #17E88F}
+.pbar{background:#003F2D}
+.pbg{height:3px;background:rgba(255,255,255,.12)}
+.pfill{height:100%;background:#17E88F;width:0%;transition:width .3s}
+.pinfo{background:#003F2D;padding:8px 20px;display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08)}
+.pl{font-size:11px;text-transform:uppercase;color:rgba(255,255,255,.4);letter-spacing:.1em}
+.pv{font-size:12px;color:#17E88F;font-weight:700}
+.meta{background:#fff;border-bottom:1px solid #C8D6CF;padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5A7268;display:block;margin-bottom:4px;font-weight:700}
+.field input{width:100%;border:1px solid #C8D6CF;background:#F5F7F5;padding:8px 10px;font-family:Lato,Arial,sans-serif;font-size:14px;color:#1A2B25;border-radius:2px;outline:none}
+.field input:focus{border-color:#003F2D;background:#fff}
+.locwrap{position:relative}
+.locbtn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;padding:0}
+.content{max-width:900px;margin:0 auto;padding:20px 16px}
+.section{margin-bottom:16px;border:1px solid #C8D6CF;border-radius:2px;background:#fff;overflow:hidden}
+.sec-hdr{background:#003F2D;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.sec-num{font-family:"Playfair Display",Georgia,serif;font-size:18px;font-weight:700;color:#17E88F;min-width:22px}
+.sec-ttl{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+.item{padding:10px 16px;border-bottom:1px solid #C8D6CF}
+.item:last-of-type{border-bottom:none}
+.item.ok-r{background:#E6FBF2}
+.item.av-r{background:#fdf2f2}
+.item.ia-r{background:#f8f8f8}
+.item-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.sbts{display:flex;gap:4px;flex-shrink:0;padding-top:1px}
+.sb{font-family:Lato,Arial,sans-serif;font-size:12px;font-weight:700;padding:6px 10px;border-radius:3px;cursor:pointer;min-height:36px;-webkit-appearance:none;appearance:none}
+.sb.ok{border:2px solid #1A7A4A;background:#fff;color:#1A7A4A}
+.sb.av{border:2px solid #C0392B;background:#fff;color:#C0392B}
+.sb.ia{border:2px solid #6B7280;background:#fff;color:#6B7280}
+.sb.ok.a{background:#1A7A4A;color:#fff}
+.sb.av.a{background:#C0392B;color:#fff}
+.sb.ia.a{background:#6B7280;color:#fff}
+.itxt{flex:1;min-width:0}
+.txt{font-size:13px;line-height:1.5;color:#1A2B25}
+.note{font-size:11px;color:#5A7268;margin-top:2px;font-style:italic}
+.iacts{display:flex;gap:6px}
+.ib{font-family:Lato,Arial,sans-serif;font-size:11px;font-weight:700;color:#5A7268;border:1px solid #C8D6CF;background:#fff;padding:5px 10px;border-radius:3px;cursor:pointer;-webkit-appearance:none;appearance:none;flex:1;text-align:center}
+.ib.a{color:#003F2D;border-color:#003F2D;background:#E6FBF2}
+.imgf,.komf{display:none;padding:10px 16px 14px;background:#F5F7F5;border-bottom:1px solid #C8D6CF}
+.imgf.open,.komf.open{display:block}
+.slbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#003F2D;margin-bottom:6px}
+.slbl.red{color:#C0392B}
+.dropzone{display:block;border:2px dashed #C8D6CF;border-radius:3px;padding:12px;text-align:center;cursor:pointer;background:#fff;font-size:12px;color:#5A7268}
+.dropzone input{display:none}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;margin-top:8px}
+.ithumb{position:relative;aspect-ratio:1;border-radius:2px;overflow:hidden;border:1px solid #C8D6CF}
+.ithumb img{width:100%;height:100%;object-fit:cover;display:block}
+.rmi{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;cursor:pointer;font-size:11px;line-height:18px;text-align:center;padding:0}
+.komf textarea{width:100%;border:1px solid #e8c5c5;border-radius:2px;padding:8px;font-family:Lato,Arial,sans-serif;font-size:13px;color:#1A2B25;resize:vertical;min-height:56px;outline:none;background:#fff}
+.bsec{background:#fff;border:1px solid #C8D6CF;border-radius:2px;padding:20px;margin-bottom:14px}
+.bttl{font-family:"Playfair Display",Georgia,serif;font-size:16px;font-weight:700;color:#003F2D;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #C8D6CF}
+.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.btnp{font-family:Lato,Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 20px;border:none;border-radius:2px;cursor:pointer;background:#003F2D;color:#fff;-webkit-appearance:none;appearance:none}
+.btng{font-family:Lato,Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 20px;border-radius:2px;cursor:pointer;background:#fff;color:#003F2D;border:1px solid #C8D6CF;-webkit-appearance:none;appearance:none}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(12px);background:#003F2D;color:#fff;padding:10px 20px;border-radius:3px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:all .3s;z-index:9999;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.footer{background:#003F2D;color:rgba(255,255,255,.35);font-size:11px;text-align:center;padding:12px;margin-top:32px}
+@media(max-width:560px){.meta{grid-template-columns:1fr}.hdr,.meta,.pinfo,.sbar{padding-left:14px;padding-right:14px}}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-inner">
-    <div>
-      <div class="cbre-logo">CBRE</div>
-      <div class="header-title">Brannvern&shy;runde</div>
-      <div class="header-sub">Internkontroll — Brann og sikkerhet</div>
-    </div>
-    <div class="header-right">
-      <div class="doc-ref">Dato<br><strong id="today-date"></strong></div>
-    </div>
-  </div>
+<div class="hdr">
+  <div class="logo">&#8212; CBRE</div>
+  <div class="htitle">Brannvernrunde</div>
+  <div class="hsub">Internkontroll &#8212; Brann og sikkerhet</div>
 </div>
 <div class="hstripe"></div>
 
-<!-- SAVE BAR -->
-<div class="save-bar">
-  <div class="save-status">
-    <div class="sdot" id="sdot"></div>
-    <span id="sstxt">Laster lagret data…</span>
-  </div>
-  <div class="save-acts">
-    <button class="bsave" onclick="saveLocal()">💾 Lagre fremdrift</button>
-    <button class="bsp" onclick="openModal()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" fill="currentColor" opacity=".25"/><path d="M3.5 6.5h6M6.5 3.5v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      Lagre rapport til SharePoint
-    </button>
+<div class="sbar">
+  <div class="ss"><div class="sdot" id="sdot"></div><span id="stxt">Klar</span></div>
+  <div class="sa">
+    <button class="bsave" id="btn-save">Lagre fremdrift</button>
+    <button class="bsp"  id="btn-pdf">Lagre som PDF</button>
+    <button class="bsp2" id="btn-email">Send per e-post</button>
   </div>
 </div>
 
-<!-- PROGRESS -->
-<div class="prog-wrap">
-  <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
-  <div class="prog-info">
+<div class="pbar">
+  <div class="pbg"><div class="pfill" id="pfill"></div></div>
+  <div class="pinfo">
     <span class="pl">Fremdrift</span>
-    <span class="pv" id="prog-txt">0 av 0 punkter vurdert</span>
+    <span class="pv" id="ptxt">0 av 38 punkter vurdert</span>
   </div>
 </div>
 
-<!-- META -->
 <div class="meta">
   <div class="field">
     <label>Eiendom / adresse</label>
-    <div class="loc-wrap">
-      <input type="text" id="meta-eiendom" placeholder="Adresse eller navn på eiendom" oninput="markUnsaved()" autocomplete="off">
-      <button class="loc-btn" id="loc-btn" onclick="getLocation()" title="Finn adresse fra posisjon">📍</button>
-      <div class="loc-spin" id="loc-spin"></div>
+    <div class="locwrap">
+      <input type="text" id="f-e" placeholder="Adresse eller navn">
+      <button class="locbtn" id="btn-gps">&#128205;</button>
     </div>
   </div>
-  <div class="field">
-    <label>Ansvarlig</label>
-    <input type="text" id="meta-ansvarlig" placeholder="Fullt navn" oninput="markUnsaved()">
-  </div>
-  <div class="field">
-    <label>Gjennomføringsdato</label>
-    <input type="date" id="meta-dato" oninput="markUnsaved()">
-  </div>
-  <div class="field">
-    <label>Neste runde</label>
-    <input type="date" id="meta-neste" oninput="markUnsaved()">
-  </div>
+  <div class="field"><label>Ansvarlig</label><input type="text" id="f-a" placeholder="Fullt navn"></div>
+  <div class="field"><label>Dato</label><input type="date" id="f-d"></div>
+  <div class="field"><label>Neste runde</label><input type="date" id="f-n"></div>
 </div>
 
 <div class="content">
-  <div id="cl-root"></div>
+
+<div class="section">
+  <div class="sec-hdr"><span class="sec-num">01</span><span class="sec-ttl">Tegninger og planer</span></div>
+  <div class="item" id="row-i0">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i0">Ok</button>
+      <button class="sb av" id="av-i0">Avvik</button>
+      <button class="sb ia" id="ia-i0">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Brannteikninger og rømningsplaner er ajour</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i0">Bilde</button>
+      <button class="ib" id="komb-i0">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i0">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i0"></label>
+    <div class="igrid" id="grid-i0"></div>
+  </div>
+  <div class="komf" id="komf-i0">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i0" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i1">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i1">Ok</button>
+      <button class="sb av" id="av-i1">Avvik</button>
+      <button class="sb ia" id="ia-i1">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Orienteringsplaner er tilgjengelig ved inngang</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i1">Bilde</button>
+      <button class="ib" id="komb-i1">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i1">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i1"></label>
+    <div class="igrid" id="grid-i1"></div>
+  </div>
+  <div class="komf" id="komf-i1">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i1" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i2">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i2">Ok</button>
+      <button class="sb av" id="av-i2">Avvik</button>
+      <button class="sb ia" id="ia-i2">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Markeringer av brannceller er korrekte</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i2">Bilde</button>
+      <button class="ib" id="komb-i2">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i2">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i2"></label>
+    <div class="igrid" id="grid-i2"></div>
+  </div>
+  <div class="komf" id="komf-i2">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i2" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i3">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i3">Ok</button>
+      <button class="sb av" id="av-i3">Avvik</button>
+      <button class="sb ia" id="ia-i3">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Rømningsplan er godt synlig og oppdatert</div><div class="note">Sjekk at kart stemmer med planløsning</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i3">Bilde</button>
+      <button class="ib" id="komb-i3">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i3">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i3"></label>
+    <div class="igrid" id="grid-i3"></div>
+  </div>
+  <div class="komf" id="komf-i3">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i3" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-hdr"><span class="sec-num">02</span><span class="sec-ttl">Rømningsveier og utganger</span></div>
+  <div class="item" id="row-i4">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i4">Ok</button>
+      <button class="sb av" id="av-i4">Avvik</button>
+      <button class="sb ia" id="ia-i4">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Alle nødutganger er merket og fri for hindringer</div><div class="note">Inkluder dører, korridorer og trapperom</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i4">Bilde</button>
+      <button class="ib" id="komb-i4">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i4">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i4"></label>
+    <div class="igrid" id="grid-i4"></div>
+  </div>
+  <div class="komf" id="komf-i4">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i4" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i5">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i5">Ok</button>
+      <button class="sb av" id="av-i5">Avvik</button>
+      <button class="sb ia" id="ia-i5">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Nødutgangsskilt er opplyste og i funksjon</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i5">Bilde</button>
+      <button class="ib" id="komb-i5">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i5">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i5"></label>
+    <div class="igrid" id="grid-i5"></div>
+  </div>
+  <div class="komf" id="komf-i5">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i5" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i6">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i6">Ok</button>
+      <button class="sb av" id="av-i6">Avvik</button>
+      <button class="sb ia" id="ia-i6">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Branndører lukker seg automatisk</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i6">Bilde</button>
+      <button class="ib" id="komb-i6">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i6">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i6"></label>
+    <div class="igrid" id="grid-i6"></div>
+  </div>
+  <div class="komf" id="komf-i6">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i6" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i7">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i7">Ok</button>
+      <button class="sb av" id="av-i7">Avvik</button>
+      <button class="sb ia" id="ia-i7">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Rømningsveier er fri for møbler og esker</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i7">Bilde</button>
+      <button class="ib" id="komb-i7">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i7">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i7"></label>
+    <div class="igrid" id="grid-i7"></div>
+  </div>
+  <div class="komf" id="komf-i7">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i7" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i8">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i8">Ok</button>
+      <button class="sb av" id="av-i8">Avvik</button>
+      <button class="sb ia" id="ia-i8">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Korridor- og trappebelysning fungerer, inkl. nødlys</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i8">Bilde</button>
+      <button class="ib" id="komb-i8">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i8">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i8"></label>
+    <div class="igrid" id="grid-i8"></div>
+  </div>
+  <div class="komf" id="komf-i8">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i8" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-hdr"><span class="sec-num">03</span><span class="sec-ttl">Brannceller og skille</span></div>
+  <div class="item" id="row-i9">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i9">Ok</button>
+      <button class="sb av" id="av-i9">Avvik</button>
+      <button class="sb ia" id="ia-i9">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Brannskiller er uten utettheter og skader</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i9">Bilde</button>
+      <button class="ib" id="komb-i9">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i9">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i9"></label>
+    <div class="igrid" id="grid-i9"></div>
+  </div>
+  <div class="komf" id="komf-i9">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i9" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i10">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i10">Ok</button>
+      <button class="sb av" id="av-i10">Avvik</button>
+      <button class="sb ia" id="ia-i10">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Gjennomføringer i brannvegger er tettet</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i10">Bilde</button>
+      <button class="ib" id="komb-i10">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i10">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i10"></label>
+    <div class="igrid" id="grid-i10"></div>
+  </div>
+  <div class="komf" id="komf-i10">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i10" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i11">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i11">Ok</button>
+      <button class="sb av" id="av-i11">Avvik</button>
+      <button class="sb ia" id="ia-i11">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Dører i brannskiller har riktig brannklasse</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i11">Bilde</button>
+      <button class="ib" id="komb-i11">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i11">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i11"></label>
+    <div class="igrid" id="grid-i11"></div>
+  </div>
+  <div class="komf" id="komf-i11">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i11" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i12">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i12">Ok</button>
+      <button class="sb av" id="av-i12">Avvik</button>
+      <button class="sb ia" id="ia-i12">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Leilighetsskillende konstruksjoner er intakte</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i12">Bilde</button>
+      <button class="ib" id="komb-i12">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i12">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i12"></label>
+    <div class="igrid" id="grid-i12"></div>
+  </div>
+  <div class="komf" id="komf-i12">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i12" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-hdr"><span class="sec-num">04</span><span class="sec-ttl">Brannslukkingsutstyr</span></div>
+  <div class="item" id="row-i13">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i13">Ok</button>
+      <button class="sb av" id="av-i13">Avvik</button>
+      <button class="sb ia" id="ia-i13">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Alle brannslukkere er på plass og synlige</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i13">Bilde</button>
+      <button class="ib" id="komb-i13">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i13">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i13"></label>
+    <div class="igrid" id="grid-i13"></div>
+  </div>
+  <div class="komf" id="komf-i13">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i13" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i14">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i14">Ok</button>
+      <button class="sb av" id="av-i14">Avvik</button>
+      <button class="sb ia" id="ia-i14">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Servicedato på brannslukkere er innenfor frist</div><div class="note">Sjekk etikett</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i14">Bilde</button>
+      <button class="ib" id="komb-i14">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i14">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i14"></label>
+    <div class="igrid" id="grid-i14"></div>
+  </div>
+  <div class="komf" id="komf-i14">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i14" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i15">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i15">Ok</button>
+      <button class="sb av" id="av-i15">Avvik</button>
+      <button class="sb ia" id="ia-i15">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Brannslanger og skap er tilgjengelige</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i15">Bilde</button>
+      <button class="ib" id="komb-i15">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i15">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i15"></label>
+    <div class="igrid" id="grid-i15"></div>
+  </div>
+  <div class="komf" id="komf-i15">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i15" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i16">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i16">Ok</button>
+      <button class="sb av" id="av-i16">Avvik</button>
+      <button class="sb ia" id="ia-i16">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Sprinkleranlegg er i driftsklar stand</div><div class="note">Hvis aktuelt</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i16">Bilde</button>
+      <button class="ib" id="komb-i16">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i16">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i16"></label>
+    <div class="igrid" id="grid-i16"></div>
+  </div>
+  <div class="komf" id="komf-i16">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i16" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-hdr"><span class="sec-num">05</span><span class="sec-ttl">Branntekniske installasjoner</span></div>
+  <div class="item" id="row-i17">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i17">Ok</button>
+      <button class="sb av" id="av-i17">Avvik</button>
+      <button class="sb ia" id="ia-i17">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Brannalarmpanel er uten feilmeldinger</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i17">Bilde</button>
+      <button class="ib" id="komb-i17">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i17">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i17"></label>
+    <div class="igrid" id="grid-i17"></div>
+  </div>
+  <div class="komf" id="komf-i17">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i17" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i18">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i18">Ok</button>
+      <button class="sb av" id="av-i18">Avvik</button>
+      <button class="sb ia" id="ia-i18">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Røykdetektorer er rene og ikke blokkert</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i18">Bilde</button>
+      <button class="ib" id="komb-i18">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i18">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i18"></label>
+    <div class="igrid" id="grid-i18"></div>
+  </div>
+  <div class="komf" id="komf-i18">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i18" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i19">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i19">Ok</button>
+      <button class="sb av" id="av-i19">Avvik</button>
+      <button class="sb ia" id="ia-i19">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Manuelle meldere er tilgjengelige og uskadet</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i19">Bilde</button>
+      <button class="ib" id="komb-i19">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i19">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i19"></label>
+    <div class="igrid" id="grid-i19"></div>
+  </div>
+  <div class="komf" id="komf-i19">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i19" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i20">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i20">Ok</button>
+      <button class="sb av" id="av-i20">Avvik</button>
+      <button class="sb ia" id="ia-i20">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Alarm-test er gjennomført i henhold til plan</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i20">Bilde</button>
+      <button class="ib" id="komb-i20">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i20">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i20"></label>
+    <div class="igrid" id="grid-i20"></div>
+  </div>
+  <div class="komf" id="komf-i20">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i20" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i21">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i21">Ok</button>
+      <button class="sb av" id="av-i21">Avvik</button>
+      <button class="sb ia" id="ia-i21">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Røykventilasjon fungerer</div><div class="note">Hvis aktuelt</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i21">Bilde</button>
+      <button class="ib" id="komb-i21">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i21">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i21"></label>
+    <div class="igrid" id="grid-i21"></div>
+  </div>
+  <div class="komf" id="komf-i21">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i21" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i22">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i22">Ok</button>
+      <button class="sb av" id="av-i22">Avvik</button>
+      <button class="sb ia" id="ia-i22">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Styrepanel for branndører er operativt</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i22">Bilde</button>
+      <button class="ib" id="komb-i22">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i22">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i22"></label>
+    <div class="igrid" id="grid-i22"></div>
+  </div>
+  <div class="komf" id="komf-i22">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i22" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-hdr"><span class="sec-num">06</span><span class="sec-ttl">Elektrisk anlegg og varmekilder</span></div>
+  <div class="item" id="row-i23">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i23">Ok</button>
+      <button class="sb av" id="av-i23">Avvik</button>
+      <button class="sb ia" id="ia-i23">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">El-skap er ryddige og fri for brennbare materialer</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i23">Bilde</button>
+      <button class="ib" id="komb-i23">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i23">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i23"></label>
+    <div class="igrid" id="grid-i23"></div>
+  </div>
+  <div class="komf" id="komf-i23">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i23" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i24">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i24">Ok</button>
+      <button class="sb av" id="av-i24">Avvik</button>
+      <button class="sb ia" id="ia-i24">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Ingen overbelastede stikkontakter eller skjøteledninger</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i24">Bilde</button>
+      <button class="ib" id="komb-i24">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i24">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i24"></label>
+    <div class="igrid" id="grid-i24"></div>
+  </div>
+  <div class="komf" id="komf-i24">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i24" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i25">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i25">Ok</button>
+      <button class="sb av" id="av-i25">Avvik</button>
+      <button class="sb ia" id="ia-i25">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Varmeovner er ikke dekket til eller blokkert</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i25">Bilde</button>
+      <button class="ib" id="komb-i25">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i25">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i25"></label>
+    <div class="igrid" id="grid-i25"></div>
+  </div>
+  <div class="komf" id="komf-i25">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i25" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i26">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i26">Ok</button>
+      <button class="sb av" id="av-i26">Avvik</button>
+      <button class="sb ia" id="ia-i26">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Kabler og ledninger er uskadet og ryddig lagt</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i26">Bilde</button>
+      <button class="ib" id="komb-i26">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i26">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i26"></label>
+    <div class="igrid" id="grid-i26"></div>
+  </div>
+  <div class="komf" id="komf-i26">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i26" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-hdr"><span class="sec-num">07</span><span class="sec-ttl">Orden, renhold og lagring</span></div>
+  <div class="item" id="row-i27">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i27">Ok</button>
+      <button class="sb av" id="av-i27">Avvik</button>
+      <button class="sb ia" id="ia-i27">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Brennbare væsker er oppbevart i godkjente skap</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i27">Bilde</button>
+      <button class="ib" id="komb-i27">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i27">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i27"></label>
+    <div class="igrid" id="grid-i27"></div>
+  </div>
+  <div class="komf" id="komf-i27">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i27" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i28">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i28">Ok</button>
+      <button class="sb av" id="av-i28">Avvik</button>
+      <button class="sb ia" id="ia-i28">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Søppel er ikke lagret i rømningsveier</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i28">Bilde</button>
+      <button class="ib" id="komb-i28">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i28">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i28"></label>
+    <div class="igrid" id="grid-i28"></div>
+  </div>
+  <div class="komf" id="komf-i28">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i28" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i29">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i29">Ok</button>
+      <button class="sb av" id="av-i29">Avvik</button>
+      <button class="sb ia" id="ia-i29">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Lagerrom er ryddige og ikke overstappet</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i29">Bilde</button>
+      <button class="ib" id="komb-i29">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i29">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i29"></label>
+    <div class="igrid" id="grid-i29"></div>
+  </div>
+  <div class="komf" id="komf-i29">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i29" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i30">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i30">Ok</button>
+      <button class="sb av" id="av-i30">Avvik</button>
+      <button class="sb ia" id="ia-i30">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Ingen ulovlig bruk av åpen ild</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i30">Bilde</button>
+      <button class="ib" id="komb-i30">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i30">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i30"></label>
+    <div class="igrid" id="grid-i30"></div>
+  </div>
+  <div class="komf" id="komf-i30">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i30" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i31">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i31">Ok</button>
+      <button class="sb av" id="av-i31">Avvik</button>
+      <button class="sb ia" id="ia-i31">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Tekniske rom er ryddige</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i31">Bilde</button>
+      <button class="ib" id="komb-i31">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i31">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i31"></label>
+    <div class="igrid" id="grid-i31"></div>
+  </div>
+  <div class="komf" id="komf-i31">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i31" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-hdr"><span class="sec-num">08</span><span class="sec-ttl">Brannorganisering og beredskap</span></div>
+  <div class="item" id="row-i32">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i32">Ok</button>
+      <button class="sb av" id="av-i32">Avvik</button>
+      <button class="sb ia" id="ia-i32">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Branninstruks er oppdatert og kjent</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i32">Bilde</button>
+      <button class="ib" id="komb-i32">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i32">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i32"></label>
+    <div class="igrid" id="grid-i32"></div>
+  </div>
+  <div class="komf" id="komf-i32">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i32" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i33">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i33">Ok</button>
+      <button class="sb av" id="av-i33">Avvik</button>
+      <button class="sb ia" id="ia-i33">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Brannøvelse er gjennomført siste 12 måneder</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i33">Bilde</button>
+      <button class="ib" id="komb-i33">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i33">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i33"></label>
+    <div class="igrid" id="grid-i33"></div>
+  </div>
+  <div class="komf" id="komf-i33">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i33" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i34">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i34">Ok</button>
+      <button class="sb av" id="av-i34">Avvik</button>
+      <button class="sb ia" id="ia-i34">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Brannvernansvarliges kontaktinfo er tilgjengelig</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i34">Bilde</button>
+      <button class="ib" id="komb-i34">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i34">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i34"></label>
+    <div class="igrid" id="grid-i34"></div>
+  </div>
+  <div class="komf" id="komf-i34">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i34" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i35">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i35">Ok</button>
+      <button class="sb av" id="av-i35">Avvik</button>
+      <button class="sb ia" id="ia-i35">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">ROS-analyse for brann er oppdatert</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i35">Bilde</button>
+      <button class="ib" id="komb-i35">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i35">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i35"></label>
+    <div class="igrid" id="grid-i35"></div>
+  </div>
+  <div class="komf" id="komf-i35">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i35" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i36">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i36">Ok</button>
+      <button class="sb av" id="av-i36">Avvik</button>
+      <button class="sb ia" id="ia-i36">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Roller og ansvar ved brann er avklart</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i36">Bilde</button>
+      <button class="ib" id="komb-i36">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i36">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i36"></label>
+    <div class="igrid" id="grid-i36"></div>
+  </div>
+  <div class="komf" id="komf-i36">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i36" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+  <div class="item" id="row-i37">
+    <div class="sbts">
+      <button class="sb ok" id="ok-i37">Ok</button>
+      <button class="sb av" id="av-i37">Avvik</button>
+      <button class="sb ia" id="ia-i37">I/A</button>
+    </div>
+    <div class="itxt">
+      <div class="txt">Forrige runde er gjennomgått og avvik lukket</div>
+    </div>
+    <div class="iacts">
+      <button class="ib" id="imgb-i37">Bilde</button>
+      <button class="ib" id="komb-i37">Kommentar</button>
+    </div>
+  </div>
+  <div class="imgf" id="imgf-i37">
+    <div class="slbl">Bilder</div>
+    <label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fileinput-i37"></label>
+    <div class="igrid" id="grid-i37"></div>
+  </div>
+  <div class="komf" id="komf-i37">
+    <div class="slbl red">Kommentar / avvik</div>
+    <textarea id="ta-i37" placeholder="Beskriv observasjon..."></textarea>
+  </div>
+</div>
 
   <div class="bsec">
-    <div class="bsec-ttl">Generelle kommentarer</div>
-    <textarea id="gen-comments" style="width:100%;border:1px solid var(--b);border-radius:2px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:14px;color:var(--t);resize:vertical;min-height:80px;outline:none;background:var(--l);" placeholder="Øvrige observasjoner, merknader eller tiltak…" oninput="markUnsaved()" onfocus="this.style.borderColor='var(--g)'" onblur="this.style.borderColor='var(--b)'"></textarea>
+    <div class="bttl">Generelle kommentarer</div>
+    <textarea id="f-k" style="width:100%;border:1px solid #C8D6CF;border-radius:2px;padding:9px;font-family:Lato,Arial,sans-serif;font-size:14px;color:#1A2B25;resize:vertical;min-height:76px;outline:none;background:#F5F7F5;" placeholder="&#216;vrige observasjoner..."></textarea>
   </div>
 
   <div class="acts">
-    <button class="btn btn-g" onclick="resetAll()">↺ Nullstill</button>
-    <button class="btn btn-p" onclick="openModal()">Lagre rapport til SharePoint</button>
+    <button class="btng" id="btn-reset">Nullstill</button>
+    <button class="btng" id="btn-email2">Send per e-post</button>
+    <button class="btnp" id="btn-pdf2">Lagre som PDF</button>
   </div>
 </div>
 
-<!-- MODAL -->
-<div class="moverlay" id="sp-modal">
-  <div class="modal">
-    <div class="m-ttl">Lagre rapport til SharePoint</div>
-    <div class="m-sub">Rapporten genereres som PDF og lastes opp til CBRE sin SharePoint-mappe for brannvern.</div>
-    <div class="m-path">📁 Brannvern / Sjekklister og rapportmaler brannvern</div>
-    <div id="m-name-wrap">
-      <div class="field" style="margin-bottom:0">
-        <label>Filnavn (PDF)</label>
-        <input type="text" id="m-filename" style="width:100%">
-      </div>
-    </div>
-    <div class="m-spin" id="m-spin"><div class="spin-ring"></div><div style="font-size:13px;color:var(--mu)">Genererer PDF og laster opp…</div></div>
-    <div class="m-result" id="m-result">
-      <div class="m-ok" id="m-ok-msg"></div>
-      <div class="m-link" id="m-link"></div>
-    </div>
-    <div class="m-acts" id="m-acts">
-      <button class="btn btn-g" onclick="closeModal()">Avbryt</button>
-      <button class="btn btn-p" onclick="uploadPDF()">Last opp PDF</button>
-    </div>
-  </div>
-</div>
-
-<div id="toast"><span id="ti">✓</span><span id="tm"></span></div>
-<div class="footer">© CBRE <span>·</span> Internkontroll Brann <span>·</span> cbre.com/no</div>
+<div id="toast"></div>
+<div class="footer">&#169; CBRE &#183; Internkontroll Brann &#183; cbre.com/no</div>
 
 <script>
-// ─── CHECKLIST DATA (merged: existing + OneNote categories) ──────────────────
-const SECTIONS = [
-  { num:'01', title:'Tegninger og planer', icon:'🗺️', items:[
-    { text:'Brannteikninger og rømningsplaner er ajour og korrekte' },
-    { text:'Orienteringsplaner er tilgjengelig ved inngang og angrepspunkt' },
-    { text:'Markeringer av brannceller og leilighetsskiller er korrekte' },
-    { text:'Rømningsplan er godt synlig og oppdatert', note:'Sjekk at kart stemmer med faktisk planløsning' },
-  ]},
-  { num:'02', title:'Rømningsveier og utganger', icon:'🚪', items:[
-    { text:'Alle nødutganger er tydelig merket og fri for hindringer', note:'Inkluder dører, korridorer og trapperom' },
-    { text:'Nødutgangsskilt er opplyste og i funksjon' },
-    { text:'Branndører lukker seg automatisk og er ikke fastkilte' },
-    { text:'Rømningsveier er fri for møbler, esker og annet som sperrer' },
-    { text:'Korridor- og trappebelysning fungerer, inkl. nødlys' },
-  ]},
-  { num:'03', title:'Brannceller og skille', icon:'🧱', items:[
-    { text:'Brannskiller (vegger, etasjeskiller) er uten utettheter og skader' },
-    { text:'Gjennomføringer i brannvegger er tettede med godkjent materiale' },
-    { text:'Dører i brannskiller har riktig brannklasse og selvlukker' },
-    { text:'Leilighetsskillende konstruksjoner er intakte (hvis aktuelt)' },
-  ]},
-  { num:'04', title:'Brannslukkingsutstyr', icon:'🧯', items:[
-    { text:'Alle brannslukkere er på plass og godt synlige' },
-    { text:'Kontrollert dato på brannslukkere er innenfor frist', note:'Sjekk siste servicedato på henger/etikett' },
-    { text:'Brannslanger og skap er tilgjengelige og uskadet' },
-    { text:'Automatisk sprinkleranlegg er i driftsklar stand (hvis aktuelt)' },
-  ]},
-  { num:'05', title:'Branntekniske installasjoner', icon:'🔧', items:[
-    { text:'Brannalarmpanel er uten feil- eller driftsmeldinger' },
-    { text:'Røykdetektorer er rene og ikke blokkert av gjenstander' },
-    { text:'Manuelle meldere (brannknapper) er tilgjengelige og uskadet' },
-    { text:'Alarm-test er gjennomført i henhold til serviceplan' },
-    { text:'Røykventilasjon / trykkavlastning fungerer (hvis aktuelt)' },
-    { text:'Styrepanel for branndører/porter er operativt' },
-  ]},
-  { num:'06', title:'Elektrisk anlegg og varmekilder', icon:'⚡', items:[
-    { text:'El-skap er ryddige, låste og fri for brennbare materialer' },
-    { text:'Ingen synlig overbelastede stikkontakter eller skjøteledninger', note:'Skjøteledninger skal ikke brukes som permanent løsning' },
-    { text:'Varmeovner og varmepaneler er ikke dekket til eller blokkert' },
-    { text:'Kabler og ledninger er uskadet og ryddig lagt' },
-  ]},
-  { num:'07', title:'Orden, renhold og lagring', icon:'📦', items:[
-    { text:'Brennbare væsker er forsvarlig oppbevart i godkjente skap' },
-    { text:'Søppel og avfall er ikke lagret i rømningsveier eller nær varmekilder' },
-    { text:'Lagerrom er ryddige og ikke overstappet' },
-    { text:'Ingen ulovlig bruk av åpen ild eller røyking registrert' },
-    { text:'Orden og renhold i tekniske rom er tilfredsstillende' },
-  ]},
-  { num:'08', title:'Brannorganisering og beredskap', icon:'📋', items:[
-    { text:'Branninstruks er oppdatert og kjent blant ansatte' },
-    { text:'Brannøvelse er gjennomført siste 12 måneder', note:'Dokumentasjon bør arkiveres' },
-    { text:'Brannvernansvarliges kontaktinfo er lett tilgjengelig' },
-    { text:'ROS-analyse for brann er gjennomgått og oppdatert' },
-    { text:'Roller og ansvar ved brann er avklart og kommunisert' },
-    { text:'Forrige brannvernrunde er gjennomgått og avvik lukket' },
-  ]},
-];
+var TOT = 38;
+var SK  = 'cbre_bv7';
+var st  = {};
+var km  = {};
+var ig  = {};
+var _toastT, _autoT;
 
-const DRIVE_ID  = 'b!_bgLklYf4UaCwZuds6-aeDzb1qK3amdBqx5-8AZNc8AOVVxsxBD0SLOMqA6vtJQJ';
-const FOLDER_ID = '01T5SGJBMMPXRMEDOC6VD2W4ANTJXDAFYT';
-const SK        = 'cbre_brannvern_v4';
+// ── Storage ──────────────────────────────────────────────────────────────────
+var _mem = {}, _ls = false;
+try { localStorage.setItem('t','1'); localStorage.removeItem('t'); _ls = true; } catch(e) {}
+function lset(k,v) { if(_ls) { try { localStorage.setItem(k,v); } catch(e) {} } else { _mem[k]=v; } }
+function lget(k)   { if(_ls) { try { return localStorage.getItem(k); } catch(e) { return null; } } return _mem[k]||null; }
+function lkeys()   { if(_ls) { try { return Object.keys(localStorage); } catch(e) { return []; } } return Object.keys(_mem); }
 
-let istate = {};   // id -> { status:'ok'|'av'|'ia', avvik:'' }
-let imgs   = {};   // id -> [{name,dataUrl}]
-let unsaved = false, atimer = null;
-
-// ─── BUILD ────────────────────────────────────────────────────────────────────
-function build() {
-  const root = document.getElementById('cl-root');
-  root.innerHTML = '';
-  let n = 0;
-  SECTIONS.forEach(sec => {
-    const el = document.createElement('div');
-    el.className = 'section';
-    el.innerHTML = `<div class="sec-hdr"><div class="sec-num">${sec.num}</div><div class="sec-ttl">${sec.title}</div><div class="sec-icon">${sec.icon}</div></div>`;
-    sec.items.forEach(item => {
-      const id = `i${n++}`;
-      const row = document.createElement('div');
-      row.className = 'item';
-      row.dataset.id = id;
-      row.innerHTML = `
-        <div class="status-btns">
-          <button class="sb" data-s="ok" data-id="${id}">Ok</button>
-          <button class="sb" data-s="av" data-id="${id}">Avvik</button>
-          <button class="sb" data-s="ia" data-id="${id}">I/A</button>
-        </div>
-        <div class="item-content">
-          <div class="item-text">${item.text}</div>
-          ${item.note?`<div class="item-note">${item.note}</div>`:''}
-        </div>
-        <div class="item-acts">
-          <button class="itbtn img-btn" data-id="${id}">📷</button>
-          <button class="itbtn kom-btn" data-id="${id}">Kommentar</button>
-        </div>`;
-      row.querySelectorAll('.sb').forEach(btn => btn.addEventListener('click', e => {
-        e.stopPropagation();
-        setStatus(id, btn.dataset.s, row);
-      }));
-      row.querySelector('.img-btn').addEventListener('click', e => {
-        e.stopPropagation();
-        document.getElementById(`imgf-${id}`).classList.toggle('open');
-      });
-      row.querySelector('.kom-btn').addEventListener('click', e => {
-        e.stopPropagation();
-        document.getElementById(`avvf-${id}`).classList.toggle('open');
-      });
-      el.appendChild(row);
-
-      // image field
-      const imgF = document.createElement('div');
-      imgF.className = 'img-field'; imgF.id = `imgf-${id}`;
-      imgF.innerHTML = `<div class="sub-lbl grn">📷 Bilder</div>
-        <div class="dropzone" id="dz-${id}">
-          <input type="file" accept="image/*" multiple>
-          <div class="drop-txt"><strong>Klikk for å velge</strong> eller dra inn bilder</div>
-        </div>
-        <div class="img-grid" id="grid-${id}"></div>`;
-      const dz = imgF.querySelector('.dropzone');
-      dz.querySelector('input').addEventListener('change', ev => addFiles([...ev.target.files], id));
-      dz.addEventListener('dragover', ev => { ev.preventDefault(); dz.classList.add('drag-over'); });
-      dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
-      dz.addEventListener('drop', ev => { ev.preventDefault(); dz.classList.remove('drag-over'); addFiles([...ev.dataTransfer.files], id); });
-      el.appendChild(imgF);
-
-      // comment/avvik field
-      const avvF = document.createElement('div');
-      avvF.className = 'avvik-field'; avvF.id = `avvf-${id}`;
-      avvF.innerHTML = `<div class="sub-lbl red">Kommentar / avvik</div>
-        <textarea placeholder="Beskriv observasjon eller avvik…"></textarea>`;
-      avvF.querySelector('textarea').addEventListener('input', function() {
-        if (!istate[id]) istate[id] = {};
-        istate[id].avvik = this.value;
-        updateKomBtn(id);
-        markUnsaved();
-      });
-      el.appendChild(avvF);
-    });
-    root.appendChild(el);
-  });
+// ── Status buttons ───────────────────────────────────────────────────────────
+function setStatus(id, s) {
+  var prev = st[id];
+  st[id] = (prev === s) ? null : s;
+  var row = document.getElementById('row-' + id);
+  row.className = 'item' + (st[id] ? ' ' + st[id] + '-r' : '');
+  var btns = [{'id':'ok-'+id,'s':'ok'},{'id':'av-'+id,'s':'av'},{'id':'ia-'+id,'s':'ia'}];
+  for (var i = 0; i < btns.length; i++) {
+    var b = document.getElementById(btns[i].id);
+    if (b) {
+      b.className = 'sb ' + btns[i].s + (st[id] === btns[i].s ? ' a' : '');
+    }
+  }
+  if (st[id] === 'av') {
+    document.getElementById('komf-' + id).classList.add('open');
+    document.getElementById('komb-' + id).classList.add('a');
+  }
+  updateP();
+  dirty();
 }
 
-function setStatus(id, s, row) {
-  if (!istate[id]) istate[id] = {};
-  const prev = istate[id].status;
-  istate[id].status = (prev === s) ? null : s;
-  renderStatus(id, row);
-  updateProgress();
-  markUnsaved();
-  // auto-open comment for avvik
-  if (istate[id].status === 'av') {
-    document.getElementById(`avvf-${id}`).classList.add('open');
+// ── Toggle image/comment panels ──────────────────────────────────────────────
+function togglePanel(type, id) {
+  var panel = document.getElementById(type + '-' + id);
+  var btn   = document.getElementById(type === 'imgf' ? 'imgb-' : 'komb-' + id);
+  if (panel) { panel.classList.toggle('open'); }
+  if (btn)   { btn.classList.toggle('a'); }
+}
+
+// ── Images ───────────────────────────────────────────────────────────────────
+function addFiles(files, id) {
+  if (!ig[id]) ig[id] = [];
+  for (var i = 0; i < files.length; i++) {
+    (function(f) {
+      if (!f.type.match(/^image/)) return;
+      var r = new FileReader();
+      r.onload = function(e) {
+        ig[id].push({ n: f.name, u: e.target.result });
+        renderGrid(id);
+        updateImgBtn(id);
+        dirty();
+      };
+      r.readAsDataURL(f);
+    })(files[i]);
   }
 }
 
-function renderStatus(id, row) {
-  if (!row) row = document.querySelector(`.item[data-id="${id}"]`);
-  if (!row) return;
-  const s = (istate[id]||{}).status;
-  row.querySelectorAll('.sb').forEach(btn => {
-    btn.classList.remove('ok-active','av-active','ia-active');
-    if (s && btn.dataset.s === s) btn.classList.add(`${s}-active`);
-  });
-  row.style.background = s==='ok' ? 'var(--ck)' : s==='av' ? '#fdf2f2' : s==='ia' ? '#f8f8f8' : '';
-}
-
-// ─── IMAGES ──────────────────────────────────────────────────────────────────
-function addFiles(files, id) {
-  if (!imgs[id]) imgs[id] = [];
-  files.filter(f=>f.type.startsWith('image/')).forEach(f => {
-    const r = new FileReader();
-    r.onload = e => { imgs[id].push({name:f.name, dataUrl:e.target.result}); renderGrid(id); updateImgBtn(id); markUnsaved(); };
-    r.readAsDataURL(f);
-  });
-}
 function renderGrid(id) {
-  const g = document.getElementById(`grid-${id}`); if (!g) return;
+  var g = document.getElementById('grid-' + id);
+  if (!g) return;
   g.innerHTML = '';
-  (imgs[id]||[]).forEach((img,i) => {
-    const t = document.createElement('div'); t.className = 'ithumb';
-    t.innerHTML = `<img src="${img.dataUrl}" alt="${img.name}"><button class="rm-img">×</button>`;
-    t.querySelector('.rm-img').onclick = () => { imgs[id].splice(i,1); renderGrid(id); updateImgBtn(id); markUnsaved(); };
-    g.appendChild(t);
-  });
+  var arr = ig[id] || [];
+  for (var i = 0; i < arr.length; i++) {
+    (function(img, idx) {
+      var t  = document.createElement('div');  t.className = 'ithumb';
+      var im = document.createElement('img');  im.src = img.u;
+      var rm = document.createElement('button'); rm.className = 'rmi'; rm.textContent = 'x';
+      rm.onclick = function() { ig[id].splice(idx, 1); renderGrid(id); updateImgBtn(id); dirty(); };
+      t.appendChild(im); t.appendChild(rm); g.appendChild(t);
+    })(arr[i], i);
+  }
 }
+
 function updateImgBtn(id) {
-  const btn = document.querySelector(`.item[data-id="${id}"] .img-btn`); if (!btn) return;
-  const n = (imgs[id]||[]).length;
-  btn.textContent = n ? `📷 ${n}` : '📷';
-  btn.classList.toggle('has-img', n>0);
-}
-function updateKomBtn(id) {
-  const btn = document.querySelector(`.item[data-id="${id}"] .kom-btn`); if (!btn) return;
-  const v = ((istate[id]||{}).avvik||'').trim();
-  btn.classList.toggle('has-avvik', v.length>0);
-  btn.textContent = v ? 'Kommentar ●' : 'Kommentar';
+  var b = document.getElementById('imgb-' + id);
+  if (!b) return;
+  var n = (ig[id] || []).length;
+  b.textContent = n ? 'Bilde (' + n + ')' : 'Bilde';
+  b.className = 'ib' + (n ? ' a' : '');
 }
 
-// ─── PROGRESS ─────────────────────────────────────────────────────────────────
-function updateProgress() {
-  const all = document.querySelectorAll('.item').length;
-  const done = Object.values(istate).filter(s=>s.status).length;
-  document.getElementById('prog-fill').style.width = all ? (done/all*100)+'%' : '0%';
-  document.getElementById('prog-txt').textContent = `${done} av ${all} punkter vurdert`;
+// ── Progress ─────────────────────────────────────────────────────────────────
+function updateP() {
+  var done = 0;
+  for (var k in st) { if (st[k]) done++; }
+  document.getElementById('pfill').style.width = Math.round(done / TOT * 100) + '%';
+  document.getElementById('ptxt').textContent  = done + ' av ' + TOT + ' punkter vurdert';
 }
 
-// ─── GPS ──────────────────────────────────────────────────────────────────────
-function getLocation() {
-  if (!navigator.geolocation) { toast('📍','Posisjon ikke støttet i denne nettleseren',true); return; }
-  document.getElementById('loc-btn').style.display = 'none';
-  document.getElementById('loc-spin').style.display = 'block';
-  navigator.geolocation.getCurrentPosition(async pos => {
-    try {
-      const {latitude:lat, longitude:lon} = pos.coords;
-      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1&accept-language=no`);
-      const data = await res.json();
-      const a = data.address || {};
-      const parts = [
-        a.road || a.pedestrian || a.footway,
-        a.house_number,
-        a.city || a.town || a.village || a.municipality
-      ].filter(Boolean);
-      const addr = parts.length ? parts.join(' ') : data.display_name.split(',').slice(0,2).join(',').trim();
-      document.getElementById('meta-eiendom').value = addr;
-      markUnsaved();
-      toast('📍','Adresse funnet');
-    } catch(e) { toast('📍','Kunne ikke hente adresse',true); }
-    document.getElementById('loc-btn').style.display = 'block';
-    document.getElementById('loc-spin').style.display = 'none';
-  }, err => {
-    document.getElementById('loc-btn').style.display = 'block';
-    document.getElementById('loc-spin').style.display = 'none';
-    toast('📍', err.code===1 ? 'Tilgang til posisjon nektet' : 'Kunne ikke hente posisjon', true);
-  }, {timeout:10000, enableHighAccuracy:true});
+// ── Dirty / saved ────────────────────────────────────────────────────────────
+function dirty() {
+  document.getElementById('sdot').className = 'sdot u';
+  document.getElementById('stxt').textContent = 'Ulagrede endringer';
+  clearTimeout(_autoT);
+  _autoT = setTimeout(saveLocal, 20000);
+}
+function markSaved() {
+  document.getElementById('sdot').className = 'sdot';
+  var t = new Date();
+  document.getElementById('stxt').textContent = 'Lagret ' + t.getHours() + ':' + ('0' + t.getMinutes()).slice(-2);
 }
 
-// ─── LOCAL SAVE ───────────────────────────────────────────────────────────────
-function collect() {
-  document.querySelectorAll('.item').forEach(row => {
-    const id = row.dataset.id;
-    if (!istate[id]) istate[id] = {};
-    const ta = document.querySelector(`#avvf-${id} textarea`);
-    if (ta) istate[id].avvik = ta.value;
-  });
-  return {
-    meta: {
-      eiendom:   document.getElementById('meta-eiendom').value,
-      ansvarlig: document.getElementById('meta-ansvarlig').value,
-      dato:      document.getElementById('meta-dato').value,
-      neste:     document.getElementById('meta-neste').value,
-      comments:  document.getElementById('gen-comments').value,
-    },
-    items: istate
-  };
-}
-
+// ── Save / Load ───────────────────────────────────────────────────────────────
 function saveLocal() {
-  try {
-    const d = collect();
-    localStorage.setItem(SK, JSON.stringify(d));
-    Object.keys(imgs).forEach(id => {
-      if (imgs[id].length) try { localStorage.setItem(`${SK}_img_${id}`, JSON.stringify(imgs[id])); } catch(e){}
-    });
-    markSaved();
-    toast('💾','Fremdrift lagret lokalt');
-  } catch(e) { toast('⚠','Lagring feilet',true); }
+  var d = {
+    ei: document.getElementById('f-e').value,
+    an: document.getElementById('f-a').value,
+    da: document.getElementById('f-d').value,
+    ne: document.getElementById('f-n').value,
+    ko: document.getElementById('f-k').value,
+    st: st, km: km
+  };
+  lset(SK, JSON.stringify(d));
+  for (var id in ig) {
+    if (ig[id] && ig[id].length) {
+      try { lset(SK + '_i_' + id, JSON.stringify(ig[id])); } catch(e) {}
+    }
+  }
+  markSaved();
+  showToast(_ls ? 'Fremdrift lagret' : 'Lagret (midlertidig - åpne fra web for permanent lagring)');
 }
 
 function loadLocal() {
   try {
-    const raw = localStorage.getItem(SK);
+    var raw = lget(SK);
     if (!raw) { markSaved(); return; }
-    const d = JSON.parse(raw);
-    if (d.meta) {
-      document.getElementById('meta-eiendom').value  = d.meta.eiendom  || '';
-      document.getElementById('meta-ansvarlig').value= d.meta.ansvarlig|| '';
-      document.getElementById('meta-dato').value     = d.meta.dato     || '';
-      document.getElementById('meta-neste').value    = d.meta.neste    || '';
-      document.getElementById('gen-comments').value  = d.meta.comments || '';
-    }
-    if (d.items) {
-      istate = d.items;
-      Object.keys(istate).forEach(id => {
-        const row = document.querySelector(`.item[data-id="${id}"]`);
-        if (row) renderStatus(id, row);
-        if (istate[id].avvik) {
-          const ta = document.querySelector(`#avvf-${id} textarea`);
-          if (ta) { ta.value = istate[id].avvik; updateKomBtn(id); }
+    var d = JSON.parse(raw);
+    if (d.ei) document.getElementById('f-e').value = d.ei;
+    if (d.an) document.getElementById('f-a').value = d.an;
+    if (d.da) document.getElementById('f-d').value = d.da;
+    if (d.ne) document.getElementById('f-n').value = d.ne;
+    if (d.ko) document.getElementById('f-k').value = d.ko;
+    if (d.st) {
+      st = d.st;
+      for (var id in st) {
+        if (!st[id]) continue;
+        var row = document.getElementById('row-' + id);
+        if (!row) continue;
+        row.className = 'item ' + st[id] + '-r';
+        var btns = [{'id':'ok-'+id,'s':'ok'},{'id':'av-'+id,'s':'av'},{'id':'ia-'+id,'s':'ia'}];
+        for (var i = 0; i < btns.length; i++) {
+          var b = document.getElementById(btns[i].id);
+          if (b) b.className = 'sb ' + btns[i].s + (st[id] === btns[i].s ? ' a' : '');
         }
-      });
+      }
     }
-    Object.keys(localStorage).filter(k=>k.startsWith(`${SK}_img_`)).forEach(key => {
-      const id = key.replace(`${SK}_img_`,'');
-      try { imgs[id] = JSON.parse(localStorage.getItem(key)); renderGrid(id); updateImgBtn(id); } catch(e){}
-    });
-    updateProgress();
+    if (d.km) {
+      km = d.km;
+      for (var id in km) {
+        var ta = document.getElementById('ta-' + id);
+        if (ta && km[id]) ta.value = km[id];
+      }
+    }
+    var ks = lkeys();
+    for (var i = 0; i < ks.length; i++) {
+      if (ks[i].indexOf(SK + '_i_') === 0) {
+        var id = ks[i].replace(SK + '_i_', '');
+        try { ig[id] = JSON.parse(lget(ks[i])); renderGrid(id); updateImgBtn(id); } catch(e) {}
+      }
+    }
+    updateP();
     markSaved();
   } catch(e) { markSaved(); }
 }
 
-function markUnsaved() {
-  unsaved = true;
-  document.getElementById('sdot').classList.add('unsaved');
-  document.getElementById('sstxt').textContent = 'Ulagrede endringer';
-  clearTimeout(atimer);
-  atimer = setTimeout(saveLocal, 20000);
+// ── GPS ───────────────────────────────────────────────────────────────────────
+function getPos() {
+  if (!navigator.geolocation) { showToast('Posisjon ikke tilgjengelig'); return; }
+  var btn = document.getElementById('btn-gps');
+  btn.textContent = '...';
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + pos.coords.latitude + '&lon=' + pos.coords.longitude + '&accept-language=no')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var a = data.address || {};
+          var parts = [a.road || a.pedestrian, a.house_number, a.city || a.town || a.village].filter(Boolean);
+          document.getElementById('f-e').value = parts.length ? parts.join(' ') : (data.display_name || '').split(',')[0];
+          dirty();
+          btn.innerHTML = '&#128205;';
+          showToast('Adresse funnet');
+        })
+        .catch(function() { btn.innerHTML = '&#128205;'; showToast('Kunne ikke hente adresse'); });
+    },
+    function() { btn.innerHTML = '&#128205;'; showToast('Tilgang til posisjon nektet'); },
+    { timeout: 10000 }
+  );
 }
-function markSaved() {
-  unsaved = false;
-  document.getElementById('sdot').classList.remove('unsaved');
-  const t = new Date();
-  document.getElementById('sstxt').textContent = `Sist lagret ${t.toLocaleTimeString('no-NO',{hour:'2-digit',minute:'2-digit'})}`;
+
+// ── Suggest filename ──────────────────────────────────────────────────────────
+function suggestFn() {
+  var e = (document.getElementById('f-e').value || 'Brannvernrunde').replace(/[^\w\-]/g, '_');
+  var d = document.getElementById('f-d').value || new Date().toISOString().split('T')[0];
+  return e + '_' + d;
 }
 
-// ─── SHAREPOINT PDF UPLOAD ────────────────────────────────────────────────────
-function suggestFilename() {
-  const eiendom = (document.getElementById('meta-eiendom').value||'Brannvernrunde').replace(/[^\wæøåÆØÅ\-]/g,'_');
-  const dato = document.getElementById('meta-dato').value || new Date().toISOString().split('T')[0];
-  return `${eiendom}_${dato}.pdf`;
-}
-
-function openModal() {
-  document.getElementById('m-filename').value = suggestFilename();
-  document.getElementById('m-spin').classList.remove('show');
-  document.getElementById('m-result').classList.remove('show');
-  document.getElementById('m-name-wrap').style.display = 'block';
-  document.getElementById('m-acts').innerHTML = `
-    <button class="btn btn-g" onclick="closeModal()">Avbryt</button>
-    <button class="btn btn-p" onclick="uploadPDF()">Last opp PDF</button>`;
-  document.getElementById('sp-modal').classList.add('open');
-}
-function closeModal() { document.getElementById('sp-modal').classList.remove('open'); }
-
-async function uploadPDF() {
-  const rawName = document.getElementById('m-filename').value.trim() || suggestFilename();
-  const fileName = rawName.endsWith('.pdf') ? rawName : rawName.replace(/\.html?$/,'') + '.pdf';
-  const htmlContent = buildReportHTML();
-
-  document.getElementById('m-spin').classList.add('show');
-  document.getElementById('m-name-wrap').style.display = 'none';
-  document.getElementById('m-acts').innerHTML = '';
-  document.getElementById('m-result').classList.remove('show');
-
-  try {
-    const b64 = btoa(unescape(encodeURIComponent(htmlContent)));
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: `You are a SharePoint file upload assistant using Microsoft 365 tools.
-Upload a file to SharePoint using the Microsoft Graph API.
-DriveId: "${DRIVE_ID}"
-Parent folder item ID: "${FOLDER_ID}"
-File name: "${fileName}"
-The content is a base64-encoded HTML string that represents a fire safety inspection report.
-Use the Microsoft Graph PUT endpoint to upload: /drives/{driveId}/items/{parentId}:/{fileName}:/content with Content-Type text/html.
-Respond ONLY with JSON: {"success":true,"webUrl":"...","name":"..."} or {"success":false,"error":"..."}`,
-        messages:[{role:'user', content:`Upload the file "${fileName}" to SharePoint. Base64 HTML content:\n${b64}`}],
-        mcp_servers:[{type:'url', url:'https://microsoft365.mcp.claude.com/mcp', name:'microsoft365'}]
-      })
-    });
-    const data = await res.json();
-    document.getElementById('m-spin').classList.remove('show');
-
-    let result = null;
-    try {
-      const txt = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-      const m = txt.match(/\{[\s\S]*?\}/);
-      if (m) result = JSON.parse(m[0]);
-    } catch(e){}
-
-    document.getElementById('m-result').classList.add('show');
-    if (result && result.success) {
-      document.getElementById('m-ok-msg').textContent = '✓ Rapport lagret til SharePoint!';
-      document.getElementById('m-link').innerHTML = `<a href="${result.webUrl}" target="_blank">Åpne i SharePoint →</a>`;
-      document.getElementById('m-acts').innerHTML = `
-        <button class="btn btn-g" onclick="closeModal()">Lukk</button>
-        <a href="${result.webUrl}" target="_blank" class="btn btn-p" style="text-decoration:none">Åpne fil</a>`;
-      markSaved();
-      toast('✓', `Lastet opp: ${fileName}`);
-    } else {
-      document.getElementById('m-ok-msg').innerHTML = '<span style="color:#b33">⚠ Opplasting feilet</span>';
-      document.getElementById('m-link').textContent = result?.error || 'Prøv igjen eller bruk «Last ned»';
-      document.getElementById('m-acts').innerHTML = `
-        <button class="btn btn-g" onclick="closeModal()">Lukk</button>
-        <button class="btn btn-p" onclick="dlClose()">Last ned lokalt</button>`;
+// ── Build report HTML ─────────────────────────────────────────────────────────
+function buildReport() {
+  var ei = document.getElementById('f-e').value;
+  var an = document.getElementById('f-a').value;
+  var da = document.getElementById('f-d').value;
+  var ne = document.getElementById('f-n').value;
+  var ko = document.getElementById('f-k').value;
+  var ok = 0, av = 0, ia = 0;
+  var rows = '';
+  var items = document.querySelectorAll('.item');
+  for (var i = 0; i < items.length; i++) {
+    var id  = items[i].id.replace('row-', '');
+    var s   = st[id];
+    var txt = items[i].querySelector('.txt').textContent;
+    var k   = km[id] || '';
+    var imgArr = ig[id] || [];
+    var imgs = '';
+    for (var j = 0; j < imgArr.length; j++) {
+      imgs += '<img src="' + imgArr[j].u + '" style="max-width:120px;max-height:90px;margin:3px;border-radius:2px;">';
     }
-  } catch(err) {
-    document.getElementById('m-spin').classList.remove('show');
-    document.getElementById('m-result').classList.add('show');
-    document.getElementById('m-ok-msg').innerHTML = '<span style="color:#b33">⚠ Tilkoblingsfeil</span>';
-    document.getElementById('m-link').textContent = err.message;
-    document.getElementById('m-acts').innerHTML = `
-      <button class="btn btn-g" onclick="closeModal()">Lukk</button>
-      <button class="btn btn-p" onclick="dlClose()">Last ned lokalt</button>`;
+    if (s === 'ok') ok++;
+    else if (s === 'av') av++;
+    else if (s === 'ia') ia++;
+    var sl = s === 'ok'  ? '<b style="color:#1A7A4A">Ok</b>'
+           : s === 'av'  ? '<b style="color:#C0392B">Avvik</b>'
+           : s === 'ia'  ? '<span style="color:#6B7280">I/A</span>'
+           : '<span style="color:#ccc">-</span>';
+    var bg = s === 'ok' ? '#e6fbf2' : s === 'av' ? '#fdf2f2' : s === 'ia' ? '#f8f8f8' : '#fff';
+    rows += '<tr style="background:' + bg + '">'
+          + '<td style="padding:6px 10px;border-bottom:1px solid #e0e8e4;width:70px;vertical-align:top">' + sl + '</td>'
+          + '<td style="padding:6px 10px;border-bottom:1px solid #e0e8e4;font-size:12px">' + txt
+          + (k ? '<br><em style="color:#888;font-size:11px">' + k + '</em>' : '')
+          + (imgs ? '<div style="margin-top:4px">' + imgs + '</div>' : '')
+          + '</td></tr>';
   }
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CBRE Brannvernrunde</title>'
+    + '<style>@media print{body{margin:0}@page{margin:15mm}}</style></head>'
+    + '<body style="font-family:Arial,sans-serif;max-width:800px;margin:20px auto;color:#1A2B25;padding:0 20px">'
+    + '<div style="background:#003F2D;color:#fff;padding:18px 24px">'
+    + '<div style="font-size:10px;letter-spacing:.3em;color:#17E88F;margin-bottom:8px">CBRE</div>'
+    + '<h1 style="font-size:24px;margin:0">Brannvernrunde</h1></div>'
+    + '<div style="background:#f5f7f5;padding:10px 24px;border-bottom:3px solid #17E88F;font-size:12px;display:flex;gap:20px;flex-wrap:wrap">'
+    + '<span><b>Eiendom:</b> ' + (ei||'-') + '</span>'
+    + '<span><b>Dato:</b> ' + (da||'-') + '</span>'
+    + '<span><b>Ansvarlig:</b> ' + (an||'-') + '</span>'
+    + '<span><b>Neste:</b> ' + (ne||'-') + '</span></div>'
+    + '<div style="background:#fff;padding:8px 24px;border-bottom:1px solid #e0e8e4;font-size:12px;display:flex;gap:16px">'
+    + '<span style="color:#1A7A4A;font-weight:700">Ok: ' + ok + '</span>'
+    + '<span style="color:#C0392B;font-weight:700">Avvik: ' + av + '</span>'
+    + '<span style="color:#6B7280">I/A: ' + ia + '</span></div>'
+    + '<table style="width:100%;border-collapse:collapse">' + rows + '</table>'
+    + (ko ? '<div style="padding:12px 24px;background:#f5f7f5;font-size:12px"><b>Kommentarer:</b><p style="margin-top:4px">' + ko + '</p></div>' : '')
+    + '<div style="padding:8px 24px;font-size:10px;color:#aaa;border-top:1px solid #e0e8e4">Generert '
+    + new Date().toLocaleString('no-NO') + ' - CBRE Internkontroll Brann</div>'
+    + '</body></html>';
 }
 
-function dlClose() { closeModal(); downloadHTML(); }
-function downloadHTML() {
-  const html = buildReportHTML();
-  const a = Object.assign(document.createElement('a'), {
-    href: URL.createObjectURL(new Blob([html],{type:'text/html'})),
-    download: suggestFilename().replace('.pdf','.html')
-  });
+// ── Download PDF ──────────────────────────────────────────────────────────────
+function downloadPDF() {
+  var html = buildReport();
+  var w = window.open('', '_blank');
+  if (!w) {
+    // Popup blocked — fall back to download
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href   = url;
+    a.download = suggestFn() + '.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+    showToast('Tillat popup i nettleseren for å lagre som PDF');
+    return;
+  }
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  // Wait for content to render before printing
+  w.onload = function() {
+    setTimeout(function() {
+      w.focus();
+      w.print();
+    }, 300);
+  };
+  // Fallback if onload already fired
+  setTimeout(function() {
+    if (w && !w.closed) {
+      w.focus();
+      w.print();
+    }
+  }, 800);
+}
+
+// ── Email report ──────────────────────────────────────────────────────────────
+function emailReport() {
+  var ei = document.getElementById('f-e').value || 'Eiendom';
+  var da = document.getElementById('f-d').value || new Date().toISOString().split('T')[0];
+  var an = document.getElementById('f-a').value || '';
+  var ok = 0, av = 0, ia = 0, lines = '';
+  var items = document.querySelectorAll('.item');
+  for (var i = 0; i < items.length; i++) {
+    var id  = items[i].id.replace('row-', '');
+    var s   = st[id];
+    var txt = items[i].querySelector('.txt').textContent;
+    if (s === 'ok') ok++;
+    else if (s === 'av') av++;
+    else if (s === 'ia') ia++;
+    var sl = s === 'ok' ? '[OK]   ' : s === 'av' ? '[AVVIK]' : s === 'ia' ? '[I/A]  ' : '[-]    ';
+    var k  = km[id] ? '\n         -> ' + km[id] : '';
+    lines += '\n' + sl + ' ' + txt + k;
+  }
+  var subj = 'Brannvernrunde - ' + ei + ' - ' + da;
+  var body = 'BRANNVERNRUNDE\n'
+    + '========================================\n'
+    + 'Eiendom:   ' + ei + '\n'
+    + 'Dato:      ' + da + '\n'
+    + 'Ansvarlig: ' + an + '\n'
+    + '========================================\n'
+    + '\nResultat:\n'
+    + '  Ok:    ' + ok + '\n'
+    + '  Avvik: ' + av + '\n'
+    + '  I/A:   ' + ia + '\n'
+    + '\nSjekkliste:' + lines
+    + '\n\n========================================\n'
+    + 'Generert: ' + new Date().toLocaleString('no-NO');
+  // Download HTML report file
+  var html = buildReport();
+  var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href   = url;
+  a.download = suggestFn() + '.html';
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  // Open email client
+  setTimeout(function() {
+    window.location.href = 'mailto:?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
+  }, 500);
+  showToast('Rapport lastet ned — legg ved i e-posten');
 }
 
-// ─── REPORT HTML ─────────────────────────────────────────────────────────────
-function buildReportHTML() {
-  const d = collect();
-  const statusLabel = {ok:'<span style="color:#1A7A4A;font-weight:700">✓ Ok</span>', av:'<span style="color:#C0392B;font-weight:700">⚠ Avvik</span>', ia:'<span style="color:#6B7280">— I/A</span>'};
-  let sections = '';
-  let n = 0;
-  SECTIONS.forEach(sec => {
-    let rows = '';
-    sec.items.forEach(item => {
-      const id = `i${n++}`;
-      const st = (istate[id]||{}).status;
-      const av = (istate[id]||{}).avvik||'';
-      const imgList = (imgs[id]||[]).map(img=>`<img src="${img.dataUrl}" style="max-width:130px;max-height:100px;margin:3px;border-radius:2px;border:1px solid #ccc">`).join('');
-      const bg = st==='ok'?'#f0faf5':st==='av'?'#fdf2f2':st==='ia'?'#f8f8f8':'#fff';
-      rows += `<tr style="background:${bg}">
-        <td style="padding:8px 12px;border-bottom:1px solid #e0e8e4;font-size:13px;width:90px;vertical-align:top">${statusLabel[st]||'<span style="color:#ccc">–</span>'}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #e0e8e4;font-size:13px;vertical-align:top">${item.text}${av?`<br><em style="color:#888;font-size:12px">💬 ${av}</em>`:''}${imgList?`<div style="margin-top:6px">${imgList}</div>`:''}</td>
-      </tr>`;
-    });
-    sections += `<tr><td colspan="2" style="background:#003F2D;color:#fff;padding:10px 16px;font-family:Georgia,serif;font-size:14px;font-weight:700;letter-spacing:.06em">${sec.num}. ${sec.title} ${sec.icon}</td></tr>${rows}`;
-  });
-
-  const okCount  = Object.values(istate).filter(s=>s.status==='ok').length;
-  const avCount  = Object.values(istate).filter(s=>s.status==='av').length;
-  const iaCount  = Object.values(istate).filter(s=>s.status==='ia').length;
-  const totItems = document.querySelectorAll('.item').length;
-
-  return `<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8">
-<title>CBRE Brannvernrunde – ${d.meta.eiendom||''}</title>
-<style>body{font-family:Arial,sans-serif;max-width:820px;margin:30px auto;color:#1A2B25;padding:0 20px}table{width:100%;border-collapse:collapse}</style>
-</head><body>
-<div style="background:#003F2D;color:#fff;padding:22px 28px;margin-bottom:0">
-  <div style="font-size:10px;letter-spacing:.3em;color:#17E88F;margin-bottom:10px">— CBRE</div>
-  <h1 style="font-size:28px;margin:0;font-family:Georgia,serif">Brannvernrunde</h1>
-  <p style="margin:5px 0 0;color:rgba(255,255,255,.5);font-size:13px">Internkontroll — Brann og sikkerhet</p>
-</div>
-<div style="background:#f5f7f5;padding:12px 28px;border-bottom:3px solid #17E88F;display:flex;gap:24px;flex-wrap:wrap;font-size:13px">
-  <span><b>Eiendom:</b> ${d.meta.eiendom||'—'}</span>
-  <span><b>Ansvarlig:</b> ${d.meta.ansvarlig||'—'}</span>
-  <span><b>Dato:</b> ${d.meta.dato||'—'}</span>
-  <span><b>Neste runde:</b> ${d.meta.neste||'—'}</span>
-</div>
-<div style="background:#fff;padding:10px 28px;border-bottom:1px solid #e0e8e4;display:flex;gap:20px;font-size:13px">
-  <span style="color:#1A7A4A;font-weight:700">✓ Ok: ${okCount}</span>
-  <span style="color:#C0392B;font-weight:700">⚠ Avvik: ${avCount}</span>
-  <span style="color:#6B7280">I/A: ${iaCount}</span>
-  <span style="color:#888">Ikke vurdert: ${totItems-okCount-avCount-iaCount}</span>
-</div>
-<table style="margin-top:0">${sections}</table>
-${d.meta.comments?`<div style="padding:14px 28px;background:#f5f7f5;border-top:1px solid #c8d6cf;font-size:13px"><b>Kommentarer:</b><p style="margin-top:5px">${d.meta.comments}</p></div>`:''}
-<div style="padding:12px 28px;border-top:1px solid #c8d6cf;font-size:11px;color:#aaa;margin-top:0">
-  Generert ${new Date().toLocaleDateString('no-NO')} — CBRE Internkontroll Brann
-</div></body></html>`;
-}
-
-// ─── RESET ────────────────────────────────────────────────────────────────────
+// ── Reset ─────────────────────────────────────────────────────────────────────
 function resetAll() {
   if (!confirm('Nullstille alle registreringer?')) return;
-  document.querySelectorAll('.item').forEach(row => { row.style.background=''; row.querySelectorAll('.sb').forEach(b=>b.classList.remove('ok-active','av-active','ia-active')); });
-  document.querySelectorAll('.avvik-field').forEach(f=>f.classList.remove('open'));
-  document.querySelectorAll('.avvik-field textarea').forEach(t=>t.value='');
-  document.querySelectorAll('.img-field').forEach(f=>f.classList.remove('open'));
-  document.querySelectorAll('.img-grid').forEach(g=>g.innerHTML='');
-  document.querySelectorAll('.img-btn').forEach(b=>{b.textContent='📷';b.classList.remove('has-img')});
-  document.querySelectorAll('.kom-btn').forEach(b=>{b.textContent='Kommentar';b.classList.remove('has-avvik')});
-  istate={}; imgs={};
-  updateProgress(); markUnsaved();
+  st = {}; km = {}; ig = {};
+  var items = document.querySelectorAll('.item');
+  for (var i = 0; i < items.length; i++) {
+    items[i].className = 'item';
+    var id = items[i].id.replace('row-', '');
+    var btns = [{'id':'ok-'+id,'s':'ok'},{'id':'av-'+id,'s':'av'},{'id':'ia-'+id,'s':'ia'}];
+    for (var j = 0; j < btns.length; j++) {
+      var b = document.getElementById(btns[j].id);
+      if (b) b.className = 'sb ' + btns[j].s;
+    }
+  }
+  document.querySelectorAll('.imgf,.komf').forEach(function(f) { f.classList.remove('open'); });
+  document.querySelectorAll('.komf textarea').forEach(function(t) { t.value = ''; });
+  document.querySelectorAll('.igrid').forEach(function(g) { g.innerHTML = ''; });
+  document.querySelectorAll('.ib').forEach(function(b) {
+    b.classList.remove('a');
+    if (b.id && b.id.indexOf('imgb') === 0) b.textContent = 'Bilde';
+  });
+  updateP();
+  dirty();
 }
 
-// ─── TOAST ────────────────────────────────────────────────────────────────────
-let tt;
-function toast(icon,msg,err=false){
-  const el=document.getElementById('toast');
-  document.getElementById('ti').textContent=icon;
-  document.getElementById('tm').textContent=msg;
-  el.classList.toggle('err',err);
-  el.classList.add('show');
-  clearTimeout(tt);
-  tt=setTimeout(()=>el.classList.remove('show'),3000);
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show';
+  clearTimeout(_toastT);
+  _toastT = setTimeout(function() { el.className = ''; }, 3500);
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-document.getElementById('today-date').textContent = new Date().toLocaleDateString('no-NO',{day:'2-digit',month:'2-digit',year:'numeric'});
-document.getElementById('meta-dato').value = new Date().toISOString().split('T')[0];
-build();
+// ── Wire up ALL buttons with addEventListener (no onclick) ────────────────────
+function wireButtons() {
+  // Top bar
+  document.getElementById('btn-save').addEventListener('click', saveLocal);
+  document.getElementById('btn-pdf').addEventListener('click', downloadPDF);
+  document.getElementById('btn-email').addEventListener('click', emailReport);
+  document.getElementById('btn-gps').addEventListener('click', getPos);
+  // Bottom
+  document.getElementById('btn-reset').addEventListener('click', resetAll);
+  document.getElementById('btn-email2').addEventListener('click', emailReport);
+  document.getElementById('btn-pdf2').addEventListener('click', downloadPDF);
+
+  // Meta fields — mark dirty on change
+  ['f-e','f-a','f-d','f-n','f-k'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', dirty);
+  });
+
+  // Checklist buttons — use event delegation on .content
+  document.querySelector('.content').addEventListener('click', function(e) {
+    var el = e.target;
+    // Walk up max 3 levels
+    for (var i = 0; i < 3 && el && el !== document.body; i++) {
+      var id = el.id || '';
+      // Ok/Avvik/I/A
+      if (id.indexOf('ok-') === 0) { setStatus(id.replace('ok-',''), 'ok'); return; }
+      if (id.indexOf('av-') === 0) { setStatus(id.replace('av-',''), 'av'); return; }
+      if (id.indexOf('ia-') === 0) { setStatus(id.replace('ia-',''), 'ia'); return; }
+      // Bilde / Kommentar
+      if (id.indexOf('imgb-') === 0) { togglePanel('imgf', id.replace('imgb-','')); return; }
+      if (id.indexOf('komb-') === 0) { togglePanel('komf', id.replace('komb-','')); return; }
+      // File input
+      if (el.tagName === 'INPUT' && el.type === 'file') {
+        var fid = el.id.replace('fileinput-','');
+        el.addEventListener('change', function() { addFiles(this.files, fid); }, {once:true});
+        return;
+      }
+      // Remove image
+      if (el.className === 'rmi') return; // handled by onclick set in renderGrid
+      el = el.parentElement;
+    }
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+document.getElementById('f-d').value = new Date().toISOString().split('T')[0];
+wireButtons();
 loadLocal();
-updateProgress();
-document.getElementById('sp-modal').addEventListener('click', e => { if(e.target.id==='sp-modal') closeModal(); });
+updateP();
 </script>
 </body>
 </html>
