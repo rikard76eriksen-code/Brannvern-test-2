@@ -102,6 +102,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-
   <div class="sa">
     <button class="bsave" id="btn-save">Lagre fremdrift</button>
     <button class="bsp"  id="btn-pdf">Lagre som PDF</button>
+    <button class="bsp2" id="btn-share">Del / Send p&#229; e-post</button>
   </div>
 </div>
 
@@ -1034,6 +1035,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-
 
   <div class="acts">
     <button class="btng" id="btn-reset">Nullstill</button>
+    <button class="btng" id="btn-share2">Del / Send p&#229; e-post</button>
     <button class="btnp" id="btn-pdf2">Lagre som PDF</button>
   </div>
 </div>
@@ -1300,6 +1302,66 @@ function buildReport() {
 }
 
 // ── Download PDF ──────────────────────────────────────────────────────────────
+function shareReport() {
+  generatePDFBlob(function(err, pdf) {
+    var fn = suggestFn() + '.pdf';
+    if (err) {
+      // Fall back to sharing HTML
+      var html = buildReport();
+      var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+      shareBlob(blob, fn.replace('.pdf','.html'), 'text/html');
+      return;
+    }
+    var pdfBytes = pdf.output('arraybuffer');
+    var blob = new Blob([pdfBytes], {type:'application/pdf'});
+    shareBlob(blob, fn, 'application/pdf');
+  });
+}
+
+function shareBlob(blob, fn, mimeType) {
+  var file = new File([blob], fn, {type: mimeType});
+  // Use Web Share API level 2 (supports files) — works on iOS Safari and Android Chrome
+  if (navigator.canShare && navigator.canShare({files: [file]})) {
+    navigator.share({
+      title: 'CBRE Brannvernrapport',
+      text: 'Brannvernrunde ' + (document.getElementById('f-e').value || '') + ' ' + (document.getElementById('f-d').value || ''),
+      files: [file]
+    }).then(function() {
+      showToast('Rapport delt!');
+    }).catch(function(err) {
+      if (err.name !== 'AbortError') {
+        showToast('Deling feilet — prøver nedlasting');
+        fallbackDownload(blob, fn);
+      }
+    });
+  } else if (navigator.share) {
+    // Share API without file support — share text only
+    var ei = document.getElementById('f-e').value || '';
+    var da = document.getElementById('f-d').value || '';
+    navigator.share({
+      title: 'CBRE Brannvernrapport',
+      text: 'Brannvernrunde ' + ei + ' ' + da + '. Se vedlagt rapport.'
+    }).catch(function() {});
+    // Also download the file
+    fallbackDownload(blob, fn);
+  } else {
+    // No Share API — just download
+    fallbackDownload(blob, fn);
+    showToast('Last ned filen og legg den ved i Outlook');
+  }
+}
+
+function fallbackDownload(blob, fn) {
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = fn;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+}
+
 function generatePDFBlob(callback) {
   showToast('Genererer PDF...');
   var html = buildReport();
@@ -1334,6 +1396,126 @@ function generatePDFBlob(callback) {
   }, 500);
 }
 
+
+function saveToSharePoint(pdf) {
+  var fn = suggestFn() + '.pdf';
+  var spSite = 'https://cbre.sharepoint.com/sites/DriftogTeknisk';
+  var folderServerRelUrl = '/sites/DriftogTeknisk/Shared Documents/Brannvern/rapporter';
+
+  // Show progress overlay
+  var prog = document.createElement('div');
+  prog.id = 'sp-prog';
+  prog.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:Lato,Arial,sans-serif;';
+  prog.innerHTML = '<div style="width:48px;height:48px;border:4px solid rgba(255,255,255,.2);border-top-color:#17E88F;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;"></div>'
+    + '<div id="sp-prog-txt" style="font-size:15px;font-weight:700;">Kobler til SharePoint...</div>'
+    + '<div id="sp-prog-sub" style="font-size:12px;color:rgba(255,255,255,.6);margin-top:6px;"></div>';
+  document.body.appendChild(prog);
+
+  function setStatus(txt, sub) {
+    document.getElementById('sp-prog-txt').textContent = txt;
+    document.getElementById('sp-prog-sub').textContent = sub || '';
+  }
+  function removeProg() {
+    var el = document.getElementById('sp-prog');
+    if (el) el.parentNode.removeChild(el);
+  }
+
+  setStatus('Henter SharePoint-tilgang...', spSite);
+
+  // Step 1: contextinfo (needs same-origin session cookie)
+  fetch(spSite + '/_api/contextinfo', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json;odata=verbose',
+      'Content-Type': 'application/json;odata=verbose'
+    },
+    credentials: 'include'
+  })
+  .then(function(r) {
+    if (r.status === 0) throw new Error('CORS_BLOCK');
+    if (r.status === 401 || r.status === 403) throw new Error('AUTH_ERROR');
+    if (!r.ok) throw new Error('HTTP_' + r.status);
+    return r.json();
+  })
+  .then(function(ctx) {
+    setStatus('Laster opp PDF...', fn);
+    var digest = ctx.d.GetContextWebInformation.FormDigestValue;
+    var pdfBytes = pdf.output('arraybuffer');
+    var uploadUrl = spSite
+      + "/_api/web/GetFolderByServerRelativeUrl('"
+      + encodeURIComponent(folderServerRelUrl)
+      + "')/Files/add(url='"
+      + encodeURIComponent(fn)
+      + "',overwrite=true)";
+    return fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json;odata=verbose',
+        'X-RequestDigest': digest,
+        'Content-Type': 'application/pdf'
+      },
+      credentials: 'include',
+      body: pdfBytes
+    });
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('UPLOAD_' + r.status);
+    return r.json();
+  })
+  .then(function(data) {
+    removeProg();
+    var fileUrl = spSite + '/Shared%20Documents/Brannvern/rapporter/' + encodeURIComponent(fn);
+    // Show success bottom sheet
+    var sheet = document.createElement('div');
+    sheet.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:flex-end;justify-content:center;';
+    sheet.innerHTML = '<div style="background:#fff;width:100%;max-width:500px;border-radius:12px 12px 0 0;padding:24px 20px 40px;">'
+      + '<div style="width:40px;height:4px;background:#C8D6CF;border-radius:2px;margin:0 auto 20px;"></div>'
+      + '<div style="font-size:32px;text-align:center;margin-bottom:10px;">✅</div>'
+      + '<div style="font-family:Lato,Arial,sans-serif;font-size:16px;font-weight:700;color:#003F2D;text-align:center;margin-bottom:6px;">Lagret til SharePoint!</div>'
+      + '<div style="font-family:Lato,Arial,sans-serif;font-size:12px;color:#5A7268;text-align:center;margin-bottom:20px;">Brannvern / rapporter / ' + fn + '</div>'
+      + '<a href="' + fileUrl + '" target="_blank" style="display:block;width:100%;background:#003F2D;color:#fff;border:none;border-radius:6px;padding:14px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;text-align:center;text-decoration:none;">Åpne fil i SharePoint</a>'
+      + '<button id="sp-ok" style="width:100%;background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF;border-radius:6px;padding:14px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Lukk</button>'
+      + '</div>';
+    document.body.appendChild(sheet);
+    document.getElementById('sp-ok').addEventListener('click', function() {
+      document.body.removeChild(sheet);
+    });
+  })
+  .catch(function(err) {
+    removeProg();
+    console.error('SharePoint feil:', err.message);
+    var isCors = err.message === 'CORS_BLOCK' || err.message === 'Failed to fetch';
+    var isAuth = err.message === 'AUTH_ERROR';
+
+    var sheet = document.createElement('div');
+    sheet.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:flex-end;justify-content:center;';
+
+    var msg = isCors
+      ? 'Nettleseren blokkerer tilgang til SharePoint (CORS). Åpne SharePoint i en ny fane, logg inn, og prøv igjen.'
+      : isAuth
+      ? 'Du er ikke innlogget på SharePoint. Åpne SharePoint, logg inn og prøv igjen.'
+      : 'Feil: ' + err.message + '. PDF er lagret lokalt i stedet.';
+
+    sheet.innerHTML = '<div style="background:#fff;width:100%;max-width:500px;border-radius:12px 12px 0 0;padding:24px 20px 40px;">'
+      + '<div style="width:40px;height:4px;background:#C8D6CF;border-radius:2px;margin:0 auto 20px;"></div>'
+      + '<div style="font-size:32px;text-align:center;margin-bottom:10px;">⚠️</div>'
+      + '<div style="font-family:Lato,Arial,sans-serif;font-size:15px;font-weight:700;color:#C0392B;text-align:center;margin-bottom:8px;">Kunne ikke lagre til SharePoint</div>'
+      + '<div style="font-family:Lato,Arial,sans-serif;font-size:13px;color:#5A7268;text-align:center;margin-bottom:20px;line-height:1.5;">' + msg + '</div>'
+      + (isCors || isAuth ? '<a href="https://cbre.sharepoint.com/sites/DriftogTeknisk" target="_blank" style="display:block;width:100%;background:#003F2D;color:#fff;border:none;border-radius:6px;padding:14px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;text-align:center;text-decoration:none;">Åpne SharePoint og logg inn</a>' : '')
+      + '<button id="sp-err-ok" style="width:100%;background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF;border-radius:6px;padding:14px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Lukk</button>'
+      + '</div>';
+    document.body.appendChild(sheet);
+    document.getElementById('sp-err-ok').addEventListener('click', function() {
+      document.body.removeChild(sheet);
+    });
+
+    // Still save PDF locally as fallback
+    if (!isCors && !isAuth) {
+      pdf.save(fn);
+    }
+  });
+}
+
 function downloadPDF() {
   generatePDFBlob(function(err, pdf) {
     if (err) {
@@ -1352,35 +1534,69 @@ function downloadPDF() {
       return;
     }
     var fn = suggestFn() + '.pdf';
-    // Try File System Access API (lets user pick save location)
+    // Show save options dialog
+    showSaveDialog(pdf, fn);
+  });
+}
+
+function showSaveDialog(pdf, fn) {
+  // Remove existing dialog if any
+  var existing = document.getElementById('save-dialog');
+  if (existing) existing.parentNode.removeChild(existing);
+
+  var overlay = document.createElement('div');
+  overlay.id = 'save-dialog';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:flex-end;justify-content:center;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;width:100%;max-width:500px;border-radius:12px 12px 0 0;padding:24px 20px 36px;';
+
+  box.innerHTML =
+    '<div style="width:40px;height:4px;background:#C8D6CF;border-radius:2px;margin:0 auto 20px;"></div>' +
+    '<div style="font-family:Lato,Arial,sans-serif;font-size:16px;font-weight:700;color:#003F2D;margin-bottom:6px;">Lagre rapport</div>' +
+    '<div style="font-family:Lato,Arial,sans-serif;font-size:13px;color:#5A7268;margin-bottom:20px;">' + fn + '</div>' +
+    '<button id="sd-sp" style="width:100%;background:#003F2D;color:#fff;border:none;border-radius:6px;padding:14px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;">' +
+      '<span style="font-size:18px;">📁</span> Lagre til SharePoint</button>' +
+    '<button id="sd-dl" style="width:100%;background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF;border-radius:6px;padding:14px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;">' +
+      '<span style="font-size:18px;">⬇️</span> Last ned til enhet</button>' +
+    '<button id="sd-cancel" style="width:100%;background:none;color:#5A7268;border:none;padding:10px;font-family:Lato,Arial,sans-serif;font-size:13px;cursor:pointer;">Avbryt</button>';
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  document.getElementById('sd-sp').addEventListener('click', function() {
+    document.body.removeChild(overlay);
+    saveToSharePoint(pdf);
+  });
+
+  document.getElementById('sd-dl').addEventListener('click', function() {
+    document.body.removeChild(overlay);
     if (window.showSaveFilePicker) {
       var pdfBytes = pdf.output('arraybuffer');
       window.showSaveFilePicker({
         suggestedName: fn,
-        types: [{
-          description: 'PDF-fil',
-          accept: { 'application/pdf': ['.pdf'] }
-        }]
-      }).then(function(fileHandle) {
-        return fileHandle.createWritable();
-      }).then(function(writable) {
-        return writable.write(pdfBytes).then(function() {
-          return writable.close();
-        });
+        types: [{ description: 'PDF-fil', accept: { 'application/pdf': ['.pdf'] } }]
+      }).then(function(fh) {
+        return fh.createWritable();
+      }).then(function(w) {
+        return w.write(pdfBytes).then(function() { return w.close(); });
       }).then(function() {
         showToast('PDF lagret!');
-      }).catch(function(err) {
-        // User cancelled or error — fall back to normal download
-        if (err.name !== 'AbortError') {
-          pdf.save(fn);
-          showToast('PDF lastet ned!');
-        }
+      }).catch(function(e) {
+        if (e.name !== 'AbortError') { pdf.save(fn); showToast('PDF lastet ned!'); }
       });
     } else {
-      // Fallback for browsers without File System Access API (Safari)
       pdf.save(fn);
       showToast('PDF lastet ned!');
     }
+  });
+
+  document.getElementById('sd-cancel').addEventListener('click', function() {
+    document.body.removeChild(overlay);
+  });
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) document.body.removeChild(overlay);
   });
 }
 
@@ -1444,6 +1660,8 @@ function wireButtons() {
   document.getElementById('btn-gps').addEventListener('click', getPos);
   // Bottom
   document.getElementById('btn-reset').addEventListener('click', resetAll);
+  document.getElementById('btn-share').addEventListener('click', shareReport);
+  document.getElementById('btn-share2').addEventListener('click', shareReport);
   document.getElementById('btn-pdf2').addEventListener('click', downloadPDF);
 
   // Meta fields — mark dirty on change
