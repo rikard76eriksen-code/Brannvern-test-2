@@ -454,46 +454,93 @@ function closeModal(){document.getElementById('spm').className='mov';}
 
 function doUpload(){
   var fn=document.getElementById('mfn').value.trim()||suggestFn();
-  if(!fn.match(/\.pdf$/i))fn=fn.replace(/\.html?$/i,'')+'.pdf';
+  if(!fn.match(/\.html?$/i))fn=fn.replace(/\.pdf$/i,'')+'.html';
   var html=buildReport();
+
   document.getElementById('msp').className='mspin show';
   document.getElementById('mnw').style.display='none';
   document.getElementById('mac').innerHTML='';
-  var b64;try{b64=btoa(unescape(encodeURIComponent(html)));}catch(e){b64=btoa(html);}
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',max_tokens:1000,
-      system:'Upload a file to SharePoint via Microsoft 365. DriveId:"'+DRV+'", FolderId:"'+FLD+'", FileName:"'+fn+'". Use Graph API PUT upload. Return ONLY JSON: {"success":true,"webUrl":"..."} or {"success":false,"error":"..."}',
-      messages:[{role:'user',content:'Upload "'+fn+'". Base64 HTML: '+b64}],
-      mcp_servers:[{type:'url',url:'https://microsoft365.mcp.claude.com/mcp',name:'microsoft365'}]
-    })
-  }).then(function(r){return r.json();}).then(function(data){
+
+  // Use Microsoft Graph API directly with MSAL popup login
+  var CLIENT_ID = '14d82eec-204b-4c2f-b7e8-296a70dab67e'; // Microsoft Graph Explorer app
+  var TENANT = 'common';
+  var SCOPE = 'Files.ReadWrite.All';
+  var SITE = 'https://cbre.sharepoint.com/sites/Optimakvalitetssikring';
+
+  // Build Graph upload URL
+  var uploadUrl = 'https://graph.microsoft.com/v1.0/drives/' + DRV + '/items/' + FLD + ':/' + encodeURIComponent(fn) + ':/content';
+
+  // Try to get token via popup
+  var authUrl = 'https://login.microsoftonline.com/' + TENANT + '/oauth2/v2.0/authorize'
+    + '?client_id=' + CLIENT_ID
+    + '&response_type=token'
+    + '&redirect_uri=' + encodeURIComponent(window.location.href.split('?')[0])
+    + '&scope=' + encodeURIComponent(SCOPE)
+    + '&response_mode=fragment'
+    + '&prompt=select_account';
+
+  // Check if we already have a token in the URL hash (after redirect)
+  var hash = window.location.hash;
+  var tokenMatch = hash.match(/access_token=([^&]+)/);
+
+  if(tokenMatch) {
+    // We have a token, use it
+    var token = decodeURIComponent(tokenMatch[1]);
+    window.location.hash = ''; // Clean URL
+    uploadWithToken(token, fn, html, uploadUrl);
+  } else {
+    // Redirect to Microsoft login
     document.getElementById('msp').className='mspin';
-    var result=null;
-    try{
-      var txt=(data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
-      var m=txt.match(/\{[\s\S]*?\}/);if(m)result=JSON.parse(m[0]);
-    }catch(e){}
     document.getElementById('mre').className='mres show';
-    if(result&&result.success){
-      document.getElementById('mok').textContent='Rapport lastet opp!';
-      document.getElementById('mlk').innerHTML='<a href="'+result.webUrl+'" target="_blank">Apne i SharePoint</a>';
-      document.getElementById('mac').innerHTML='<button class="btng" onclick="closeModal()">Lukk</button><a href="'+result.webUrl+'" target="_blank" class="btnp" style="text-decoration:none">Apne fil</a>';
-      saved();
-    }else{
-      document.getElementById('mok').innerHTML='<span style="color:#b33">Opplasting feilet</span>';
-      document.getElementById('mlk').textContent=(result&&result.error)||'Ukjent feil';
-      document.getElementById('mac').innerHTML='<button class="btng" onclick="closeModal()">Lukk</button><button class="btnp" onclick="dlHtml()">Last ned lokalt</button>';
-    }
+    document.getElementById('mok').innerHTML='<span style="color:#003F2D">Logg inn med Microsoft for aa laste opp</span>';
+    document.getElementById('mlk').textContent='Du blir sendt til Microsoft-innlogging og kommer tilbake automatisk.';
+    document.getElementById('mac').innerHTML=
+      '<button class="btng" onclick="closeModal()">Avbryt</button>' +
+      '<button class="btnp" onclick="window.location.href='' + authUrl.replace(/'/g,"\'") + ''">Logg inn med Microsoft</button>';
+  }
+}
+
+function uploadWithToken(token, fn, html, uploadUrl) {
+  fetch(uploadUrl, {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'text/html; charset=utf-8'
+    },
+    body: html
+  }).then(function(r){
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }).then(function(data){
+    document.getElementById('msp').className='mspin';
+    document.getElementById('mre').className='mres show';
+    var webUrl = (data.webUrl || data['@content.downloadUrl'] || '');
+    document.getElementById('mok').textContent='Rapport lastet opp!';
+    document.getElementById('mlk').innerHTML = webUrl
+      ? '<a href="'+webUrl+'" target="_blank">Apne i SharePoint</a>'
+      : 'Filen er lastet opp til SharePoint.';
+    document.getElementById('mac').innerHTML='<button class="btng" onclick="closeModal()">Lukk</button>'
+      + (webUrl ? '<a href="'+webUrl+'" target="_blank" class="btnp" style="text-decoration:none">Apne fil</a>' : '');
+    saved();
   }).catch(function(err){
     document.getElementById('msp').className='mspin';
     document.getElementById('mre').className='mres show';
-    document.getElementById('mok').innerHTML='<span style="color:#b33">Tilkoblingsfeil</span>';
-    document.getElementById('mlk').textContent=err.message||'';
+    document.getElementById('mok').innerHTML='<span style="color:#b33">Opplasting feilet</span>';
+    document.getElementById('mlk').textContent=err.message||'Ukjent feil';
     document.getElementById('mac').innerHTML='<button class="btng" onclick="closeModal()">Lukk</button><button class="btnp" onclick="dlHtml()">Last ned lokalt</button>';
   });
 }
+
+// Check for token on page load (after Microsoft redirect)
+(function checkToken(){
+  var hash = window.location.hash;
+  var tokenMatch = hash.match(/access_token=([^&]+)/);
+  if(tokenMatch && window._pendingUpload) {
+    var token = decodeURIComponent(tokenMatch[1]);
+    window.location.hash = '';
+    uploadWithToken(token, window._pendingUpload.fn, window._pendingUpload.html, window._pendingUpload.url);
+  }
+})();
 
 function dlHtml(){closeModal();var html=buildReport();var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=suggestFn().replace('.pdf','.html');a.click();}
 
