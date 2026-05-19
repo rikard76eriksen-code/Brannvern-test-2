@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CBRE Brannvernrunde</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// Make jsPDF available as expected
+window.addEventListener('load', function() {
+  if (window.jspdf) window.jsPDF = window.jspdf.jsPDF;
+});
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-bottom:60px}
@@ -94,7 +102,6 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-
   <div class="sa">
     <button class="bsave" id="btn-save">Lagre fremdrift</button>
     <button class="bsp"  id="btn-pdf">Lagre som PDF</button>
-    <button class="bsp2" id="btn-email">Send per e-post</button>
   </div>
 </div>
 
@@ -1027,7 +1034,6 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-
 
   <div class="acts">
     <button class="btng" id="btn-reset">Nullstill</button>
-    <button class="btng" id="btn-email2">Send per e-post</button>
     <button class="btnp" id="btn-pdf2">Lagre som PDF</button>
   </div>
 </div>
@@ -1294,91 +1300,107 @@ function buildReport() {
 }
 
 // ── Download PDF ──────────────────────────────────────────────────────────────
-function downloadPDF() {
+function generatePDFBlob(callback) {
+  showToast('Genererer PDF...');
   var html = buildReport();
-  var w = window.open('', '_blank');
-  if (!w) {
-    // Popup blocked — fall back to download
-    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    var url  = URL.createObjectURL(blob);
-    var a    = document.createElement('a');
-    a.href   = url;
-    a.download = suggestFn() + '.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-    showToast('Tillat popup i nettleseren for å lagre som PDF');
-    return;
-  }
-  w.document.open();
-  w.document.write(html);
-  w.document.close();
-  // Wait for content to render before printing
-  w.onload = function() {
-    setTimeout(function() {
-      w.focus();
-      w.print();
-    }, 300);
-  };
-  // Fallback if onload already fired
+  var iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:800px;height:1px;border:none;';
+  document.body.appendChild(iframe);
+  iframe.contentDocument.open();
+  iframe.contentDocument.write(html);
+  iframe.contentDocument.close();
   setTimeout(function() {
-    if (w && !w.closed) {
-      w.focus();
-      w.print();
+    html2canvas(iframe.contentDocument.body, {
+      scale: 1.5, useCORS: true, allowTaint: true,
+      backgroundColor: '#ffffff', width: 800, windowWidth: 800
+    }).then(function(canvas) {
+      document.body.removeChild(iframe);
+      var imgData = canvas.toDataURL('image/jpeg', 0.85);
+      var pdf    = new jsPDF('p', 'mm', 'a4');
+      var pageW  = pdf.internal.pageSize.getWidth();
+      var pageH  = pdf.internal.pageSize.getHeight();
+      var imgH   = (canvas.height * pageW) / canvas.width;
+      var y = 0;
+      while (y < imgH) {
+        if (y > 0) pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, -y, pageW, imgH);
+        y += pageH;
+      }
+      callback(null, pdf);
+    }).catch(function(err) {
+      document.body.removeChild(iframe);
+      callback(err, null);
+    });
+  }, 500);
+}
+
+function downloadPDF() {
+  generatePDFBlob(function(err, pdf) {
+    if (err) {
+      // Fallback to HTML download
+      var html = buildReport();
+      var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+      var url  = URL.createObjectURL(blob);
+      var a    = document.createElement('a');
+      a.href   = url;
+      a.download = suggestFn() + '.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);}, 1000);
+      showToast('Lastet ned som HTML (PDF feilet)');
+      return;
     }
-  }, 800);
+    var fn = suggestFn() + '.pdf';
+    // Try File System Access API (lets user pick save location)
+    if (window.showSaveFilePicker) {
+      var pdfBytes = pdf.output('arraybuffer');
+      window.showSaveFilePicker({
+        suggestedName: fn,
+        types: [{
+          description: 'PDF-fil',
+          accept: { 'application/pdf': ['.pdf'] }
+        }]
+      }).then(function(fileHandle) {
+        return fileHandle.createWritable();
+      }).then(function(writable) {
+        return writable.write(pdfBytes).then(function() {
+          return writable.close();
+        });
+      }).then(function() {
+        showToast('PDF lagret!');
+      }).catch(function(err) {
+        // User cancelled or error — fall back to normal download
+        if (err.name !== 'AbortError') {
+          pdf.save(fn);
+          showToast('PDF lastet ned!');
+        }
+      });
+    } else {
+      // Fallback for browsers without File System Access API (Safari)
+      pdf.save(fn);
+      showToast('PDF lastet ned!');
+    }
+  });
 }
 
 // ── Email report ──────────────────────────────────────────────────────────────
 function emailReport() {
-  var ei = document.getElementById('f-e').value || 'Eiendom';
-  var da = document.getElementById('f-d').value || new Date().toISOString().split('T')[0];
-  var an = document.getElementById('f-a').value || '';
-  var ok = 0, av = 0, ia = 0, lines = '';
-  var items = document.querySelectorAll('.item');
-  for (var i = 0; i < items.length; i++) {
-    var id  = items[i].id.replace('row-', '');
-    var s   = st[id];
-    var txt = items[i].querySelector('.txt').textContent;
-    if (s === 'ok') ok++;
-    else if (s === 'av') av++;
-    else if (s === 'ia') ia++;
-    var sl = s === 'ok' ? '[OK]   ' : s === 'av' ? '[AVVIK]' : s === 'ia' ? '[I/A]  ' : '[-]    ';
-    var k  = km[id] ? '\n         -> ' + km[id] : '';
-    lines += '\n' + sl + ' ' + txt + k;
-  }
-  var subj = 'Brannvernrunde - ' + ei + ' - ' + da;
-  var body = 'BRANNVERNRUNDE\n'
-    + '========================================\n'
-    + 'Eiendom:   ' + ei + '\n'
-    + 'Dato:      ' + da + '\n'
-    + 'Ansvarlig: ' + an + '\n'
-    + '========================================\n'
-    + '\nResultat:\n'
-    + '  Ok:    ' + ok + '\n'
-    + '  Avvik: ' + av + '\n'
-    + '  I/A:   ' + ia + '\n'
-    + '\nSjekkliste:' + lines
-    + '\n\n========================================\n'
-    + 'Generert: ' + new Date().toLocaleString('no-NO');
-  // Download HTML report file
+  // Download the HTML report — attach it to an email manually
   var html = buildReport();
   var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   var url  = URL.createObjectURL(blob);
   var a    = document.createElement('a');
   a.href   = url;
-  a.download = suggestFn() + '.html';
+  a.download = suggestFn() + '_rapport.html';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-  // Open email client
-  setTimeout(function() {
-    window.location.href = 'mailto:?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
-  }, 500);
-  showToast('Rapport lastet ned — legg ved i e-posten');
+  showToast('Rapport lastet ned — legg ved i e-posten din');
 }
+
+
 
 // ── Reset ─────────────────────────────────────────────────────────────────────
 function resetAll() {
@@ -1419,11 +1441,9 @@ function wireButtons() {
   // Top bar
   document.getElementById('btn-save').addEventListener('click', saveLocal);
   document.getElementById('btn-pdf').addEventListener('click', downloadPDF);
-  document.getElementById('btn-email').addEventListener('click', emailReport);
   document.getElementById('btn-gps').addEventListener('click', getPos);
   // Bottom
   document.getElementById('btn-reset').addEventListener('click', resetAll);
-  document.getElementById('btn-email2').addEventListener('click', emailReport);
   document.getElementById('btn-pdf2').addEventListener('click', downloadPDF);
 
   // Meta fields — mark dirty on change
