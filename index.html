@@ -42,6 +42,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-
 .locwrap{position:relative}
 .locbtn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;padding:0}
 .content{max-width:900px;margin:0 auto;padding:20px 16px}
+.disclaimer{background:#FFF8E6;border-left:4px solid #E8A020;border-radius:0 3px 3px 0;padding:12px 16px;font-size:13px;color:#5A3A00;line-height:1.6;margin-bottom:16px;}
 .section{margin-bottom:16px;border:1px solid #C8D6CF;border-radius:2px;background:#fff;overflow:hidden}
 .sec-hdr{background:#003F2D;padding:10px 16px;display:flex;align-items:center;gap:10px}
 .sec-num{font-family:"Playfair Display",Georgia,serif;font-size:18px;font-weight:700;color:#17E88F;min-width:22px}
@@ -127,6 +128,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;padding-
 </div>
 
 <div class="content">
+<div class="disclaimer"><strong>Merknad:</strong> Denne brannvernrunden er basert på stikkprøver og visuelle observasjoner gjennomført på inspeksjonsdatoen. Runden gir et øyeblikksbilde av brannvernstatusen og er ikke en erstatning for virksomhetens etablerte internkontrollrutiner, systematisk brannvernarbeid eller lovpålagte serviceavtaler.</div>
 <div class="section"><div class="sec-hdr"><span class="sec-num">01</span><span class="sec-ttl">Dokumentasjon</span></div>
 <div class="item" id="row-i0">
   <div class="item-top">
@@ -1290,6 +1292,9 @@ function buildReport() {
     + '</div>'
 
     // Checklist
+    + '<div style="background:#FFF8E6;border-left:4px solid #E8A020;padding:12px 16px;margin:0;font-size:11px;color:#5A3A00;line-height:1.6;">'
+    + '<strong>Merknad:</strong> Denne brannvernrunden er basert på stikkprøver og visuelle observasjoner gjennomført på inspeksjonsdatoen. Runden gir et øyeblikksbilde av brannvernstatusen og er ikke en erstatning for virksomhetens etablerte internkontrollrutiner, systematisk brannvernarbeid eller lovpålagte serviceavtaler.'
+    + '</div>'
     + '<table style="width:100%;border-collapse:collapse;">' + sectionsHtml + '</table>'
 
     // Avvik log
