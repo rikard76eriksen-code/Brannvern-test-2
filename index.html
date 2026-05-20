@@ -1084,7 +1084,7 @@ function getPos() {
         .catch(function() { btn.innerHTML = '&#128205;'; showToast('Kunne ikke hente adresse'); });
     },
     function() { btn.innerHTML = '&#128205;'; showToast('Tilgang til posisjon nektet'); },
-    { timeout: 10000 }
+    { timeout: 20000, enableHighAccuracy: true, maximumAge: 0 }
   );
 }
 
