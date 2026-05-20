@@ -1377,18 +1377,18 @@ function generatePDFBlob(callback) {
   showToast('Genererer PDF...');
   var html = buildReport();
   var iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:800px;height:1px;border:none;';
+  iframe.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1200px;height:1px;border:none;';
   document.body.appendChild(iframe);
   iframe.contentDocument.open();
   iframe.contentDocument.write(html);
   iframe.contentDocument.close();
   setTimeout(function() {
     html2canvas(iframe.contentDocument.body, {
-      scale: 3, useCORS: true, allowTaint: true,
-      backgroundColor: '#ffffff', width: 800, windowWidth: 800
+      scale: 4, useCORS: true, allowTaint: true,
+      backgroundColor: '#ffffff', width: 1200, windowWidth: 1200
     }).then(function(canvas) {
       document.body.removeChild(iframe);
-      var imgData = canvas.toDataURL('image/jpeg', 0.98);
+      var imgData = canvas.toDataURL('image/png');
       var pdf    = new jsPDF('p', 'mm', 'a4');
       var pageW  = pdf.internal.pageSize.getWidth();
       var pageH  = pdf.internal.pageSize.getHeight();
