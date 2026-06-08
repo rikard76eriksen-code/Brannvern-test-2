@@ -136,6 +136,46 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(12px);background:#003F2D;color:#fff;padding:10px 20px;border-radius:3px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:all .3s;z-index:9999;white-space:nowrap}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .footer{background:#003F2D;color:rgba(255,255,255,.35);font-size:11px;text-align:center;padding:12px;margin-top:24px}
+.history-card{background:#fff;border:1px solid #C8D6CF;border-radius:6px;padding:16px 16px;margin-bottom:10px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.history-card:hover,.history-card:active{border-color:#003F2D;background:#f0f4f2}
+.history-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.history-card-title{font-size:15px;font-weight:700;color:#003F2D}
+.history-card-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.06em}
+.history-card-badge.brann{background:#E6FBF2;color:#1A7A4A}
+.history-card-badge.risiko{background:#FFF3E0;color:#E8A020}
+.history-card-meta{font-size:12px;color:#5A7268;line-height:1.6}
+.history-card-progress{font-size:11px;color:#17E88F;font-weight:700;margin-top:4px}
+.history-card-actions{display:flex;gap:6px;margin-top:10px}
+.history-card-btn{font-family:Lato,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:3px;cursor:pointer;-webkit-appearance:none;flex:1;text-align:center}
+.history-card-btn.primary{background:#003F2D;color:#fff;border:none}
+.history-card-btn.danger{background:#fff;color:#C0392B;border:1px solid #C0392B}
+.history-card-btn.secondary{background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF}
+.history-empty{text-align:center;padding:48px 20px;color:#5A7268}
+.history-empty-icon{font-size:48px;margin-bottom:12px}
+.history-empty-title{font-size:16px;font-weight:700;color:#1A2B25;margin-bottom:6px}
+.history-empty-desc{font-size:13px;line-height:1.6}
+.tilstand-item{padding:12px 14px;border-bottom:1px solid #C8D6CF}
+.tilstand-item:last-of-type{border-bottom:none}
+.tg-scores{margin:10px 0 8px}
+.tg-btns{display:flex;gap:4px;flex-wrap:wrap}
+.tgb{font-family:Lato,Arial,sans-serif;cursor:pointer;-webkit-appearance:none;appearance:none;border-radius:4px;border:2px solid #C8D6CF;background:#fff;padding:6px 8px;display:flex;flex-direction:column;align-items:center;min-width:58px;flex:1;transition:all .12s}
+.tg-num{font-size:12px;font-weight:700;line-height:1.2}
+.tg-lbl{font-size:9px;letter-spacing:.03em;color:#888;line-height:1.2;text-align:center}
+.tgb.tg0{border-color:#C8D6CF;color:#5A7268}
+.tgb.tg1{border-color:#C8D6CF;color:#5A7268}
+.tgb.tg2{border-color:#C8D6CF;color:#5A7268}
+.tgb.tg3{border-color:#C8D6CF;color:#5A7268}
+.tgb.tgia{border-color:#C8D6CF;color:#5A7268}
+.tgb.tg0.a{background:#E6FBF2;border-color:#1A7A4A;color:#1A7A4A}.tgb.tg0.a .tg-lbl{color:#1A7A4A}
+.tgb.tg1.a{background:#FFF3E0;border-color:#E8A020;color:#E8A020}.tgb.tg1.a .tg-lbl{color:#E8A020}
+.tgb.tg2.a{background:#fdf2f2;border-color:#C0392B;color:#C0392B}.tgb.tg2.a .tg-lbl{color:#C0392B}
+.tgb.tg3.a{background:#3D0000;border-color:#7B0000;color:#fff}.tgb.tg3.a .tg-lbl{color:rgba(255,255,255,.8)}
+.tgb.tgia.a{background:#f8f8f8;border-color:#6B7280;color:#6B7280}.tgb.tgia.a .tg-lbl{color:#6B7280}
+.item.tg0-r{background:#f0faf5}
+.item.tg1-r{background:#fffbf0}
+.item.tg2-r{background:#fdf2f2}
+.item.tg3-r{background:#fff0f0}
+.item.tgia-r{background:#f8f8f8}
 @media(max-width:480px){.meta{grid-template-columns:1fr}.cl-acts{flex-wrap:wrap}}
 </style>
 </head>
@@ -175,7 +215,1581 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
         <div class="menu-card-arrow">&#8250;</div>
       </div>
 
+      <div class="menu-card" id="card-tilstand">
+        <div class="menu-card-icon">&#127970;</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Tilstandsanalyse</div>
+          <div class="menu-card-desc">Vurdering av tilstand per sjekkpunkt etter NS 3424 (TG0–TG3). 61 punkter.</div>
+          <div class="menu-card-meta" id="tilstand-progress">Ikke startet</div>
+        </div>
+        <div class="menu-card-arrow">&#8250;</div>
+      </div>
+
+      <div class="menu-card" id="card-history">
+        <div class="menu-card-icon">&#128339;</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Historikk</div>
+          <div class="menu-card-desc">Se tidligere gjennomf&#248;rte runder og analyser. Fortsett p&#229;begynte runder.</div>
+          <div class="menu-card-meta" id="history-count">Laster...</div>
+        </div>
+        <div class="menu-card-arrow">&#8250;</div>
+      </div>
+
     </div>
+  </div>
+  <div class="footer">&#169; CBRE &#183; Internkontroll &#183; cbre.com/no</div>
+</div>
+
+
+
+<!-- ════ TILSTANDSANALYSE SCREEN ════ -->
+<div class="screen" id="screen-tilstand">
+  <div class="cl-hdr">
+    <button class="cl-back" id="back-tilstand">&#8592; Meny</button>
+    <div class="cl-acts">
+      <button class="bsave" id="btn-save-t">Lagre fremdrift</button>
+      <button class="bsp" id="btn-share-t">Send rapport</button>
+    </div>
+  </div>
+  <div class="ss-bar">
+    <div class="sstatus"><div class="sdot" id="sdot-t"></div><span id="stxt-t">Klar</span></div>
+  </div>
+  <div class="pbar"><div class="pbg"><div class="pfill" id="pfill-t"></div></div></div>
+  <div class="pinfo"><span class="pl">Fremdrift</span><span class="pv" id="ptxt-t">0 av 61 punkter vurdert</span></div>
+  <div class="meta">
+    <div class="field"><label>Eiendom / adresse</label><div class="locwrap"><input type="text" id="t-e" placeholder="Adresse eller navn"><button class="locbtn" id="btn-gps-t">&#128205;</button></div></div>
+    <div class="field"><label>Ansvarlig</label><input type="text" id="t-a" placeholder="Fullt navn"></div>
+    <div class="field"><label>Dato</label><input type="date" id="t-d"></div>
+    <div class="field"><label>Neste analyse</label><input type="date" id="t-n"></div>
+  </div>
+  <div class="content">
+    <div class="disclaimer" style="margin-bottom:14px">
+      <strong>Tilstandsgrader (NS 3424):</strong><br>
+      <span style="color:#1A7A4A;font-weight:700;">TG0</span> Ingen avvik &nbsp;&#183;&nbsp;
+      <span style="color:#E8A020;font-weight:700;">TG1</span> Svake avvik &nbsp;&#183;&nbsp;
+      <span style="color:#C0392B;font-weight:700;">TG2</span> Store avvik &nbsp;&#183;&nbsp;
+      <span style="color:#7B0000;font-weight:700;">TG3</span> Kritisk tilstand &nbsp;&#183;&nbsp;
+      <span style="color:#6B7280;font-weight:700;">I/A</span> Ikke aktuelt
+    </div>
+    <div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">01</span><span class="sec-ttl">Dokumentasjon</span></div>
+<div class="item tilstand-item" id="row-t0">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Energiattest</div>
+      <div class="risiko-q">Er energiattest gyldig og finnes for alle bruksområder i bygget?</div>
+<div class="note">Gyldig i 10 år fra utstedelse. Separat attest for forretning, kontor, lager osv.</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t0" data-id="t0" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t0" data-id="t0" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t0" data-id="t0" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t0" data-id="t0" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t0" data-id="t0" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t0">Bilde</button>
+    <button class="ib" id="komb-t0">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t0"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t0"></label><div class="igrid" id="grid-t0"></div></div>
+<div class="komf" id="komf-t0"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t0" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t1">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Reklamasjon og garanti</div>
+      <div class="risiko-q">Er det etablert rutiner for oppfølging av reklamasjoner og garantisaker?</div>
+<div class="note">Kontroller at avvik er adressert før garantiutløp</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t1" data-id="t1" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t1" data-id="t1" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t1" data-id="t1" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t1" data-id="t1" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t1" data-id="t1" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t1">Bilde</button>
+    <button class="ib" id="komb-t1">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t1"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t1"></label><div class="igrid" id="grid-t1"></div></div>
+<div class="komf" id="komf-t1"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t1" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t2">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Energivurderinger</div>
+      <div class="risiko-q">Finnes det oppdaterte energivurderinger for tekniske anlegg?</div>
+<div class="note">Kjølemaskiner, varmeanlegg, ventilasjonsanlegg. Hvert 4. år.</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t2" data-id="t2" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t2" data-id="t2" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t2" data-id="t2" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t2" data-id="t2" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t2" data-id="t2" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t2">Bilde</button>
+    <button class="ib" id="komb-t2">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t2"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t2"></label><div class="igrid" id="grid-t2"></div></div>
+<div class="komf" id="komf-t2"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t2" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t3">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Brannkonsept</div>
+      <div class="risiko-q">Er brannkonsept og brannstrategi oppdatert og i samsvar med byggets nåværende tilstand?</div>
+<div class="note">Brannteknisk tilstandsanalyse ved endringer</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t3" data-id="t3" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t3" data-id="t3" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t3" data-id="t3" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t3" data-id="t3" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t3" data-id="t3" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t3">Bilde</button>
+    <button class="ib" id="komb-t3">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t3"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t3"></label><div class="igrid" id="grid-t3"></div></div>
+<div class="komf" id="komf-t3"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t3" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t4">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Branntegninger</div>
+      <div class="risiko-q">Er branntegninger, rømningsplaner og orienteringsplaner oppdatert og montert?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t4" data-id="t4" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t4" data-id="t4" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t4" data-id="t4" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t4" data-id="t4" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t4" data-id="t4" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t4">Bilde</button>
+    <button class="ib" id="komb-t4">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t4"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t4"></label><div class="igrid" id="grid-t4"></div></div>
+<div class="komf" id="komf-t4"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t4" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t5">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">BREEAM In Use</div>
+      <div class="risiko-q">Er BREEAM In Use-sertifisering planlagt fornyet eller vurdert?</div>
+<div class="note">Budsjettkostnad ca. kr 200 000</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t5" data-id="t5" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t5" data-id="t5" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t5" data-id="t5" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t5" data-id="t5" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t5" data-id="t5" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t5">Bilde</button>
+    <button class="ib" id="komb-t5">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t5"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t5"></label><div class="igrid" id="grid-t5"></div></div>
+<div class="komf" id="komf-t5"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t5" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">02</span><span class="sec-ttl">Brannsikkerhet</span></div>
+<div class="item tilstand-item" id="row-t6">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Brannslukking og sprinkler</div>
+      <div class="risiko-q">Er sprinkleranlegg dokumentert, loggbok kvittert ukentlig og avvik fra kontrollrapporter lukket?</div>
+<div class="note">Stikkprøvekontroll på slanger og pulverapparater</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t6" data-id="t6" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t6" data-id="t6" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t6" data-id="t6" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t6" data-id="t6" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t6" data-id="t6" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t6">Bilde</button>
+    <button class="ib" id="komb-t6">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t6"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t6"></label><div class="igrid" id="grid-t6"></div></div>
+<div class="komf" id="komf-t6"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t6" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t7">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Brennbart i tekniske rom</div>
+      <div class="risiko-q">Er tekniske rom og tavlerom fri for brennbart materiell?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t7" data-id="t7" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t7" data-id="t7" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t7" data-id="t7" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t7" data-id="t7" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t7" data-id="t7" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t7">Bilde</button>
+    <button class="ib" id="komb-t7">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t7"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t7"></label><div class="igrid" id="grid-t7"></div></div>
+<div class="komf" id="komf-t7"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t7" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t8">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">25-årskon troll sprinkler</div>
+      <div class="risiko-q">Er 25-årskon troll av sprinkleranlegg gjennomført eller planlagt?</div>
+<div class="note">Veiledende kostnad kr 150 000</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t8" data-id="t8" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t8" data-id="t8" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t8" data-id="t8" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t8" data-id="t8" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t8" data-id="t8" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t8">Bilde</button>
+    <button class="ib" id="komb-t8">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t8"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t8"></label><div class="igrid" id="grid-t8"></div></div>
+<div class="komf" id="komf-t8"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t8" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t9">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Brannskiller</div>
+      <div class="risiko-q">Er gjennomføringer i brannvegger tett og forskriftsmessig ved stikkprøver?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t9" data-id="t9" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t9" data-id="t9" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t9" data-id="t9" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t9" data-id="t9" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t9" data-id="t9" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t9">Bilde</button>
+    <button class="ib" id="komb-t9">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t9"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t9"></label><div class="igrid" id="grid-t9"></div></div>
+<div class="komf" id="komf-t9"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t9" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t10">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Dørklassifisering</div>
+      <div class="risiko-q">Har dører i brannskiller korrekt klassifisering?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t10" data-id="t10" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t10" data-id="t10" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t10" data-id="t10" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t10" data-id="t10" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t10" data-id="t10" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t10">Bilde</button>
+    <button class="ib" id="komb-t10">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t10"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t10"></label><div class="igrid" id="grid-t10"></div></div>
+<div class="komf" id="komf-t10"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t10" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">03</span><span class="sec-ttl">Bygg innvendig</span></div>
+<div class="item tilstand-item" id="row-t11">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Gulv og overflater</div>
+      <div class="risiko-q">Hva er tilstanden på gulv og overflater — behov for utskifting?</div>
+<div class="note">For logistikkbygg: undersøk sprekkdannelser i dekket</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t11" data-id="t11" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t11" data-id="t11" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t11" data-id="t11" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t11" data-id="t11" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t11" data-id="t11" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t11">Bilde</button>
+    <button class="ib" id="komb-t11">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t11"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t11"></label><div class="igrid" id="grid-t11"></div></div>
+<div class="komf" id="komf-t11"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t11" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t12">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Vinduer, dører og porter</div>
+      <div class="risiko-q">Hva er tilstanden på vinduer, ytterdører og porter?</div>
+<div class="note">Funksjonstest og visuell kontroll</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t12" data-id="t12" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t12" data-id="t12" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t12" data-id="t12" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t12" data-id="t12" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t12" data-id="t12" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t12">Bilde</button>
+    <button class="ib" id="komb-t12">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t12"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t12"></label><div class="igrid" id="grid-t12"></div></div>
+<div class="komf" id="komf-t12"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t12" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t13">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Skilt og tavler</div>
+      <div class="risiko-q">Er informasjonstavler, skilting og merking intakt og i henhold til avtalt standard?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t13" data-id="t13" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t13" data-id="t13" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t13" data-id="t13" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t13" data-id="t13" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t13" data-id="t13" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t13">Bilde</button>
+    <button class="ib" id="komb-t13">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t13"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t13"></label><div class="igrid" id="grid-t13"></div></div>
+<div class="komf" id="komf-t13"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t13" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t14">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Himling</div>
+      <div class="risiko-q">Er systemhimlinger fri for skader og er opphengsystem i orden?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t14" data-id="t14" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t14" data-id="t14" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t14" data-id="t14" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t14" data-id="t14" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t14" data-id="t14" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t14">Bilde</button>
+    <button class="ib" id="komb-t14">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t14"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t14"></label><div class="igrid" id="grid-t14"></div></div>
+<div class="komf" id="komf-t14"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t14" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t15">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Innvendige overflater</div>
+      <div class="risiko-q">Hva er tilstanden på vegger og innvendige overflater?</div>
+<div class="note">Huller, slitasje, behov for maling</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t15" data-id="t15" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t15" data-id="t15" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t15" data-id="t15" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t15" data-id="t15" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t15" data-id="t15" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t15">Bilde</button>
+    <button class="ib" id="komb-t15">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t15"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t15"></label><div class="igrid" id="grid-t15"></div></div>
+<div class="komf" id="komf-t15"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t15" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">04</span><span class="sec-ttl">Bygg utvendig</span></div>
+<div class="item tilstand-item" id="row-t16">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Tak</div>
+      <div class="risiko-q">Hva er tilstanden på taket?</div>
+<div class="note">Sprekker, buler, beslag, gjennomføringer, snøfangere, lynavledere</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t16" data-id="t16" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t16" data-id="t16" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t16" data-id="t16" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t16" data-id="t16" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t16" data-id="t16" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t16">Bilde</button>
+    <button class="ib" id="komb-t16">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t16"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t16"></label><div class="igrid" id="grid-t16"></div></div>
+<div class="komf" id="komf-t16"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t16" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t17">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Utvendig skilting</div>
+      <div class="risiko-q">Er utvendig skilting intakt, oppdatert og i henhold til skiltplan?</div>
+<div class="note">Avvik dersom skiltplan mangler</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t17" data-id="t17" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t17" data-id="t17" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t17" data-id="t17" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t17" data-id="t17" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t17" data-id="t17" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t17">Bilde</button>
+    <button class="ib" id="komb-t17">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t17"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t17"></label><div class="igrid" id="grid-t17"></div></div>
+<div class="komf" id="komf-t17"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t17" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t18">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Balkonger og rekkverk</div>
+      <div class="risiko-q">Er balkonger og rekkverk i tilfredsstillende stand?</div>
+<div class="note">Korrosjon, frostsprengning</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t18" data-id="t18" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t18" data-id="t18" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t18" data-id="t18" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t18" data-id="t18" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t18" data-id="t18" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t18">Bilde</button>
+    <button class="ib" id="komb-t18">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t18"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t18"></label><div class="igrid" id="grid-t18"></div></div>
+<div class="komf" id="komf-t18"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t18" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t19">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Utvendig kledning og overflate</div>
+      <div class="risiko-q">Hva er tilstanden på fasader og utvendig kledning?</div>
+<div class="note">Riss, skadde plater, avskalling, armeringskorrosjon</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t19" data-id="t19" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t19" data-id="t19" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t19" data-id="t19" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t19" data-id="t19" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t19" data-id="t19" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t19">Bilde</button>
+    <button class="ib" id="komb-t19">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t19"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t19"></label><div class="igrid" id="grid-t19"></div></div>
+<div class="komf" id="komf-t19"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t19" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t20">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Overlys og takluker</div>
+      <div class="risiko-q">Er det tegn til lekkasje ved overlys og takluker?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t20" data-id="t20" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t20" data-id="t20" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t20" data-id="t20" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t20" data-id="t20" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t20" data-id="t20" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t20">Bilde</button>
+    <button class="ib" id="komb-t20">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t20"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t20"></label><div class="igrid" id="grid-t20"></div></div>
+<div class="komf" id="komf-t20"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t20" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t21">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Takrenner og nedløp</div>
+      <div class="risiko-q">Er takrenner og nedløp uten lekkasjer, skader eller behov for rengjøring?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t21" data-id="t21" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t21" data-id="t21" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t21" data-id="t21" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t21" data-id="t21" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t21" data-id="t21" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t21">Bilde</button>
+    <button class="ib" id="komb-t21">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t21"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t21"></label><div class="igrid" id="grid-t21"></div></div>
+<div class="komf" id="komf-t21"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t21" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t22">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Utvendige trapper</div>
+      <div class="risiko-q">Er utvendige trapper i tilfredsstillende stand?</div>
+<div class="note">Løse heller, frostsprengning, glatt overflate</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t22" data-id="t22" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t22" data-id="t22" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t22" data-id="t22" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t22" data-id="t22" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t22" data-id="t22" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t22">Bilde</button>
+    <button class="ib" id="komb-t22">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t22"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t22"></label><div class="igrid" id="grid-t22"></div></div>
+<div class="komf" id="komf-t22"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t22" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t23">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Vask av vinduer og fasader</div>
+      <div class="risiko-q">Er det behov for vask av vinduer og fasader?</div>
+<div class="note">Fast avtale anbefales for fulldriftsbygg</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t23" data-id="t23" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t23" data-id="t23" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t23" data-id="t23" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t23" data-id="t23" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t23" data-id="t23" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t23">Bilde</button>
+    <button class="ib" id="komb-t23">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t23"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t23"></label><div class="igrid" id="grid-t23"></div></div>
+<div class="komf" id="komf-t23"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t23" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">05</span><span class="sec-ttl">Elektro</span></div>
+<div class="item tilstand-item" id="row-t24">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Elkraft og tavler</div>
+      <div class="risiko-q">Hva er tilstanden på elektrisk anlegg og tavler?</div>
+<div class="note">Vurder mot forskrifter og tilsynsrapporter. Planlegg utskifting innen 10 år.</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t24" data-id="t24" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t24" data-id="t24" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t24" data-id="t24" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t24" data-id="t24" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t24" data-id="t24" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t24">Bilde</button>
+    <button class="ib" id="komb-t24">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t24"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t24"></label><div class="igrid" id="grid-t24"></div></div>
+<div class="komf" id="komf-t24"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t24" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t25">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Lyskilder</div>
+      <div class="risiko-q">Er lyskilder oppdatert i henhold til EU-direktiver?</div>
+<div class="note">Fra 2023 gjelder utfasing av T8, T5 og kompaktlysrør</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t25" data-id="t25" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t25" data-id="t25" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t25" data-id="t25" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t25" data-id="t25" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t25" data-id="t25" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t25">Bilde</button>
+    <button class="ib" id="komb-t25">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t25"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t25"></label><div class="igrid" id="grid-t25"></div></div>
+<div class="komf" id="komf-t25"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t25" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t26">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Effektbrytere</div>
+      <div class="risiko-q">Er effektbrytere trimmet og servicert etter behov?</div>
+<div class="note">Trimming årlig, service hvert 5. år</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t26" data-id="t26" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t26" data-id="t26" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t26" data-id="t26" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t26" data-id="t26" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t26" data-id="t26" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t26">Bilde</button>
+    <button class="ib" id="komb-t26">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t26"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t26"></label><div class="igrid" id="grid-t26"></div></div>
+<div class="komf" id="komf-t26"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t26" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t27">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Svakstrømsanlegg</div>
+      <div class="risiko-q">Hva er tilstanden på SD-anlegg, adgangskontroll, brannvarsling, innbruddsalarm og CCTV?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t27" data-id="t27" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t27" data-id="t27" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t27" data-id="t27" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t27" data-id="t27" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t27" data-id="t27" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t27">Bilde</button>
+    <button class="ib" id="komb-t27">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t27"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t27"></label><div class="igrid" id="grid-t27"></div></div>
+<div class="komf" id="komf-t27"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t27" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t28">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Fordelinger</div>
+      <div class="risiko-q">Er tavler godt merket, avdekninger tilfredsstillende og sikringsmateriell i god stand?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t28" data-id="t28" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t28" data-id="t28" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t28" data-id="t28" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t28" data-id="t28" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t28" data-id="t28" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t28">Bilde</button>
+    <button class="ib" id="komb-t28">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t28"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t28"></label><div class="igrid" id="grid-t28"></div></div>
+<div class="komf" id="komf-t28"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t28" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">06</span><span class="sec-ttl">Generelt</span></div>
+<div class="item tilstand-item" id="row-t29">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Styringssystem / SD-anlegg</div>
+      <div class="risiko-q">Er det et tilfredsstillende styringssystem for energikrevende tekniske installasjoner?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t29" data-id="t29" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t29" data-id="t29" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t29" data-id="t29" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t29" data-id="t29" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t29" data-id="t29" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t29">Bilde</button>
+    <button class="ib" id="komb-t29">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t29"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t29"></label><div class="igrid" id="grid-t29"></div></div>
+<div class="komf" id="komf-t29"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t29" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t30">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Andre installasjoner</div>
+      <div class="risiko-q">Hva er tilstanden på maskiner og øvrige installasjoner?</div>
+<div class="note">Noter installasjonsår og vurder levetid</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t30" data-id="t30" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t30" data-id="t30" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t30" data-id="t30" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t30" data-id="t30" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t30" data-id="t30" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t30">Bilde</button>
+    <button class="ib" id="komb-t30">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t30"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t30"></label><div class="igrid" id="grid-t30"></div></div>
+<div class="komf" id="komf-t30"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t30" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t31">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Andre bygningsmessige forhold</div>
+      <div class="risiko-q">Er det avvik som ikke dekkes av øvrige sjekkpunkter?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t31" data-id="t31" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t31" data-id="t31" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t31" data-id="t31" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t31" data-id="t31" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t31" data-id="t31" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t31">Bilde</button>
+    <button class="ib" id="komb-t31">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t31"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t31"></label><div class="igrid" id="grid-t31"></div></div>
+<div class="komf" id="komf-t31"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t31" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t32">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Drifts- og energioptimalisering</div>
+      <div class="risiko-q">Er det muligheter for drifts- og energioptimalisering i eksisterende styresystemer?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t32" data-id="t32" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t32" data-id="t32" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t32" data-id="t32" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t32" data-id="t32" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t32" data-id="t32" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t32">Bilde</button>
+    <button class="ib" id="komb-t32">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t32"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t32"></label><div class="igrid" id="grid-t32"></div></div>
+<div class="komf" id="komf-t32"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t32" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">07</span><span class="sec-ttl">Heiser</span></div>
+<div class="item tilstand-item" id="row-t33">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Heis</div>
+      <div class="risiko-q">Hva er tilstanden på heisanlegg og er siste kontrollrapport fra Heiskontrollen fulgt opp?</div>
+<div class="note">Åpne avvik legges i plan. Vurder levetid og evt. utskifting innen 10 år.</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t33" data-id="t33" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t33" data-id="t33" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t33" data-id="t33" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t33" data-id="t33" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t33" data-id="t33" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t33">Bilde</button>
+    <button class="ib" id="komb-t33">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t33"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t33"></label><div class="igrid" id="grid-t33"></div></div>
+<div class="komf" id="komf-t33"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t33" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">08</span><span class="sec-ttl">Innemiljø</span></div>
+<div class="item tilstand-item" id="row-t34">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Skadedyr</div>
+      <div class="risiko-q">Er det tegn til skadedyr og finnes det et serviceprogram for forebygging?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t34" data-id="t34" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t34" data-id="t34" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t34" data-id="t34" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t34" data-id="t34" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t34" data-id="t34" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t34">Bilde</button>
+    <button class="ib" id="komb-t34">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t34"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t34"></label><div class="igrid" id="grid-t34"></div></div>
+<div class="komf" id="komf-t34"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t34" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t35">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Innemiljø ved arbeidsplasser</div>
+      <div class="risiko-q">Hva er tilstanden på innemiljø — luftkvalitet, temperatur, trekk, støy og belysning?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t35" data-id="t35" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t35" data-id="t35" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t35" data-id="t35" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t35" data-id="t35" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t35" data-id="t35" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t35">Bilde</button>
+    <button class="ib" id="komb-t35">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t35"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t35"></label><div class="igrid" id="grid-t35"></div></div>
+<div class="komf" id="komf-t35"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t35" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">09</span><span class="sec-ttl">Kjøling og varme</span></div>
+<div class="item tilstand-item" id="row-t36">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Vannrenseanlegg</div>
+      <div class="risiko-q">Er det installert vannrenseanlegg for varme- og kjøleanlegg?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t36" data-id="t36" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t36" data-id="t36" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t36" data-id="t36" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t36" data-id="t36" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t36" data-id="t36" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t36">Bilde</button>
+    <button class="ib" id="komb-t36">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t36"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t36"></label><div class="igrid" id="grid-t36"></div></div>
+<div class="komf" id="komf-t36"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t36" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t37">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Kjøleanlegg</div>
+      <div class="risiko-q">Hva er tilstanden på kjøleanlegg?</div>
+<div class="note">Vurder levetid og energieffektivisering</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t37" data-id="t37" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t37" data-id="t37" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t37" data-id="t37" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t37" data-id="t37" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t37" data-id="t37" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t37">Bilde</button>
+    <button class="ib" id="komb-t37">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t37"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t37"></label><div class="igrid" id="grid-t37"></div></div>
+<div class="komf" id="komf-t37"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t37" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t38">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Driftsinstruks sommer/vinterdrift</div>
+      <div class="risiko-q">Er det etablert driftsinstruks for sesongskifte mellom varme- og kjøleanlegg?</div>
+<div class="note">Etableres som GAO i FDVweb</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t38" data-id="t38" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t38" data-id="t38" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t38" data-id="t38" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t38" data-id="t38" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t38" data-id="t38" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t38">Bilde</button>
+    <button class="ib" id="komb-t38">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t38"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t38"></label><div class="igrid" id="grid-t38"></div></div>
+<div class="komf" id="komf-t38"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t38" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">10</span><span class="sec-ttl">Miljø</span></div>
+<div class="item tilstand-item" id="row-t39">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Plukkanalyse avfall</div>
+      <div class="risiko-q">Er det gjennomført plukkanalyse for avfall siste 3 år?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t39" data-id="t39" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t39" data-id="t39" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t39" data-id="t39" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t39" data-id="t39" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t39" data-id="t39" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t39">Bilde</button>
+    <button class="ib" id="komb-t39">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t39"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t39"></label><div class="igrid" id="grid-t39"></div></div>
+<div class="komf" id="komf-t39"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t39" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t40">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Utnyttelse av takflater</div>
+      <div class="risiko-q">Er takflater vurdert for miljømessig utnyttelse?</div>
+<div class="note">Solceller, grønne tak, bikuber, insektskasser</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t40" data-id="t40" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t40" data-id="t40" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t40" data-id="t40" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t40" data-id="t40" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t40" data-id="t40" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t40">Bilde</button>
+    <button class="ib" id="komb-t40">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t40"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t40"></label><div class="igrid" id="grid-t40"></div></div>
+<div class="komf" id="komf-t40"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t40" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t41">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Lading av el-biler</div>
+      <div class="risiko-q">Er det etablert tilstrekkelig ladeinfrastruktur for el-biler?</div>
+<div class="note">Krav ved parkering tilgjengelig for allmenheten</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t41" data-id="t41" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t41" data-id="t41" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t41" data-id="t41" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t41" data-id="t41" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t41" data-id="t41" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t41">Bilde</button>
+    <button class="ib" id="komb-t41">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t41"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t41"></label><div class="igrid" id="grid-t41"></div></div>
+<div class="komf" id="komf-t41"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t41" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t42">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Sykkelparkering</div>
+      <div class="risiko-q">Er det tilfredsstillende sykkelparkering ved eiendommen?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t42" data-id="t42" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t42" data-id="t42" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t42" data-id="t42" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t42" data-id="t42" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t42" data-id="t42" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t42">Bilde</button>
+    <button class="ib" id="komb-t42">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t42"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t42"></label><div class="igrid" id="grid-t42"></div></div>
+<div class="komf" id="komf-t42"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t42" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">11</span><span class="sec-ttl">Rulletrapper</span></div>
+<div class="item tilstand-item" id="row-t43">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Rulletrapper</div>
+      <div class="risiko-q">Hva er tilstanden på rulletrapper og er kontrollrapport fra Heiskontrollen fulgt opp?</div>
+<div class="note">Vurder levetid og evt. utskifting innen 10 år</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t43" data-id="t43" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t43" data-id="t43" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t43" data-id="t43" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t43" data-id="t43" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t43" data-id="t43" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t43">Bilde</button>
+    <button class="ib" id="komb-t43">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t43"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t43"></label><div class="igrid" id="grid-t43"></div></div>
+<div class="komf" id="komf-t43"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t43" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">12</span><span class="sec-ttl">Tilfluktsrom</span></div>
+<div class="item tilstand-item" id="row-t44">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Tilfluktsrom</div>
+      <div class="risiko-q">Er tilfluktsrommet registrert i FDVweb med tilsyn og driftsinstruks, og kan det settes i beredskap innen 72 timer?</div>
+<div class="note">Hvis aktuelt</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t44" data-id="t44" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t44" data-id="t44" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t44" data-id="t44" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t44" data-id="t44" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t44" data-id="t44" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t44">Bilde</button>
+    <button class="ib" id="komb-t44">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t44"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t44"></label><div class="igrid" id="grid-t44"></div></div>
+<div class="komf" id="komf-t44"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t44" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">13</span><span class="sec-ttl">Utendørs</span></div>
+<div class="item tilstand-item" id="row-t45">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Grøntområder</div>
+      <div class="risiko-q">Hva er tilstanden på grøntområder, flaggstenger og utearealer?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t45" data-id="t45" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t45" data-id="t45" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t45" data-id="t45" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t45" data-id="t45" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t45" data-id="t45" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t45">Bilde</button>
+    <button class="ib" id="komb-t45">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t45"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t45"></label><div class="igrid" id="grid-t45"></div></div>
+<div class="komf" id="komf-t45"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t45" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t46">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Beplantning og skjøtsel</div>
+      <div class="risiko-q">Er det etablert serviceavtaler for beplantning, beskjæring og gressklipping?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t46" data-id="t46" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t46" data-id="t46" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t46" data-id="t46" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t46" data-id="t46" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t46" data-id="t46" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t46">Bilde</button>
+    <button class="ib" id="komb-t46">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t46"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t46"></label><div class="igrid" id="grid-t46"></div></div>
+<div class="komf" id="komf-t46"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t46" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t47">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Veier og plasser</div>
+      <div class="risiko-q">Hva er tilstanden på asfalt, kantstein, skilter og sikkerhetsrekkverk?</div>
+<div class="note">Huller, krakilering, løse kantstein</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t47" data-id="t47" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t47" data-id="t47" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t47" data-id="t47" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t47" data-id="t47" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t47" data-id="t47" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t47">Bilde</button>
+    <button class="ib" id="komb-t47">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t47"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t47"></label><div class="igrid" id="grid-t47"></div></div>
+<div class="komf" id="komf-t47"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t47" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">14</span><span class="sec-ttl">Varme</span></div>
+<div class="item tilstand-item" id="row-t48">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Varmeanlegg</div>
+      <div class="risiko-q">Hva er tilstanden på varmeanlegg og er energieffektivisering vurdert?</div>
+<div class="note">Vannbehandlingsutstyr, isolerte varmerør, levetid</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t48" data-id="t48" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t48" data-id="t48" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t48" data-id="t48" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t48" data-id="t48" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t48" data-id="t48" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t48">Bilde</button>
+    <button class="ib" id="komb-t48">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t48"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t48"></label><div class="igrid" id="grid-t48"></div></div>
+<div class="komf" id="komf-t48"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t48" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">15</span><span class="sec-ttl">Ventilasjon</span></div>
+<div class="item tilstand-item" id="row-t49">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Energieffektivisering ventilasjon</div>
+      <div class="risiko-q">Er muligheter for energieffektivisering av ventilasjonsanlegg vurdert?</div>
+<div class="note">Direktedrevne vifter, SD-anlegg, innregulering</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t49" data-id="t49" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t49" data-id="t49" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t49" data-id="t49" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t49" data-id="t49" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t49" data-id="t49" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t49">Bilde</button>
+    <button class="ib" id="komb-t49">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t49"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t49"></label><div class="igrid" id="grid-t49"></div></div>
+<div class="komf" id="komf-t49"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t49" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t50">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Ventilasjonsanlegg</div>
+      <div class="risiko-q">Hva er tilstanden på ventilasjonsanlegg?</div>
+<div class="note">Vurder levetid og driftstid tilpasset byggets bruk</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t50" data-id="t50" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t50" data-id="t50" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t50" data-id="t50" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t50" data-id="t50" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t50" data-id="t50" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t50">Bilde</button>
+    <button class="ib" id="komb-t50">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t50"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t50"></label><div class="igrid" id="grid-t50"></div></div>
+<div class="komf" id="komf-t50"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t50" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t51">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">SD-anlegg driftstider</div>
+      <div class="risiko-q">Er SD-anlegg gjennomgått og driftstider/alarmer/setpunkter kontrollert?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t51" data-id="t51" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t51" data-id="t51" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t51" data-id="t51" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t51" data-id="t51" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t51" data-id="t51" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t51">Bilde</button>
+    <button class="ib" id="komb-t51">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t51"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t51"></label><div class="igrid" id="grid-t51"></div></div>
+<div class="komf" id="komf-t51"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t51" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">16</span><span class="sec-ttl">VVS</span></div>
+<div class="item tilstand-item" id="row-t52">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Rørinstallasjoner</div>
+      <div class="risiko-q">Hva er tilstanden på rørinstallasjoner — fuktighet, skader og alder?</div>
+<div class="note">Planlegg tilstandsvurdering og kamerainspeksjon etter 30-40 år</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t52" data-id="t52" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t52" data-id="t52" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t52" data-id="t52" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t52" data-id="t52" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t52" data-id="t52" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t52">Bilde</button>
+    <button class="ib" id="komb-t52">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t52"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t52"></label><div class="igrid" id="grid-t52"></div></div>
+<div class="komf" id="komf-t52"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t52" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t53">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Oljefyranlegg</div>
+      <div class="risiko-q">Er oljefyranlegg konvertert til alternativ energikilde?</div>
+<div class="note">Forbud mot fyring med fossilt brennstoff fra 2020</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t53" data-id="t53" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t53" data-id="t53" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t53" data-id="t53" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t53" data-id="t53" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t53" data-id="t53" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t53">Bilde</button>
+    <button class="ib" id="komb-t53">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t53"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t53"></label><div class="igrid" id="grid-t53"></div></div>
+<div class="komf" id="komf-t53"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t53" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t54">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Grunnvannspumper</div>
+      <div class="risiko-q">Er grunnvannspumper i funksjon og har etablert tilsyn i FDVweb?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t54" data-id="t54" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t54" data-id="t54" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t54" data-id="t54" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t54" data-id="t54" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t54" data-id="t54" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t54">Bilde</button>
+    <button class="ib" id="komb-t54">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t54"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t54"></label><div class="igrid" id="grid-t54"></div></div>
+<div class="komf" id="komf-t54"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t54" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t55">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Vannkvalitet</div>
+      <div class="risiko-q">Er vannkvalitet i lukkede varme- og kjøleanlegg kontrollert siste 3 år?</div>
+<div class="note">Budsjettpris vannprøve kr 10 000, vannrenseanlegg kr 200 000</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t55" data-id="t55" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t55" data-id="t55" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t55" data-id="t55" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t55" data-id="t55" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t55" data-id="t55" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t55">Bilde</button>
+    <button class="ib" id="komb-t55">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t55"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t55"></label><div class="igrid" id="grid-t55"></div></div>
+<div class="komf" id="komf-t55"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t55" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t56">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Lekkasjeovervåkning</div>
+      <div class="risiko-q">Er det installert eller vurdert lekkasjedeteksjon og automatiske vannmålere?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t56" data-id="t56" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t56" data-id="t56" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t56" data-id="t56" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t56" data-id="t56" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t56" data-id="t56" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t56">Bilde</button>
+    <button class="ib" id="komb-t56">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t56"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t56"></label><div class="igrid" id="grid-t56"></div></div>
+<div class="komf" id="komf-t56"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t56" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t57">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Nedgravde tanker</div>
+      <div class="risiko-q">Er nedgravde tanker som ikke er i bruk sansert og fjernet?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t57" data-id="t57" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t57" data-id="t57" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t57" data-id="t57" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t57" data-id="t57" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t57" data-id="t57" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t57">Bilde</button>
+    <button class="ib" id="komb-t57">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t57"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t57"></label><div class="igrid" id="grid-t57"></div></div>
+<div class="komf" id="komf-t57"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t57" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t58">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Innregulering</div>
+      <div class="risiko-q">Er kjøle- og varmeanlegg innregulert etter siste endring eller siste 10 år?</div>
+    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t58" data-id="t58" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t58" data-id="t58" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t58" data-id="t58" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t58" data-id="t58" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t58" data-id="t58" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t58">Bilde</button>
+    <button class="ib" id="komb-t58">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t58"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t58"></label><div class="igrid" id="grid-t58"></div></div>
+<div class="komf" id="komf-t58"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t58" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+<div class="item tilstand-item" id="row-t59">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Vannbesparende tiltak</div>
+      <div class="risiko-q">Er vannbesparende tiltak vurdert og implementert?</div>
+<div class="note">Sparedusjer, vannbesparende armaturer, tørrurinaler</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t59" data-id="t59" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t59" data-id="t59" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t59" data-id="t59" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t59" data-id="t59" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t59" data-id="t59" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t59">Bilde</button>
+    <button class="ib" id="komb-t59">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t59"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t59"></label><div class="igrid" id="grid-t59"></div></div>
+<div class="komf" id="komf-t59"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t59" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+<div class="section" data-list="tilstand"><div class="sec-hdr"><span class="sec-num">17</span><span class="sec-ttl">Energitiltak</span></div>
+<div class="item tilstand-item" id="row-t60">
+  <div class="item-top">
+    <div class="itxt">
+      <div class="txt">Andre energitiltak</div>
+      <div class="risiko-q">Er øvrige energitiltak vurdert og implementert der relevant?</div>
+<div class="note">LED, direktedrevne vifter, varmepumpe, solavskjerming, lysstyring, undermålere</div>    </div>
+  </div>
+  <div class="tg-scores">
+    <div class="score-lbl">Tilstandsgrad</div>
+    <div class="tg-btns">
+      <button class="tgb tg0" id="tg0-t60" data-id="t60" data-val="0"><span class="tg-num">TG0</span><span class="tg-lbl">Ingen avvik</span></button>
+      <button class="tgb tg1" id="tg1-t60" data-id="t60" data-val="1"><span class="tg-num">TG1</span><span class="tg-lbl">Svake avvik</span></button>
+      <button class="tgb tg2" id="tg2-t60" data-id="t60" data-val="2"><span class="tg-num">TG2</span><span class="tg-lbl">Store avvik</span></button>
+      <button class="tgb tg3" id="tg3-t60" data-id="t60" data-val="3"><span class="tg-num">TG3</span><span class="tg-lbl">Kritisk</span></button>
+      <button class="tgb tgia" id="tgia-t60" data-id="t60" data-val="ia"><span class="tg-num">I/A</span><span class="tg-lbl">Ikke aktuelt</span></button>
+    </div>
+  </div>
+  <div class="iacts">
+    <button class="ib" id="imgb-t60">Bilde</button>
+    <button class="ib" id="komb-t60">Kommentar</button>
+  </div>
+</div>
+<div class="imgf" id="imgf-t60"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-t60"></label><div class="igrid" id="grid-t60"></div></div>
+<div class="komf" id="komf-t60"><div class="slbl red">Kommentar og tiltak</div><textarea id="ta-t60" placeholder="Beskriv observasjon, tilstand og anbefalte tiltak..."></textarea></div>
+</div>
+
+    <div class="bsec"><div class="bttl">Generelle kommentarer</div>
+    <textarea id="t-k" style="width:100%;border:1px solid #C8D6CF;border-radius:2px;padding:9px;font-family:Lato,Arial,sans-serif;font-size:14px;resize:vertical;min-height:70px;outline:none;background:#F5F7F5;" placeholder="&#216;vrige kommentarer..."></textarea></div>
+    <div class="acts">
+      <button class="btng" id="btn-reset-t">Nullstill</button>
+      <button class="btnp" id="btn-share2-t">Send rapport</button>
+    </div>
+  </div>
+  <div class="footer">&#169; CBRE &#183; Tilstandsanalyse &#183; cbre.com/no</div>
+</div>
+
+<!-- ════ HISTORY SCREEN ════ -->
+<div class="screen" id="screen-history">
+  <div class="cl-hdr">
+    <button class="cl-back" id="back-history">&#8592; Meny</button>
+    <div class="cl-acts">
+      <button class="bsp" id="btn-new-from-history">+ Ny runde</button>
+    </div>
+  </div>
+  <div class="content" style="max-width:700px;">
+    <div id="history-list"></div>
   </div>
   <div class="footer">&#169; CBRE &#183; Internkontroll &#183; cbre.com/no</div>
 </div>
@@ -2943,15 +4557,78 @@ var SK_R = 'cbre_risiko_v1';
 
 // State
 var stB = {}, kmB = {}, igB = {};   // brann: status, kommentarer, bilder
+var stT = {}, kmT = {}, igT = {};   // tilstand: tg-verdi, kommentarer, bilder
 var stR = {}, kmR = {}, igR = {};   // risiko: {s,k}, kommentarer, bilder
 var _autoB, _autoR, _toastT;
 
-// Storage
-var _mem={}, _ls=false;
+// ── IndexedDB Storage ────────────────────────────────────────────────────────
+var DB_NAME = 'cbre_internkontroll';
+var DB_VER  = 1;
+var db = null;
+var _mem = {}, _ls = false;
 try{localStorage.setItem('t','1');localStorage.removeItem('t');_ls=true;}catch(e){}
 function lset(k,v){if(_ls){try{localStorage.setItem(k,v);}catch(e){}}else{_mem[k]=v;}}
 function lget(k){if(_ls){try{return localStorage.getItem(k);}catch(e){return null;}}return _mem[k]||null;}
 function lkeys(){if(_ls){try{return Object.keys(localStorage);}catch(e){return[];}}return Object.keys(_mem);}
+
+function openDB(callback) {
+  if(db){callback(db);return;}
+  var req = indexedDB.open(DB_NAME, DB_VER);
+  req.onupgradeneeded = function(e) {
+    var d = e.target.result;
+    if(!d.objectStoreNames.contains('rounds')) {
+      var store = d.createObjectStore('rounds', {keyPath:'id'});
+      store.createIndex('type', 'type', {unique:false});
+      store.createIndex('updatedAt', 'updatedAt', {unique:false});
+    }
+  };
+  req.onsuccess = function(e){db=e.target.result;callback(db);};
+  req.onerror   = function(){callback(null);};
+}
+
+function dbSave(round, callback) {
+  openDB(function(d){
+    if(!d){if(callback)callback(false);return;}
+    var tx = d.transaction('rounds','readwrite');
+    tx.objectStore('rounds').put(round);
+    tx.oncomplete = function(){if(callback)callback(true);};
+    tx.onerror    = function(){if(callback)callback(false);};
+  });
+}
+
+function dbGet(id, callback) {
+  openDB(function(d){
+    if(!d){callback(null);return;}
+    var req = d.transaction('rounds','readonly').objectStore('rounds').get(id);
+    req.onsuccess = function(){callback(req.result||null);};
+    req.onerror   = function(){callback(null);};
+  });
+}
+
+function dbGetAll(callback) {
+  openDB(function(d){
+    if(!d){callback([]);return;}
+    var req = d.transaction('rounds','readonly').objectStore('rounds').getAll();
+    req.onsuccess = function(){
+      var all = (req.result||[]).sort(function(a,b){return (b.updatedAt||0)-(a.updatedAt||0);});
+      callback(all);
+    };
+    req.onerror = function(){callback([]);};
+  });
+}
+
+function dbDelete(id, callback) {
+  openDB(function(d){
+    if(!d){if(callback)callback(false);return;}
+    var tx = d.transaction('rounds','readwrite');
+    tx.objectStore('rounds').delete(id);
+    tx.oncomplete = function(){if(callback)callback(true);};
+    tx.onerror    = function(){if(callback)callback(false);};
+  });
+}
+
+// Current round ID being edited
+var currentRoundId = null;
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────────
 function showScreen(id) {
@@ -3021,6 +4698,99 @@ function setRScore(id, type, val) {
   updatePrioritet(id);
   updateProgressR(); dirtyR();
 }
+
+function setTG(id, val) {
+  var prev = stT[id];
+  stT[id] = (prev === val) ? null : val;
+  var row = document.getElementById('row-' + id);
+  // Update row background
+  row.className = 'item tilstand-item' + (stT[id] ? ' tg'+stT[id]+'-r' : '');
+  // Update button states
+  ['0','1','2','3','ia'].forEach(function(v){
+    var b = document.getElementById('tg'+v+'-'+id);
+    if(b){
+      b.className = 'tgb tg'+v + (stT[id]===v ? ' a' : '');
+    }
+  });
+  // Auto-open comment for TG2/TG3
+  if(stT[id]==='2'||stT[id]==='3'){
+    document.getElementById('komf-'+id).classList.add('open');
+    document.getElementById('komb-'+id).classList.add('a');
+  }
+  updateProgressT(); dirtyT();
+}
+
+function updateProgressT() {
+  var done=0; for(var k in stT){if(stT[k]!==null&&stT[k]!==undefined)done++;}
+  document.getElementById('pfill-t').style.width=Math.round(done/61*100)+'%';
+  document.getElementById('ptxt-t').textContent=done+' av 61 punkter vurdert';
+}
+
+function dirtyT(){
+  document.getElementById('sdot-t').className='sdot u';
+  document.getElementById('stxt-t').textContent='Ulagrede endringer';
+  clearTimeout(_autoT2); _autoT2=setTimeout(saveT,20000);
+}
+function savedT(){
+  document.getElementById('sdot-t').className='sdot';
+  var t=new Date();document.getElementById('stxt-t').textContent='Lagret '+t.getHours()+':'+('0'+t.getMinutes()).slice(-2);
+}
+
+function saveT(){
+  document.querySelectorAll('#screen-tilstand .komf textarea').forEach(function(ta){
+    var id=ta.id.replace('ta-','');if(!kmT[id])kmT[id]='';kmT[id]=ta.value;
+  });
+  var meta={ei:document.getElementById('t-e').value,an:document.getElementById('t-a').value,
+    da:document.getElementById('t-d').value,ne:document.getElementById('t-n').value,
+    ko:document.getElementById('t-k').value};
+  compressImagesForStorage(igT,function(igSmall){
+    var round={id:currentRoundId||('t_'+Date.now()),type:'tilstand',
+      title:meta.ei||'Tilstandsanalyse',meta:meta,st:stT,km:kmT,ig:igSmall,updatedAt:Date.now()};
+    if(!currentRoundId){currentRoundId=round.id;round.createdAt=Date.now();}
+    dbSave(round,function(ok){if(ok){savedT();showToast('Fremdrift lagret');}else{showToast('Lagring feilet');}});
+    updateMenuCards();
+  });
+}
+
+function loadT(roundId){
+  if(!roundId){savedT();return;}
+  dbGet(roundId,function(round){
+    if(!round){savedT();return;}
+    currentRoundId=round.id;
+    var m=round.meta||{};
+    document.getElementById('t-e').value=m.ei||'';
+    document.getElementById('t-a').value=m.an||'';
+    document.getElementById('t-d').value=m.da||'';
+    document.getElementById('t-n').value=m.ne||'';
+    document.getElementById('t-k').value=m.ko||'';
+    stT=round.st||{};kmT=round.km||{};igT=round.ig||{};
+    for(var id in stT){
+      if(stT[id]===null||stT[id]===undefined)continue;
+      var row=document.getElementById('row-'+id);if(!row)continue;
+      row.className='item tilstand-item tg'+stT[id]+'-r';
+      ['0','1','2','3','ia'].forEach(function(v){var b=document.getElementById('tg'+v+'-'+id);if(b)b.className='tgb tg'+v+(stT[id]===v?' a':'');});
+    }
+    for(var id in kmT){var ta=document.getElementById('ta-'+id);if(ta&&kmT[id])ta.value=kmT[id];}
+    for(var id in igT){renderGrid(id);updIB(id,igT);}
+    updateProgressT();savedT();
+  });
+}
+
+function resetTilstandUI(){
+  document.querySelectorAll('#screen-tilstand .tilstand-item').forEach(function(row){
+    row.className='item tilstand-item';
+    var id=row.id.replace('row-','');
+    ['0','1','2','3','ia'].forEach(function(v){var b=document.getElementById('tg'+v+'-'+id);if(b)b.className='tgb tg'+v;});
+  });
+  document.querySelectorAll('#screen-tilstand .imgf,#screen-tilstand .komf').forEach(function(f){f.classList.remove('open');});
+  document.querySelectorAll('#screen-tilstand .komf textarea').forEach(function(t){t.value='';});
+  document.querySelectorAll('#screen-tilstand .igrid').forEach(function(g){g.innerHTML='';});
+  document.querySelectorAll('#screen-tilstand .ib').forEach(function(b){b.classList.remove('a');if(b.id&&b.id.indexOf('imgb')===0)b.textContent='Bilde';});
+  var fk=document.getElementById('t-k');if(fk)fk.value='';
+  updateProgressT();
+}
+
+var _autoT2;
 
 function updatePrioritet(id) {
   var badge = document.getElementById('pri-'+id);
@@ -3151,22 +4921,22 @@ function savedR(){
 }
 
 // ── SAVE / LOAD ───────────────────────────────────────────────────────────────
-function saveImagesCompressed(ig, sk, callback) {
+function compressImagesForStorage(ig, callback) {
+  var result = {};
   var ids = Object.keys(ig).filter(function(k){return ig[k]&&ig[k].length;});
-  if(ids.length === 0){callback();return;}
+  if(ids.length === 0){callback({});return;}
   var done = 0;
   ids.forEach(function(id){
     var arr = ig[id];
-    var compressed = [];
+    result[id] = new Array(arr.length);
     var imgDone = 0;
     arr.forEach(function(imgObj, idx){
       compressImage(imgObj.u, 80000, function(small){
-        compressed[idx] = {n:imgObj.n, u:small};
+        result[id][idx] = {n:imgObj.n, u:small};
         imgDone++;
         if(imgDone === arr.length){
-          try{lset(sk+'_i_'+id, JSON.stringify(compressed));}catch(e){}
           done++;
-          if(done === ids.length) callback();
+          if(done === ids.length) callback(result);
         }
       });
     });
@@ -3177,78 +4947,116 @@ function saveB(){
   document.querySelectorAll('#screen-brann .komf textarea').forEach(function(ta){
     var id=ta.id.replace('ta-','');if(!kmB[id])kmB[id]='';kmB[id]=ta.value;
   });
-  var d={ei:document.getElementById('b-e').value,an:document.getElementById('b-a').value,
-    da:document.getElementById('b-d').value,ne:document.getElementById('b-n').value,
-    ko:document.getElementById('b-k').value,st:stB,km:kmB};
-  lset(SK_B,JSON.stringify(d));
-  // Compress images further for storage (max 80KB each)
-  saveImagesCompressed(igB, SK_B, function(){
-    savedB();showToast(_ls?'Fremdrift lagret':'Lagret (midlertidig)');
+  var meta = {
+    ei: document.getElementById('b-e').value,
+    an: document.getElementById('b-a').value,
+    da: document.getElementById('b-d').value,
+    ne: document.getElementById('b-n').value,
+    ko: document.getElementById('b-k').value
+  };
+  // Compress images for storage
+  compressImagesForStorage(igB, function(igSmall){
+    var round = {
+      id:        currentRoundId || ('b_' + Date.now()),
+      type:      'brann',
+      title:     meta.ei || 'Brannvernrunde',
+      meta:      meta,
+      st:        stB,
+      km:        kmB,
+      ig:        igSmall,
+      updatedAt: Date.now(),
+      createdAt: currentRoundId ? undefined : Date.now()
+    };
+    if(!currentRoundId) { currentRoundId = round.id; round.createdAt = Date.now(); }
+    dbSave(round, function(ok){
+      if(ok){ savedB(); showToast('Fremdrift lagret'); }
+      else  { showToast('Lagring feilet'); }
+    });
+    updateMenuCards();
   });
 }
 function saveR(){
   document.querySelectorAll('#screen-risiko .komf textarea').forEach(function(ta){
     var id=ta.id.replace('ta-','');if(!kmR[id])kmR[id]='';kmR[id]=ta.value;
   });
-  var d={ei:document.getElementById('r-e').value,an:document.getElementById('r-a').value,
-    da:document.getElementById('r-d').value,ne:document.getElementById('r-n').value,
-    ko:document.getElementById('r-k').value,st:stR,km:kmR};
-  lset(SK_R,JSON.stringify(d));
-  saveImagesCompressed(igR, SK_R, function(){
-    savedR();showToast(_ls?'Fremdrift lagret':'Lagret (midlertidig)');
+  var meta = {
+    ei: document.getElementById('r-e').value,
+    an: document.getElementById('r-a').value,
+    da: document.getElementById('r-d').value,
+    ne: document.getElementById('r-n').value,
+    ko: document.getElementById('r-k').value
+  };
+  compressImagesForStorage(igR, function(igSmall){
+    var round = {
+      id:        currentRoundId || ('r_' + Date.now()),
+      type:      'risiko',
+      title:     meta.ei || 'Risikoanalyse',
+      meta:      meta,
+      st:        stR,
+      km:        kmR,
+      ig:        igSmall,
+      updatedAt: Date.now(),
+      createdAt: currentRoundId ? undefined : Date.now()
+    };
+    if(!currentRoundId) { currentRoundId = round.id; round.createdAt = Date.now(); }
+    dbSave(round, function(ok){
+      if(ok){ savedR(); showToast('Fremdrift lagret'); }
+      else  { showToast('Lagring feilet'); }
+    });
+    updateMenuCards();
   });
 }
 
-function loadB(){
-  try{
-    var raw=lget(SK_B);if(!raw){savedB();return;}
-    var d=JSON.parse(raw);
-    document.getElementById('b-e').value=d.ei||'';
-    document.getElementById('b-a').value=d.an||'';
-    document.getElementById('b-d').value=d.da||'';
-    document.getElementById('b-n').value=d.ne||'';
-    document.getElementById('b-k').value=d.ko||'';
-    if(d.st){stB=d.st;for(var id in stB){if(!stB[id])continue;
+function loadB(roundId){
+  if(!roundId){ savedB(); return; }
+  dbGet(roundId, function(round){
+    if(!round){ savedB(); return; }
+    currentRoundId = round.id;
+    var m = round.meta||{};
+    document.getElementById('b-e').value = m.ei||'';
+    document.getElementById('b-a').value = m.an||'';
+    document.getElementById('b-d').value = m.da||'';
+    document.getElementById('b-n').value = m.ne||'';
+    document.getElementById('b-k').value = m.ko||'';
+    stB = round.st||{};
+    kmB = round.km||{};
+    igB = round.ig||{};
+    // Restore UI
+    for(var id in stB){
+      if(!stB[id])continue;
       var row=document.getElementById('row-'+id);if(!row)continue;
       row.className='item '+stB[id]+'-r';
       ['ok','av','ia'].forEach(function(x){var b=document.getElementById(x+'-'+id);if(b)b.className='sb '+x+(stB[id]===x?' a':'');});
-    }}
-    if(d.km){kmB=d.km;for(var id in kmB){var ta=document.getElementById('ta-'+id);if(ta&&kmB[id])ta.value=kmB[id];}}
-    lkeys().filter(function(k){return k.indexOf(SK_B+'_i_')===0;}).forEach(function(k){
-      var id=k.replace(SK_B+'_i_','');
-      try{igB[id]=JSON.parse(lget(k));renderGrid(id);updIB(id,igB);}catch(e){}
-    });
+    }
+    for(var id in kmB){var ta=document.getElementById('ta-'+id);if(ta&&kmB[id])ta.value=kmB[id];}
+    for(var id in igB){renderGrid(id);updIB(id,igB);}
     updateProgressB();savedB();
-  }catch(e){savedB();}
+  });
 }
-function loadR(){
-  try{
-    var raw=lget(SK_R);if(!raw){savedR();return;}
-    var d=JSON.parse(raw);
-    document.getElementById('r-e').value=d.ei||'';
-    document.getElementById('r-a').value=d.an||'';
-    document.getElementById('r-d').value=d.da||'';
-    document.getElementById('r-n').value=d.ne||'';
-    document.getElementById('r-k').value=d.ko||'';
-    if(d.st){stR=d.st;for(var id in stR){
+function loadR(roundId){
+  if(!roundId){ savedR(); return; }
+  dbGet(roundId, function(round){
+    if(!round){ savedR(); return; }
+    currentRoundId = round.id;
+    var m = round.meta||{};
+    document.getElementById('r-e').value = m.ei||'';
+    document.getElementById('r-a').value = m.an||'';
+    document.getElementById('r-d').value = m.da||'';
+    document.getElementById('r-n').value = m.ne||'';
+    document.getElementById('r-k').value = m.ko||'';
+    stR = round.st||{};
+    kmR = round.km||{};
+    igR = round.ig||{};
+    for(var id in stR){
       if(!stR[id])continue;
-      if(stR[id].s!==null&&stR[id].s!==undefined){
-        var b=document.getElementById('s'+stR[id].s+'-'+id);
-        if(b)b.className='scb a'+stR[id].s;
-      }
-      if(stR[id].k!==null&&stR[id].k!==undefined){
-        var b=document.getElementById('k'+stR[id].k+'-'+id);
-        if(b)b.className='scb a'+stR[id].k;
-      }
+      if(stR[id].s!==null&&stR[id].s!==undefined){var b=document.getElementById('s'+stR[id].s+'-'+id);if(b)b.className='scb a'+stR[id].s;}
+      if(stR[id].k!==null&&stR[id].k!==undefined){var b=document.getElementById('k'+stR[id].k+'-'+id);if(b)b.className='scb a'+stR[id].k;}
       updatePrioritet(id);
-    }}
-    if(d.km){kmR=d.km;for(var id in kmR){var ta=document.getElementById('ta-'+id);if(ta&&kmR[id])ta.value=kmR[id];}}
-    lkeys().filter(function(k){return k.indexOf(SK_R+'_i_')===0;}).forEach(function(k){
-      var id=k.replace(SK_R+'_i_','');
-      try{igR[id]=JSON.parse(lget(k));renderGrid(id);updIB(id,igR);}catch(e){}
-    });
+    }
+    for(var id in kmR){var ta=document.getElementById('ta-'+id);if(ta&&kmR[id])ta.value=kmR[id];}
+    for(var id in igR){renderGrid(id);updIB(id,igR);}
     updateProgressR();savedR();
-  }catch(e){savedR();}
+  });
 }
 
 // ── GPS ───────────────────────────────────────────────────────────────────────
@@ -3376,11 +5184,11 @@ function generatePDF(htmlContent, filename, callback) {
 }
 
 function shareReport(prefix) {
-  var type = prefix==='b'?'Brannvernrunde':'Risikoanalyse';
+  var type = prefix==='b'?'Brannvernrunde':prefix==='r'?'Risikoanalyse':'Tilstandsanalyse';
   var fn   = suggestFn(prefix, type);
 
   // Check total image size to decide format
-  var ig   = prefix==='b' ? igB : igR;
+  var ig   = prefix==='b' ? igB : prefix==='r' ? igR : igT;
   var totalImgBytes = 0;
   for(var k in ig){if(ig[k]){for(var j=0;j<ig[k].length;j++){totalImgBytes+=ig[k][j].u.length;}}}
   var LIMIT = 8 * 1024 * 1024; // 8 MB — above this, share as HTML instead
@@ -3392,7 +5200,7 @@ function shareReport(prefix) {
   }
 
   // Normal flow: generate and share PDF
-  var html = prefix==='b' ? buildBrannReport() : buildRisikoReport();
+  var html = prefix==='b' ? buildBrannReport() : prefix==='r' ? buildRisikoReport() : buildTilstandReport();
   generatePDF(html, fn, function(pdf, pdfFn) {
     var pdfBytes = pdf.output('arraybuffer');
     var blob     = new Blob([pdfBytes], {type:'application/pdf'});
@@ -3408,7 +5216,7 @@ function shareReport(prefix) {
 }
 
 function buildAndSharePDF(prefix, type, fn, savedImgs, ig) {
-  var html = prefix==='b' ? buildBrannReport() : buildRisikoReport();
+  var html = prefix==='b' ? buildBrannReport() : prefix==='r' ? buildRisikoReport() : buildTilstandReport();
   // Restore original images if we have them
   if(savedImgs && ig) {
     for(var k in savedImgs) ig[k] = savedImgs[k];
@@ -3449,7 +5257,7 @@ function showShareOptions(prefix, type, fn, imgBytes) {
 
   document.getElementById('so-pdf').addEventListener('click', function(){
     close();
-    var html = prefix==='b' ? buildBrannReport() : buildRisikoReport();
+    var html = prefix==='b' ? buildBrannReport() : prefix==='r' ? buildRisikoReport() : buildTilstandReport();
     generatePDF(html, fn, function(pdf, pdfFn){
       var blob = new Blob([pdf.output('arraybuffer')],{type:'application/pdf'});
       var file = new File([blob],pdfFn,{type:'application/pdf'});
@@ -3461,7 +5269,7 @@ function showShareOptions(prefix, type, fn, imgBytes) {
 
   document.getElementById('so-html').addEventListener('click', function(){
     close();
-    var html = prefix==='b' ? buildBrannReport() : buildRisikoReport();
+    var html = prefix==='b' ? buildBrannReport() : prefix==='r' ? buildRisikoReport() : buildTilstandReport();
     var blob = new Blob([html],{type:'text/html;charset=utf-8'});
     var file = new File([blob], fn+'.html', {type:'text/html'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
@@ -3507,7 +5315,7 @@ function showShareOptions(prefix, type, fn, imgBytes) {
     var savedR = JSON.parse(JSON.stringify(igR));
     for(var k in igB)igB[k]=[];
     for(var k in igR)igR[k]=[];
-    var html = prefix==='b' ? buildBrannReport() : buildRisikoReport();
+    var html = prefix==='b' ? buildBrannReport() : prefix==='r' ? buildRisikoReport() : buildTilstandReport();
     igB = savedB; igR = savedR; // restore
     generatePDF(html, fn, function(pdf, pdfFn){
       var blob = new Blob([pdf.output('arraybuffer')],{type:'application/pdf'});
@@ -3623,6 +5431,100 @@ function buildBrannReport() {
 }
 
 // ── RISIKOANALYSE REPORT ──────────────────────────────────────────────────────
+function buildTilstandReport() {
+  var ei=document.getElementById('t-e').value||'-';
+  var an=document.getElementById('t-a').value||'-';
+  var da=document.getElementById('t-d').value||'-';
+  var ne=document.getElementById('t-n').value||'-';
+  var koEl=document.getElementById('t-k');var ko=koEl?koEl.value:'';
+  var tg0=0,tg1=0,tg2=0,tg3=0,tgia=0;
+  var sectionsHtml='',currentSection='',itemRows='',avvikRows='',avvikCount=0;
+  var items=document.querySelectorAll('#screen-tilstand .tilstand-item');
+  for(var i=0;i<items.length;i++){
+    var id=items[i].id.replace('row-','');
+    var tg=stT[id];
+    var txtEl=items[i].querySelector('.txt');var txt=txtEl?txtEl.textContent:'';
+    var qEl=items[i].querySelector('.risiko-q');var q=qEl?qEl.textContent:'';
+    var taEl=document.getElementById('ta-'+id);var k=taEl?taEl.value:(kmT[id]||'');
+    var imgArr=igT[id]||[];
+    if(tg==='0')tg0++;else if(tg==='1')tg1++;else if(tg==='2')tg2++;else if(tg==='3')tg3++;else if(tg==='ia')tgia++;
+    var sec=items[i].closest('.section');var secTitle=sec?sec.querySelector('.sec-ttl').textContent:'';
+    if(secTitle!==currentSection){
+      currentSection=secTitle;sectionsHtml+=itemRows;itemRows='';
+      sectionsHtml+='<tr><td colspan="3" style="background:#003F2D;color:#fff;padding:9px 14px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">'+secTitle+'</td></tr>';
+    }
+    var badge,bg;
+    if(tg==='0'){badge='<span style="background:#1A7A4A;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">TG0</span>';bg='#f0faf5';}
+    else if(tg==='1'){badge='<span style="background:#E8A020;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">TG1</span>';bg='#fffbf0';}
+    else if(tg==='2'){badge='<span style="background:#C0392B;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">TG2</span>';bg='#fdf2f2';}
+    else if(tg==='3'){badge='<span style="background:#7B0000;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">TG3</span>';bg='#fff0f0';}
+    else if(tg==='ia'){badge='<span style="background:#6B7280;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">I/A</span>';bg='#f8f8f8';}
+    else{badge='<span style="background:#e0e0e0;color:#999;font-size:10px;padding:2px 7px;border-radius:3px;">—</span>';bg='#fff';}
+    var imgs='';for(var j=0;j<imgArr.length;j++){imgs+='<img src="'+imgArr[j].u+'" style="width:200px;height:150px;object-fit:cover;border-radius:3px;border:1px solid #ddd;margin:3px;">';}
+    itemRows+='<tr style="background:'+bg+';border-bottom:1px solid #e8f0ec;">'
+      +'<td style="padding:9px 12px;vertical-align:top;width:70px;">'+badge+'</td>'
+      +'<td style="padding:9px 12px;font-size:12px;line-height:1.5;vertical-align:top;">'
+      +'<div style="font-weight:600;">'+txt+'</div>'
+      +'<div style="font-size:11px;color:#5A7268;font-style:italic;margin-top:2px;">'+q+'</div>'
+      +(k?'<div style="font-size:11px;color:#333;margin-top:5px;padding:5px 8px;background:#f9f9f9;border-left:3px solid #888;">'+k+'</div>':'')
+      +(imgs?'<div style="margin-top:6px;">'+imgs+'</div>':'')
+      +'</td></tr>';
+    if(tg==='2'||tg==='3'){
+      avvikCount++;
+      avvikRows+='<tr style="border-bottom:1px solid #f0d0d0;">'
+        +'<td style="padding:9px 12px;font-size:12px;width:45%;vertical-align:top;">'
+        +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">'+badge+' <span style="font-weight:600;color:'+(tg==='3'?'#7B0000':'#C0392B')+';">'+txt+'</span></div>'
+        +(k?'<div style="font-size:11px;color:#888;margin-top:2px;">'+k+'</div>':'')
+        +'</td>'
+        +'<td style="padding:9px 12px;width:30%;border-left:1px solid #f0d0d0;vertical-align:top;">'
+        +'<div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#888;margin-bottom:4px;">Tiltak</div>'
+        +'<div style="min-height:28px;border-bottom:1px solid #bbb;"></div></td>'
+        +'<td style="padding:9px 12px;width:25%;border-left:1px solid #f0d0d0;vertical-align:top;">'
+        +'<div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#888;margin-bottom:4px;">Lukking</div>'
+        +'<div style="font-size:9px;color:#aaa;margin-bottom:2px;">Dato:</div>'
+        +'<div style="min-height:16px;border-bottom:1px solid #bbb;margin-bottom:5px;"></div>'
+        +'<div style="font-size:9px;color:#aaa;margin-bottom:2px;">Signatur:</div>'
+        +'<div style="min-height:24px;border-bottom:1px solid #bbb;"></div></td></tr>';
+    }
+  }
+  sectionsHtml+=itemRows;
+  var avvikSec=avvikCount>0?
+    '<div style="background:#fff;border-top:3px solid #C0392B;">'
+    +'<div style="background:#C0392B;padding:10px 28px;"><span style="color:#fff;font-size:12px;font-weight:700;">Avvik (TG2/TG3) — '+avvikCount+' punkter krever oppfølging</span></div>'
+    +'<table style="width:100%;border-collapse:collapse;">'
+    +'<tr style="background:#fdf2f2;">'
+    +'<th style="padding:7px 12px;font-size:9px;text-transform:uppercase;font-weight:700;color:#888;text-align:left;border-bottom:2px solid #f0d0d0;width:45%;">Sjekkpunkt</th>'
+    +'<th style="padding:7px 12px;font-size:9px;text-transform:uppercase;font-weight:700;color:#888;text-align:left;border-bottom:2px solid #f0d0d0;width:30%;border-left:1px solid #f0d0d0;">Tiltak</th>'
+    +'<th style="padding:7px 12px;font-size:9px;text-transform:uppercase;font-weight:700;color:#888;text-align:left;border-bottom:2px solid #f0d0d0;width:25%;border-left:1px solid #f0d0d0;">Lukking</th>'
+    +'</tr>'+avvikRows+'</table></div>':'';
+  var komSec=ko?'<div style="padding:14px 28px;background:#f5f7f5;border-top:2px solid #e0e8e4;"><div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#5A7268;margin-bottom:5px;">Generelle kommentarer</div><div style="font-size:12px;line-height:1.6;">'+ko+'</div></div>':'';
+  var now=new Date();var gen=now.toLocaleDateString('no-NO',{day:'2-digit',month:'2-digit',year:'numeric'})+' kl. '+now.toLocaleTimeString('no-NO',{hour:'2-digit',minute:'2-digit'});
+  return '<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><title>CBRE Tilstandsanalyse</title>'
+    +'<style>body{margin:0;padding:0;font-family:Arial,sans-serif;color:#1A2B25}@media print{@page{margin:12mm 14mm}}</style></head><body>'
+    +'<div style="background:#003F2D;padding:24px 28px 20px;">'
+    +'<div style="font-size:10px;letter-spacing:.35em;color:#17E88F;margin-bottom:10px;font-weight:700;">— CBRE</div>'
+    +'<div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:4px;">Tilstandsanalyse</div>'
+    +'<div style="font-size:12px;color:rgba(255,255,255,.5);">Eiendomsinspeksjon — NS 3424</div></div>'
+    +'<div style="height:4px;background:linear-gradient(90deg,#17E88F,rgba(23,232,143,.15));"></div>'
+    +'<div style="background:#f5f7f5;padding:12px 28px;border-bottom:1px solid #dde8e2;display:flex;flex-wrap:wrap;gap:0;">'
+    +'<div style="flex:1;min-width:140px;padding:3px 14px 3px 0;border-right:1px solid #C8D6CF;margin-right:14px;"><div style="font-size:9px;text-transform:uppercase;color:#5A7268;font-weight:700;margin-bottom:2px;">Eiendom</div><div style="font-size:13px;font-weight:700;">'+ei+'</div></div>'
+    +'<div style="flex:1;min-width:110px;padding:3px 14px 3px 0;border-right:1px solid #C8D6CF;margin-right:14px;"><div style="font-size:9px;text-transform:uppercase;color:#5A7268;font-weight:700;margin-bottom:2px;">Dato</div><div style="font-size:13px;font-weight:700;">'+da+'</div></div>'
+    +'<div style="flex:1;min-width:110px;padding:3px 14px 3px 0;border-right:1px solid #C8D6CF;margin-right:14px;"><div style="font-size:9px;text-transform:uppercase;color:#5A7268;font-weight:700;margin-bottom:2px;">Ansvarlig</div><div style="font-size:13px;font-weight:700;">'+an+'</div></div>'
+    +'<div style="flex:1;min-width:110px;padding:3px 0;"><div style="font-size:9px;text-transform:uppercase;color:#5A7268;font-weight:700;margin-bottom:2px;">Neste analyse</div><div style="font-size:13px;font-weight:700;">'+ne+'</div></div></div>'
+    +'<div style="background:#fff;padding:12px 28px;border-bottom:2px solid #e0e8e4;display:flex;gap:10px;">'
+    +'<div style="background:#E6FBF2;border-radius:5px;padding:10px 16px;text-align:center;min-width:70px;"><div style="font-size:22px;font-weight:700;color:#1A7A4A;line-height:1;">'+tg0+'</div><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#1A7A4A;margin-top:2px;">TG0</div></div>'
+    +'<div style="background:#FFF3E0;border-radius:5px;padding:10px 16px;text-align:center;min-width:70px;"><div style="font-size:22px;font-weight:700;color:#E8A020;line-height:1;">'+tg1+'</div><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#E8A020;margin-top:2px;">TG1</div></div>'
+    +'<div style="background:#fdf2f2;border-radius:5px;padding:10px 16px;text-align:center;min-width:70px;"><div style="font-size:22px;font-weight:700;color:#C0392B;line-height:1;">'+tg2+'</div><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#C0392B;margin-top:2px;">TG2</div></div>'
+    +'<div style="background:#fff0f0;border-radius:5px;padding:10px 16px;text-align:center;min-width:70px;"><div style="font-size:22px;font-weight:700;color:#7B0000;line-height:1;">'+tg3+'</div><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#7B0000;margin-top:2px;">TG3</div></div>'
+    +'<div style="background:#f8f8f8;border-radius:5px;padding:10px 16px;text-align:center;min-width:70px;"><div style="font-size:22px;font-weight:700;color:#6B7280;line-height:1;">'+tgia+'</div><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6B7280;margin-top:2px;">I/A</div></div></div>'
+    +'<table style="width:100%;border-collapse:collapse;">'+sectionsHtml+'</table>'
+    +avvikSec+komSec
+    +'<div style="background:#003F2D;padding:10px 28px;display:flex;justify-content:space-between;">'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.5);">© CBRE · Tilstandsanalyse</div>'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.4);">Generert '+gen+'</div></div>'
+    +'</body></html>';
+}
+
 function buildRisikoReport() {
   var ei=document.getElementById('r-e').value||'-';
   var an=document.getElementById('r-a').value||'-';
@@ -3730,6 +5632,184 @@ function buildRisikoReport() {
 }
 
 // ── RESET ─────────────────────────────────────────────────────────────────────
+// ── HISTORY ───────────────────────────────────────────────────────────────────
+function showHistory() {
+  showScreen('history');
+  renderHistory();
+}
+
+function renderHistory() {
+  dbGetAll(function(rounds){
+    var el = document.getElementById('history-list');
+    if(!rounds||rounds.length===0){
+      el.innerHTML = '<div class="history-empty">'
+        +'<div class="history-empty-icon">&#128203;</div>'
+        +'<div class="history-empty-title">Ingen lagrede runder</div>'
+        +'<div class="history-empty-desc">Start en ny runde fra menyen. Den lagres automatisk her når du trykker "Lagre fremdrift".</div>'
+        +'</div>';
+      return;
+    }
+    var html = '';
+    rounds.forEach(function(r){
+      var typeLabel = r.type==='brann'?'Brannvernrunde':'Risikoanalyse';
+      var typeClass = r.type==='brann'?'brann':'risiko';
+      var date = r.meta&&r.meta.da ? r.meta.da : '';
+      var eiendom = r.title || '-';
+      var ansv = r.meta&&r.meta.an ? r.meta.an : '';
+      var updated = r.updatedAt ? new Date(r.updatedAt).toLocaleDateString('no-NO',{day:'2-digit',month:'2-digit',year:'numeric'})+' kl. '+new Date(r.updatedAt).toLocaleTimeString('no-NO',{hour:'2-digit',minute:'2-digit'}) : '';
+      // Count progress
+      var done=0, total=0;
+      if(r.type==='brann'){
+        for(var k in r.st){total++;if(r.st[k])done++;}
+      } else {
+        for(var k in r.st){total++;if(r.st[k]&&(r.st[k].s!==null||r.st[k].k!==null))done++;}
+      }
+      html += '<div class="history-card">'
+        +'<div class="history-card-top">'
+        +'<div class="history-card-title">'+eiendom+'</div>'
+        +'<span class="history-card-badge '+typeClass+'">'+typeLabel+'</span>'
+        +'</div>'
+        +'<div class="history-card-meta">'
+        +(date?'Dato: '+date+'<br>':'')
+        +(ansv?'Ansvarlig: '+ansv+'<br>':'')
+        +'Sist lagret: '+updated
+        +'</div>'
+        +(done>0?'<div class="history-card-progress">'+done+' punkter vurdert</div>':'')
+        +'<div class="history-card-actions">'
+        +'<button class="history-card-btn primary" onclick="continueRound(''+r.id+'',''+r.type+'')">Fortsett</button>'
+        +'<button class="history-card-btn secondary" onclick="shareRoundFromHistory(''+r.id+'')">Send rapport</button>'
+        +'<button class="history-card-btn danger" onclick="deleteRound(''+r.id+'')">Slett</button>'
+        +'</div>'
+        +'</div>';
+    });
+    el.innerHTML = html;
+  });
+}
+
+function updateMenuCards() {
+  var doneB=0; for(var k in stB){if(stB[k])doneB++;}
+  var doneR=0; for(var k in stR){if(stR[k]&&(stR[k].s!==null||stR[k].k!==null))doneR++;}
+  var bEl=document.getElementById('brann-progress');
+  var rEl=document.getElementById('risiko-progress');
+  if(bEl) bEl.textContent = doneB>0 ? doneB+' av 32 punkter vurdert' : 'Ikke startet';
+  if(rEl) rEl.textContent = doneR>0 ? doneR+' av 61 punkter vurdert' : 'Ikke startet';
+  var doneT=0; for(var k in stT){if(stT[k]!==null&&stT[k]!==undefined)doneT++;}
+  var tEl=document.getElementById('tilstand-progress');
+  if(tEl) tEl.textContent = doneT>0 ? doneT+' av 61 punkter vurdert' : 'Ikke startet';
+  dbGetAll(function(rounds){
+    var hEl=document.getElementById('history-count');
+    if(hEl) hEl.textContent = rounds.length>0 ? rounds.length+' lagrede runder' : 'Ingen lagrede runder';
+  });
+}
+
+function startNewRound(type) {
+  currentRoundId = null;
+  if(type==='brann'){
+    stB={}; kmB={}; igB={};
+    resetBrannUI();
+    document.getElementById('b-d').value = new Date().toISOString().split('T')[0];
+    showScreen('brann');
+    savedB();
+  } else if(type==='risiko') {
+    stR={}; kmR={}; igR={};
+    resetRisikoUI();
+    document.getElementById('r-d').value = new Date().toISOString().split('T')[0];
+    showScreen('risiko');
+    savedR();
+  } else {
+    stT={}; kmT={}; igT={};
+    resetTilstandUI();
+    document.getElementById('t-d').value = new Date().toISOString().split('T')[0];
+    showScreen('tilstand');
+    savedT();
+  }
+}
+
+function resetBrannUI() {
+  document.querySelectorAll('#screen-brann .item').forEach(function(row){
+    row.className='item';
+    var id=row.id.replace('row-','');
+    ['ok','av','ia'].forEach(function(x){var b=document.getElementById(x+'-'+id);if(b)b.className='sb '+x;});
+  });
+  document.querySelectorAll('#screen-brann .imgf,#screen-brann .komf').forEach(function(f){f.classList.remove('open');});
+  document.querySelectorAll('#screen-brann .komf textarea').forEach(function(t){t.value='';});
+  document.querySelectorAll('#screen-brann .igrid').forEach(function(g){g.innerHTML='';});
+  document.querySelectorAll('#screen-brann .ib').forEach(function(b){b.classList.remove('a');if(b.id&&b.id.indexOf('imgb')===0)b.textContent='Bilde';});
+  ['b-e','b-a','b-n','b-k'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  updateProgressB();
+}
+
+function resetRisikoUI() {
+  document.querySelectorAll('#screen-risiko .risiko-item').forEach(function(row){
+    row.style.background='';
+    var id=row.id.replace('row-','');
+    for(var t=['s','k'],i=0;i<2;i++){for(var v=0;v<=3;v++){var b=document.getElementById(t[i]+v+'-'+id);if(b)b.className='scb';}}
+    var badge=document.getElementById('pri-'+id);if(badge){badge.textContent='—';badge.className='prioritet-badge';}
+  });
+  document.querySelectorAll('#screen-risiko .imgf,#screen-risiko .komf').forEach(function(f){f.classList.remove('open');});
+  document.querySelectorAll('#screen-risiko .komf textarea').forEach(function(t){t.value='';});
+  document.querySelectorAll('#screen-risiko .igrid').forEach(function(g){g.innerHTML='';});
+  document.querySelectorAll('#screen-risiko .ib').forEach(function(b){b.classList.remove('a');if(b.id&&b.id.indexOf('imgb')===0)b.textContent='Bilde';});
+  ['r-e','r-a','r-n','r-k'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  updateProgressR();
+}
+
+function continueRound(id, type) {
+  currentRoundId = id;
+  if(type==='brann'){
+    stB={}; kmB={}; igB={};
+    resetBrannUI();
+    loadB(id);
+    showScreen('brann');
+  } else if(type==='risiko') {
+    stR={}; kmR={}; igR={};
+    resetRisikoUI();
+    loadR(id);
+    showScreen('risiko');
+  } else {
+    stT={}; kmT={}; igT={};
+    resetTilstandUI();
+    loadT(id);
+    showScreen('tilstand');
+  }
+}
+
+function shareRoundFromHistory(id) {
+  dbGet(id, function(round){
+    if(!round){showToast('Fant ikke runden');return;}
+    // Restore state temporarily
+    var prevId = currentRoundId;
+    currentRoundId = id;
+    if(round.type==='brann'){
+      var prevSt=stB,prevKm=kmB,prevIg=igB;
+      stB=round.st||{};kmB=round.km||{};igB=round.ig||{};
+      shareReport('b');
+      stB=prevSt;kmB=prevKm;igB=prevIg;
+    } else if(round.type==='risiko'){
+      var prevSt=stR,prevKm=kmR,prevIg=igR;
+      stR=round.st||{};kmR=round.km||{};igR=round.ig||{};
+      shareReport('r');
+      stR=prevSt;kmR=prevKm;igR=prevIg;
+    } else {
+      var prevSt=stT,prevKm=kmT,prevIg=igT;
+      stT=round.st||{};kmT=round.km||{};igT=round.ig||{};
+      shareReport('t');
+      stT=prevSt;kmT=prevKm;igT=prevIg;
+    }
+    currentRoundId = prevId;
+  });
+}
+
+function deleteRound(id) {
+  showConfirm('Slette denne runden permanent?', function(){
+    dbDelete(id, function(){
+      showToast('Runde slettet');
+      renderHistory();
+      updateMenuCards();
+    });
+  });
+}
+
 function showConfirm(msg, onYes) {
   var overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:flex-end;justify-content:center;';
@@ -3748,20 +5828,17 @@ function showConfirm(msg, onYes) {
 function resetB(){
   showConfirm('Nullstille brannvernrunden?',function(){
     stB={};kmB={};igB={};
-    document.querySelectorAll('#screen-brann .item').forEach(function(row){
-      row.className='item';
-      var id=row.id.replace('row-','');
-      ['ok','av','ia'].forEach(function(x){var b=document.getElementById(x+'-'+id);if(b)b.className='sb '+x;});
-    });
-    document.querySelectorAll('#screen-brann .imgf,#screen-brann .komf').forEach(function(f){f.classList.remove('open');});
-    document.querySelectorAll('#screen-brann .komf textarea').forEach(function(t){t.value='';});
-    document.querySelectorAll('#screen-brann .igrid').forEach(function(g){g.innerHTML='';});
-    document.querySelectorAll('#screen-brann .ib').forEach(function(b){b.classList.remove('a');if(b.id&&b.id.indexOf('imgb')===0)b.textContent='Bilde';});
-    var fk=document.getElementById('b-k');if(fk)fk.value='';
-    updateProgressB();dirtyB();
+    resetBrannUI();
+    dirtyB();
   });
 }
 function resetR(){
+  showConfirm('Nullstille risikoanalysen?',function(){
+    stR={};kmR={};igR={};
+    resetRisikoUI();
+    dirtyR();
+  });
+}unction resetR(){
   showConfirm('Nullstille risikoanalysen?',function(){
     stR={};kmR={};igR={};
     document.querySelectorAll('#screen-risiko .risiko-item').forEach(function(row){
@@ -3788,8 +5865,12 @@ function showToast(msg){
 // ── WIRE UP ───────────────────────────────────────────────────────────────────
 function wireUp() {
   // Menu
-  document.getElementById('card-brann').addEventListener('click',function(){showScreen('brann');});
-  document.getElementById('card-risiko').addEventListener('click',function(){showScreen('risiko');});
+  document.getElementById('card-brann').addEventListener('click',function(){startNewRound('brann');});
+  document.getElementById('card-risiko').addEventListener('click',function(){startNewRound('risiko');});
+  document.getElementById('card-tilstand').addEventListener('click',function(){startNewRound('tilstand');});
+  document.getElementById('card-history').addEventListener('click',function(){showHistory();});
+  document.getElementById('back-history').addEventListener('click',function(){showScreen('menu');});
+  document.getElementById('btn-new-from-history').addEventListener('click',function(){showScreen('menu');});
 
   // Brann bar
   document.getElementById('back-brann').addEventListener('click',function(){showScreen('menu');});
@@ -3804,6 +5885,13 @@ function wireUp() {
 
   // Risiko bar
   document.getElementById('back-risiko').addEventListener('click',function(){showScreen('menu');});
+  document.getElementById('back-tilstand').addEventListener('click',function(){showScreen('menu');});
+  document.getElementById('btn-save-t').addEventListener('click',saveT);
+  document.getElementById('btn-share-t').addEventListener('click',function(){shareReport('t');});
+  document.getElementById('btn-gps-t').addEventListener('click',function(){getPos('t');});
+  document.getElementById('btn-reset-t').addEventListener('click',function(){showConfirm('Nullstille tilstandsanalysen?',function(){stT={};kmT={};igT={};resetTilstandUI();dirtyT();});});
+  document.getElementById('btn-share2-t').addEventListener('click',function(){shareReport('t');});
+  ['t-e','t-a','t-d','t-n','t-k'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',dirtyT);});
   document.getElementById('btn-save-r').addEventListener('click',saveR);
   document.getElementById('btn-share-r').addEventListener('click',function(){shareReport('r');});
   document.getElementById('btn-gps-r').addEventListener('click',function(){getPos('r');});
@@ -3829,6 +5917,33 @@ function wireUp() {
         return;
       }
       el=el.parentElement;
+    }
+  });
+
+  // Tilstand items
+  document.getElementById('screen-tilstand').addEventListener('click',function(e){
+    var el=e.target;
+    for(var i=0;i<4&&el&&el!==document.body;i++){
+      var id=el.id||'';
+      if(el.classList&&el.classList.contains('tgb')){
+        var did=el.getAttribute('data-id');
+        var dval=el.getAttribute('data-val');
+        if(did&&dval!==null){setTG(did,dval);return;}
+      }
+      if(id.indexOf('imgb-')===0){togglePanel('imgf',id.replace('imgb-',''));return;}
+      if(id.indexOf('komb-')===0){togglePanel('komf',id.replace('komb-',''));return;}
+      if(el.tagName==='INPUT'&&el.type==='file'){
+        var fid=el.id.replace('fi-','');
+        el.addEventListener('change',function(){addFiles(this.files,fid,igT);},{once:true});
+        return;
+      }
+      el=el.parentElement;
+    }
+  });
+  document.getElementById('screen-tilstand').addEventListener('input',function(e){
+    if(e.target.tagName==='TEXTAREA'){
+      var id=e.target.id.replace('ta-','');
+      if(id!==e.target.id){kmT[id]=e.target.value;dirtyT();}
     }
   });
 
@@ -3874,10 +5989,11 @@ function wireUp() {
 var today = new Date().toISOString().split('T')[0];
 document.getElementById('b-d').value = today;
 document.getElementById('r-d').value = today;
+document.getElementById('t-d').value = today;
 wireUp();
-loadB();
-loadR();
 updateMenuCards();
+// Open IndexedDB on startup
+openDB(function(){updateMenuCards();});
 </script>
 </body>
 </html>
