@@ -4648,16 +4648,7 @@ function showScreen(id) {
   }
 }
 
-function updateMenuCards() {
-  var doneB=0;
-  for(var k in stB){if(stB[k])doneB++;}
-  var doneR=0;
-  for(var k in stR){if(stR[k]&&(stR[k].s!==null||stR[k].k!==null))doneR++;}
-  var bEl=document.getElementById('brann-progress');
-  var rEl=document.getElementById('risiko-progress');
-  if(bEl) bEl.textContent = doneB>0 ? doneB+' av 32 punkter vurdert' : 'Ikke startet';
-  if(rEl) rEl.textContent = doneR>0 ? doneR+' av 61 punkter vurdert' : 'Ikke startet';
-}
+// updateMenuCards defined below
 
 // ── BRANNVERN STATUS ──────────────────────────────────────────────────────────
 function setBStatus(id, s) {
