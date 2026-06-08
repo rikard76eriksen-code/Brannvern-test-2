@@ -5636,44 +5636,55 @@ function renderHistory() {
       el.innerHTML = '<div class="history-empty">'
         +'<div class="history-empty-icon">&#128203;</div>'
         +'<div class="history-empty-title">Ingen lagrede runder</div>'
-        +'<div class="history-empty-desc">Start en ny runde fra menyen. Den lagres automatisk her når du trykker "Lagre fremdrift".</div>'
+        +'<div class="history-empty-desc">Start en ny runde fra menyen. Den lagres automatisk her n\u00e5r du trykker Lagre fremdrift.</div>'
         +'</div>';
       return;
     }
-    var html = '';
+    el.innerHTML = '';
     rounds.forEach(function(r){
-      var typeLabel = r.type==='brann'?'Brannvernrunde':'Risikoanalyse';
-      var typeClass = r.type==='brann'?'brann':'risiko';
-      var date = r.meta&&r.meta.da ? r.meta.da : '';
+      var typeLabel = r.type==='brann'?'Brannvernrunde':r.type==='risiko'?'Risikoanalyse':'Tilstandsanalyse';
+      var typeClass = r.type==='brann'?'brann':r.type==='risiko'?'risiko':'tilstand';
+      var date  = r.meta&&r.meta.da ? r.meta.da : '';
       var eiendom = r.title || '-';
-      var ansv = r.meta&&r.meta.an ? r.meta.an : '';
+      var ansv  = r.meta&&r.meta.an ? r.meta.an : '';
       var updated = r.updatedAt ? new Date(r.updatedAt).toLocaleDateString('no-NO',{day:'2-digit',month:'2-digit',year:'numeric'})+' kl. '+new Date(r.updatedAt).toLocaleTimeString('no-NO',{hour:'2-digit',minute:'2-digit'}) : '';
-      // Count progress
-      var done=0, total=0;
-      if(r.type==='brann'){
-        for(var k in r.st){total++;if(r.st[k])done++;}
-      } else {
-        for(var k in r.st){total++;if(r.st[k]&&(r.st[k].s!==null||r.st[k].k!==null))done++;}
-      }
-      html += '<div class="history-card">'
-        +'<div class="history-card-top">'
-        +'<div class="history-card-title">'+eiendom+'</div>'
-        +'<span class="history-card-badge '+typeClass+'">'+typeLabel+'</span>'
-        +'</div>'
-        +'<div class="history-card-meta">'
-        +(date?'Dato: '+date+'<br>':'')
-        +(ansv?'Ansvarlig: '+ansv+'<br>':'')
-        +'Sist lagret: '+updated
-        +'</div>'
-        +(done>0?'<div class="history-card-progress">'+done+' punkter vurdert</div>':'')
-        +'<div class="history-card-actions">'
-        +'<button class="history-card-btn primary" onclick="continueRound(''+r.id+'',''+r.type+'')">Fortsett</button>'
-        +'<button class="history-card-btn secondary" onclick="shareRoundFromHistory(''+r.id+'')">Send rapport</button>'
-        +'<button class="history-card-btn danger" onclick="deleteRound(''+r.id+'')">Slett</button>'
-        +'</div>'
-        +'</div>';
+      var done=0;
+      if(r.type==='brann'){ for(var k in r.st){if(r.st[k])done++;} }
+      else if(r.type==='risiko'){ for(var k in r.st){if(r.st[k]&&(r.st[k].s!==null||r.st[k].k!==null))done++;} }
+      else { for(var k in r.st){if(r.st[k]!==null&&r.st[k]!==undefined)done++;} }
+
+      // Build card using DOM (avoids quote escaping issues)
+      var card = document.createElement('div');
+      card.className = 'history-card';
+
+      var top = document.createElement('div'); top.className='history-card-top';
+      var title = document.createElement('div'); title.className='history-card-title'; title.textContent=eiendom;
+      var badge = document.createElement('span'); badge.className='history-card-badge '+typeClass; badge.textContent=typeLabel;
+      top.appendChild(title); top.appendChild(badge);
+
+      var meta = document.createElement('div'); meta.className='history-card-meta';
+      meta.innerHTML = (date?'Dato: '+date+'<br>':'')+(ansv?'Ansvarlig: '+ansv+'<br>':'')+'Sist lagret: '+updated;
+
+      var prog = document.createElement('div'); prog.className='history-card-progress';
+      if(done>0) prog.textContent = done+' punkter vurdert';
+
+      var acts = document.createElement('div'); acts.className='history-card-actions';
+
+      var btnCont = document.createElement('button'); btnCont.className='history-card-btn primary'; btnCont.textContent='Fortsett';
+      btnCont.addEventListener('click', (function(id,type){return function(){continueRound(id,type);};})(r.id,r.type));
+
+      var btnSend = document.createElement('button'); btnSend.className='history-card-btn secondary'; btnSend.textContent='Send rapport';
+      btnSend.addEventListener('click', (function(id){return function(){shareRoundFromHistory(id);};})(r.id));
+
+      var btnDel = document.createElement('button'); btnDel.className='history-card-btn danger'; btnDel.textContent='Slett';
+      btnDel.addEventListener('click', (function(id){return function(){deleteRound(id);};})(r.id));
+
+      acts.appendChild(btnCont); acts.appendChild(btnSend); acts.appendChild(btnDel);
+      card.appendChild(top); card.appendChild(meta);
+      if(done>0) card.appendChild(prog);
+      card.appendChild(acts);
+      el.appendChild(card);
     });
-    el.innerHTML = html;
   });
 }
 
@@ -5829,7 +5840,8 @@ function resetR(){
     resetRisikoUI();
     dirtyR();
   });
-}unction resetR(){
+}
+function resetR(){
   showConfirm('Nullstille risikoanalysen?',function(){
     stR={};kmR={};igR={};
     document.querySelectorAll('#screen-risiko .risiko-item').forEach(function(row){
