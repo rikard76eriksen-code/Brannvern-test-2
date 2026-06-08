@@ -247,6 +247,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
   <div class="cl-hdr">
     <button class="cl-back" id="back-tilstand">&#8592; Meny</button>
     <div class="cl-acts">
+      <button class="btng" id="btn-reset-t" style="font-size:11px;padding:7px 12px;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2);">Nullstill</button>
       <button class="bsave" id="btn-save-t">Lagre fremdrift</button>
       <button class="bsp" id="btn-share-t">Send rapport</button>
     </div>
@@ -260,7 +261,6 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
     <div class="field"><label>Eiendom / adresse</label><div class="locwrap"><input type="text" id="t-e" placeholder="Adresse eller navn"><button class="locbtn" id="btn-gps-t">&#128205;</button></div></div>
     <div class="field"><label>Ansvarlig</label><input type="text" id="t-a" placeholder="Fullt navn"></div>
     <div class="field"><label>Dato</label><input type="date" id="t-d"></div>
-    <div class="field"><label>Neste analyse</label><input type="date" id="t-n"></div>
   </div>
   <div class="content">
     <div class="disclaimer" style="margin-bottom:14px">
@@ -1799,6 +1799,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
   <div class="cl-hdr">
     <button class="cl-back" id="back-brann">&#8592; Meny</button>
     <div class="cl-acts">
+      <button class="btng" id="btn-reset-b" style="font-size:11px;padding:7px 12px;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2);">Nullstill</button>
       <button class="bsave" id="btn-save-b">Lagre fremdrift</button>
       <button class="bsp" id="btn-share-b">Send rapport</button>
     </div>
@@ -1812,7 +1813,6 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
     <div class="field"><label>Eiendom / adresse</label><div class="locwrap"><input type="text" id="b-e" placeholder="Adresse eller navn"><button class="locbtn" id="btn-gps-b">&#128205;</button></div></div>
     <div class="field"><label>Ansvarlig</label><input type="text" id="b-a" placeholder="Fullt navn"></div>
     <div class="field"><label>Dato</label><input type="date" id="b-d"></div>
-    <div class="field"><label>Neste runde</label><input type="date" id="b-n"></div>
   </div>
   <div class="content">
     <div class="disclaimer"><strong>Merknad:</strong> Denne brannvernrunden er basert p&#229; stikkpr&#248;ver og visuelle observasjoner gjennomf&#248;rt p&#229; inspeksjonsdatoen. Runden gir et &#248;yeblikksbilde av brannvernstatusen og er ikke en erstatning for virksomhetens etablerte internkontrollrutiner, systematisk brannvernarbeid eller lovp&#229;lagte serviceavtaler.</div>
@@ -2360,6 +2360,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
   <div class="cl-hdr">
     <button class="cl-back" id="back-risiko">&#8592; Meny</button>
     <div class="cl-acts">
+      <button class="btng" id="btn-reset-r" style="font-size:11px;padding:7px 12px;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2);">Nullstill</button>
       <button class="bsave" id="btn-save-r">Lagre fremdrift</button>
       <button class="bsp" id="btn-share-r">Send rapport</button>
     </div>
@@ -2373,7 +2374,6 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
     <div class="field"><label>Eiendom / adresse</label><div class="locwrap"><input type="text" id="r-e" placeholder="Adresse eller navn"><button class="locbtn" id="btn-gps-r">&#128205;</button></div></div>
     <div class="field"><label>Ansvarlig</label><input type="text" id="r-a" placeholder="Fullt navn"></div>
     <div class="field"><label>Dato</label><input type="date" id="r-d"></div>
-    <div class="field"><label>Neste analyse</label><input type="date" id="r-n"></div>
   </div>
   <div class="content">
     <div class="disclaimer" style="margin-bottom:14px">
@@ -4720,7 +4720,7 @@ function updateProgressT() {
 function dirtyT(){
   document.getElementById('sdot-t').className='sdot u';
   document.getElementById('stxt-t').textContent='Ulagrede endringer';
-  clearTimeout(_autoT2); _autoT2=setTimeout(saveT,20000);
+  clearTimeout(_autoT2); _autoT2=setTimeout(saveT,5000);
 }
 function savedT(){
   document.getElementById('sdot-t').className='sdot';
@@ -4895,7 +4895,7 @@ function togglePanel(type,id){
 function dirtyB(){
   document.getElementById('sdot-b').className='sdot u';
   document.getElementById('stxt-b').textContent='Ulagrede endringer';
-  clearTimeout(_autoB);_autoB=setTimeout(saveB,20000);
+  clearTimeout(_autoB);_autoB=setTimeout(saveB,5000);
 }
 function savedB(){
   document.getElementById('sdot-b').className='sdot';
@@ -4904,7 +4904,7 @@ function savedB(){
 function dirtyR(){
   document.getElementById('sdot-r').className='sdot u';
   document.getElementById('stxt-r').textContent='Ulagrede endringer';
-  clearTimeout(_autoR);_autoR=setTimeout(saveR,20000);
+  clearTimeout(_autoR);_autoR=setTimeout(saveR,5000);
 }
 function savedR(){
   document.getElementById('sdot-r').className='sdot';
@@ -4942,7 +4942,6 @@ function saveB(){
     ei: document.getElementById('b-e').value,
     an: document.getElementById('b-a').value,
     da: document.getElementById('b-d').value,
-    ne: document.getElementById('b-n').value,
     ko: document.getElementById('b-k').value
   };
   // Compress images for storage
@@ -4974,7 +4973,6 @@ function saveR(){
     ei: document.getElementById('r-e').value,
     an: document.getElementById('r-a').value,
     da: document.getElementById('r-d').value,
-    ne: document.getElementById('r-n').value,
     ko: document.getElementById('r-k').value
   };
   compressImagesForStorage(igR, function(igSmall){
@@ -5007,7 +5005,6 @@ function loadB(roundId){
     document.getElementById('b-e').value = m.ei||'';
     document.getElementById('b-a').value = m.an||'';
     document.getElementById('b-d').value = m.da||'';
-    document.getElementById('b-n').value = m.ne||'';
     document.getElementById('b-k').value = m.ko||'';
     stB = round.st||{};
     kmB = round.km||{};
@@ -5033,7 +5030,6 @@ function loadR(roundId){
     document.getElementById('r-e').value = m.ei||'';
     document.getElementById('r-a').value = m.an||'';
     document.getElementById('r-d').value = m.da||'';
-    document.getElementById('r-n').value = m.ne||'';
     document.getElementById('r-k').value = m.ko||'';
     stR = round.st||{};
     kmR = round.km||{};
@@ -5635,7 +5631,7 @@ function renderHistory() {
     if(!rounds||rounds.length===0){
       el.innerHTML = '<div class="history-empty">'
         +'<div class="history-empty-icon">&#128203;</div>'
-        +'<div class="history-empty-title">Ingen lagrede runder</div>'
+        +'<div class="history-empty-title">Ingen lagrede rapporter</div>'
         +'<div class="history-empty-desc">Start en ny runde fra menyen. Den lagres automatisk her n\u00e5r du trykker Lagre fremdrift.</div>'
         +'</div>';
       return;
@@ -5700,7 +5696,7 @@ function updateMenuCards() {
   if(tEl) tEl.textContent = doneT>0 ? doneT+' av 61 punkter vurdert' : 'Ikke startet';
   dbGetAll(function(rounds){
     var hEl=document.getElementById('history-count');
-    if(hEl) hEl.textContent = rounds.length>0 ? rounds.length+' lagrede runder' : 'Ingen lagrede runder';
+    if(hEl) hEl.textContent = rounds.length>0 ? rounds.length+(rounds.length===1?' lagret rapport':' lagrede rapporter') : 'Ingen lagrede rapporter';
   });
 }
 
@@ -5882,7 +5878,7 @@ function wireUp() {
   document.getElementById('btn-gps-b').addEventListener('click',function(){getPos('b');});
   document.getElementById('btn-reset-b').addEventListener('click',resetB);
   document.getElementById('btn-share2-b').addEventListener('click',function(){shareReport('b');});
-  ['b-e','b-a','b-d','b-n','b-k'].forEach(function(id){
+  ['b-e','b-a','b-d','b-k'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.addEventListener('input',dirtyB);
   });
 
@@ -5894,13 +5890,13 @@ function wireUp() {
   document.getElementById('btn-gps-t').addEventListener('click',function(){getPos('t');});
   document.getElementById('btn-reset-t').addEventListener('click',function(){showConfirm('Nullstille tilstandsanalysen?',function(){stT={};kmT={};igT={};resetTilstandUI();dirtyT();});});
   document.getElementById('btn-share2-t').addEventListener('click',function(){shareReport('t');});
-  ['t-e','t-a','t-d','t-n','t-k'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',dirtyT);});
+  ['t-e','t-a','t-d','t-k'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',dirtyT);});
   document.getElementById('btn-save-r').addEventListener('click',saveR);
   document.getElementById('btn-share-r').addEventListener('click',function(){shareReport('r');});
   document.getElementById('btn-gps-r').addEventListener('click',function(){getPos('r');});
   document.getElementById('btn-reset-r').addEventListener('click',resetR);
   document.getElementById('btn-share2-r').addEventListener('click',function(){shareReport('r');});
-  ['r-e','r-a','r-d','r-n','r-k'].forEach(function(id){
+  ['r-e','r-a','r-d','r-k'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.addEventListener('input',dirtyR);
   });
 
@@ -5997,6 +5993,38 @@ wireUp();
 updateMenuCards();
 // Open IndexedDB on startup
 openDB(function(){updateMenuCards();});
+
+// Auto-save every 60 seconds
+setInterval(function(){
+  if(currentRoundId) {
+    var sdot = document.getElementById('sdot-b');
+    // Only save if there's unsaved changes (dot is orange)
+    var screenB = document.getElementById('screen-brann');
+    var screenR = document.getElementById('screen-risiko');
+    var screenT = document.getElementById('screen-tilstand');
+    if(screenB && screenB.classList.contains('active') &&
+       document.getElementById('sdot-b').className.indexOf('u') > -1) { saveB(); }
+    else if(screenR && screenR.classList.contains('active') &&
+       document.getElementById('sdot-r').className.indexOf('u') > -1) { saveR(); }
+    else if(screenT && screenT.classList.contains('active') &&
+       document.getElementById('sdot-t').className.indexOf('u') > -1) { saveT(); }
+  }
+}, 60000);
+
+// Save on page hide (browser tab switch, phone lock screen, navigate away)
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden && currentRoundId) {
+    var screenB = document.getElementById('screen-brann');
+    var screenR = document.getElementById('screen-risiko');
+    var screenT = document.getElementById('screen-tilstand');
+    if(screenB && screenB.classList.contains('active')) saveB();
+    else if(screenR && screenR.classList.contains('active')) saveR();
+    else if(screenT && screenT.classList.contains('active')) saveT();
+  }
+});
+
+// Also reduce auto-save delay from 20s to 5s after last change
+
 </script>
 </body>
 </html>
