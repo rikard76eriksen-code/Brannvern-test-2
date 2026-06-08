@@ -3151,8 +3151,29 @@ function savedR(){
 }
 
 // ── SAVE / LOAD ───────────────────────────────────────────────────────────────
+function saveImagesCompressed(ig, sk, callback) {
+  var ids = Object.keys(ig).filter(function(k){return ig[k]&&ig[k].length;});
+  if(ids.length === 0){callback();return;}
+  var done = 0;
+  ids.forEach(function(id){
+    var arr = ig[id];
+    var compressed = [];
+    var imgDone = 0;
+    arr.forEach(function(imgObj, idx){
+      compressImage(imgObj.u, 80000, function(small){
+        compressed[idx] = {n:imgObj.n, u:small};
+        imgDone++;
+        if(imgDone === arr.length){
+          try{lset(sk+'_i_'+id, JSON.stringify(compressed));}catch(e){}
+          done++;
+          if(done === ids.length) callback();
+        }
+      });
+    });
+  });
+}
+
 function saveB(){
-  // collect textarea values
   document.querySelectorAll('#screen-brann .komf textarea').forEach(function(ta){
     var id=ta.id.replace('ta-','');if(!kmB[id])kmB[id]='';kmB[id]=ta.value;
   });
@@ -3160,8 +3181,10 @@ function saveB(){
     da:document.getElementById('b-d').value,ne:document.getElementById('b-n').value,
     ko:document.getElementById('b-k').value,st:stB,km:kmB};
   lset(SK_B,JSON.stringify(d));
-  for(var id in igB){if(igB[id]&&igB[id].length){try{lset(SK_B+'_i_'+id,JSON.stringify(igB[id]));}catch(e){}}}
-  savedB();showToast(_ls?'Fremdrift lagret':'Lagret (midlertidig)');
+  // Compress images further for storage (max 80KB each)
+  saveImagesCompressed(igB, SK_B, function(){
+    savedB();showToast(_ls?'Fremdrift lagret':'Lagret (midlertidig)');
+  });
 }
 function saveR(){
   document.querySelectorAll('#screen-risiko .komf textarea').forEach(function(ta){
@@ -3171,8 +3194,9 @@ function saveR(){
     da:document.getElementById('r-d').value,ne:document.getElementById('r-n').value,
     ko:document.getElementById('r-k').value,st:stR,km:kmR};
   lset(SK_R,JSON.stringify(d));
-  for(var id in igR){if(igR[id]&&igR[id].length){try{lset(SK_R+'_i_'+id,JSON.stringify(igR[id]));}catch(e){}}}
-  savedR();showToast(_ls?'Fremdrift lagret':'Lagret (midlertidig)');
+  saveImagesCompressed(igR, SK_R, function(){
+    savedR();showToast(_ls?'Fremdrift lagret':'Lagret (midlertidig)');
+  });
 }
 
 function loadB(){
@@ -3258,31 +3282,97 @@ function suggestFn(prefix, type) {
 
 // ── PDF GENERATION ────────────────────────────────────────────────────────────
 function generatePDF(htmlContent, filename, callback) {
-  showToast('Genererer PDF...');
-  var iframe=document.createElement('iframe');
-  iframe.style.cssText='position:fixed;left:-9999px;top:-9999px;width:1200px;height:1px;border:none;';
+  showToast('Genererer rapport...');
+
+  // Safari iOS: use a visible (off-screen) iframe with onload
+  var iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:900px;height:600px;border:none;visibility:hidden;';
   document.body.appendChild(iframe);
-  iframe.contentDocument.open();
-  iframe.contentDocument.write(htmlContent);
-  iframe.contentDocument.close();
-  setTimeout(function(){
-    html2canvas(iframe.contentDocument.body,{
-      scale:4,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:1200,windowWidth:1200
-    }).then(function(canvas){
-      document.body.removeChild(iframe);
-      var imgData=canvas.toDataURL('image/png');
-      var pdf=new jsPDF('p','mm','a4');
-      var pw=pdf.internal.pageSize.getWidth();
-      var ph=pdf.internal.pageSize.getHeight();
-      var imgH=(canvas.height*pw)/canvas.width;
-      var y=0;
-      while(y<imgH){if(y>0)pdf.addPage();pdf.addImage(imgData,'PNG',0,-y,pw,imgH);y+=ph;}
-      callback(pdf, filename+'.pdf');
-    }).catch(function(){
-      document.body.removeChild(iframe);
-      showToast('PDF feilet');
-    });
-  },500);
+
+  var done = false;
+  var timeoutId = setTimeout(function(){
+    if(done) return;
+    done = true;
+    // html2canvas timed out — fall back to HTML file share
+    if(iframe.parentNode) document.body.removeChild(iframe);
+    showToast('PDF feilet - deler som HTML');
+    var blob = new Blob([htmlContent],{type:'text/html;charset=utf-8'});
+    var file = new File([blob], filename+'.html', {type:'text/html'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({title:'CBRE Rapport', files:[file]}).catch(function(){fallbackDl(blob,filename+'.html');});
+    } else {
+      fallbackDl(blob, filename+'.html');
+    }
+  }, 30000); // 30 second timeout
+
+  function runCanvas() {
+    if(done) return;
+    try {
+      html2canvas(iframe.contentDocument.body, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#fff',
+        width: 900,
+        windowWidth: 900,
+        logging: false
+      }).then(function(canvas){
+        if(done) return;
+        done = true;
+        clearTimeout(timeoutId);
+        if(iframe.parentNode) document.body.removeChild(iframe);
+        var imgData = canvas.toDataURL('image/jpeg', 0.85);
+        var pdf = new jsPDF('p','mm','a4');
+        var pw  = pdf.internal.pageSize.getWidth();
+        var ph  = pdf.internal.pageSize.getHeight();
+        var imgH = (canvas.height * pw) / canvas.width;
+        var y = 0;
+        while(y < imgH){
+          if(y > 0) pdf.addPage();
+          pdf.addImage(imgData,'JPEG',0,-y,pw,imgH);
+          y += ph;
+        }
+        showToast('Rapport klar!');
+        callback(pdf, filename+'.pdf');
+      }).catch(function(err){
+        if(done) return;
+        done = true;
+        clearTimeout(timeoutId);
+        if(iframe.parentNode) document.body.removeChild(iframe);
+        console.error('html2canvas error:', err);
+        showToast('PDF feilet - deler som HTML');
+        var blob = new Blob([htmlContent],{type:'text/html;charset=utf-8'});
+        fallbackDl(blob, filename+'.html');
+      });
+    } catch(e) {
+      if(done) return;
+      done = true;
+      clearTimeout(timeoutId);
+      if(iframe.parentNode) document.body.removeChild(iframe);
+      showToast('PDF feilet - laster ned HTML');
+      fallbackDl(new Blob([htmlContent],{type:'text/html'}), filename+'.html');
+    }
+  }
+
+  iframe.onload = function(){ setTimeout(runCanvas, 800); };
+  try {
+    iframe.contentDocument.open();
+    iframe.contentDocument.write(htmlContent);
+    iframe.contentDocument.close();
+  } catch(e) {
+    // Some browsers block iframe document.write — use srcdoc
+    clearTimeout(timeoutId);
+    done = true;
+    if(iframe.parentNode) document.body.removeChild(iframe);
+    showToast('Laster ned rapport...');
+    var blob = new Blob([htmlContent],{type:'text/html;charset=utf-8'});
+    var file = new File([blob], filename+'.html', {type:'text/html'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({title:'CBRE Rapport', files:[file]}).catch(function(){fallbackDl(blob,filename+'.html');});
+    } else {
+      fallbackDl(blob, filename+'.html');
+    }
+  }
 }
 
 function shareReport(prefix) {
