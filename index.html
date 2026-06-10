@@ -5367,10 +5367,9 @@ function buildBrannReport() {
         +(k?'<div style="font-size:11px;color:#888;font-style:italic;">'+k+'</div>':'')
         +'</td>'
         +'<td style="padding:10px 12px;vertical-align:top;width:28%;border-left:1px solid #f0d0d0;">'
-        +'<div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#888;margin-bottom:5px;">Tiltak</div>'
-        +'<div style="min-height:28px;border-bottom:1px solid #bbb;"></div></td>'
+        +'<div style="min-height:44px;border-bottom:1px solid #bbb;"></div></td>'
         +'<td style="padding:10px 12px;vertical-align:top;width:32%;border-left:1px solid #f0d0d0;">'
-        +'<div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#888;margin-bottom:5px;">Lukking</div>'
+        
         +'<div style="font-size:9px;color:#aaa;margin-bottom:2px;">Dato:</div>'
         +'<div style="min-height:18px;border-bottom:1px solid #bbb;margin-bottom:6px;"></div>'
         +'<div style="font-size:9px;color:#aaa;margin-bottom:2px;">Kommentar / signatur:</div>'
@@ -5388,7 +5387,7 @@ function buildBrannReport() {
     +'<th style="padding:7px 12px;font-size:9px;text-transform:uppercase;font-weight:700;color:#888;text-align:left;border-bottom:2px solid #f0d0d0;width:28%;border-left:1px solid #f0d0d0;">Tiltak</th>'
     +'<th style="padding:7px 12px;font-size:9px;text-transform:uppercase;font-weight:700;color:#888;text-align:left;border-bottom:2px solid #f0d0d0;width:32%;border-left:1px solid #f0d0d0;">Lukking</th>'
     +'</tr>'+avvikRows+'</table></div>':'';
-  var komSec=ko?'<div style="padding:14px 28px;background:#f5f7f5;border-top:2px solid #e0e8e4;"><div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#5A7268;margin-bottom:5px;">Generelle kommentarer</div><div style="font-size:12px;line-height:1.6;">'+ko+'</div></div>':'';
+  var komSec=ko?'<div style="padding:16px 28px 20px;background:#f5f7f5;border-top:2px solid #e0e8e4;">'+'<div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#5A7268;margin-bottom:8px;">Generelle kommentarer</div>'+'<div style="font-size:12px;line-height:1.7;color:#1A2B25;">'+ko+'</div></div>':'';
   var now=new Date();
   var gen=now.toLocaleDateString('no-NO',{day:'2-digit',month:'2-digit',year:'numeric'})+' kl. '+now.toLocaleTimeString('no-NO',{hour:'2-digit',minute:'2-digit'});
   return '<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><title>CBRE Brannvernrunde</title>'
@@ -5409,9 +5408,9 @@ function buildBrannReport() {
     +'<div style="background:#FFF8E6;border-left:4px solid #E8A020;padding:11px 28px;font-size:11px;color:#5A3A00;line-height:1.6;"><strong>Merknad:</strong> Denne brannvernrunden er basert p\u00e5 stikkpr\u00f8ver og visuelle observasjoner gjennomf\u00f8rt p\u00e5 inspeksjonsdatoen. Runden gir et \u00f8yeblikksbilde av brannvernstatusen og er ikke en erstatning for virksomhetens etablerte internkontrollrutiner, systematisk brannvernarbeid eller lovp\u00e5lagte serviceavtaler.</div>'
     +'<table style="width:100%;border-collapse:collapse;">'+sectionsHtml+'</table>'
     +avvikSec+komSec
-    +'<div style="background:#003F2D;padding:10px 28px;display:flex;justify-content:space-between;">'
-    +'<div style="font-size:10px;color:rgba(255,255,255,.5);">\u00a9 CBRE \u00b7 Internkontroll Brann</div>'
-    +'<div style="font-size:10px;color:rgba(255,255,255,.4);">Generert '+gen+'</div></div>'
+    +'<div style="background:#003F2D;padding:12px 28px;display:flex;justify-content:space-between;align-items:center;">'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.5);">&#169; CBRE &#183; Brannvernrunde</div>'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.5);">Generert '+gen+'</div></div>'
     +'</body></html>';
 }
 
@@ -5481,7 +5480,7 @@ function buildTilstandReport() {
     +'<th style="padding:7px 12px;font-size:9px;text-transform:uppercase;font-weight:700;color:#888;text-align:left;border-bottom:2px solid #f0d0d0;width:30%;border-left:1px solid #f0d0d0;">Tiltak</th>'
     +'<th style="padding:7px 12px;font-size:9px;text-transform:uppercase;font-weight:700;color:#888;text-align:left;border-bottom:2px solid #f0d0d0;width:25%;border-left:1px solid #f0d0d0;">Lukking</th>'
     +'</tr>'+avvikRows+'</table></div>':'';
-  var komSec=ko?'<div style="padding:14px 28px;background:#f5f7f5;border-top:2px solid #e0e8e4;"><div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#5A7268;margin-bottom:5px;">Generelle kommentarer</div><div style="font-size:12px;line-height:1.6;">'+ko+'</div></div>':'';
+  var komSec=ko?'<div style="padding:16px 28px 20px;background:#f5f7f5;border-top:2px solid #e0e8e4;">'+'<div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#5A7268;margin-bottom:8px;">Generelle kommentarer</div>'+'<div style="font-size:12px;line-height:1.7;color:#1A2B25;">'+ko+'</div></div>':'';
   var now=new Date();var gen=now.toLocaleDateString('no-NO',{day:'2-digit',month:'2-digit',year:'numeric'})+' kl. '+now.toLocaleTimeString('no-NO',{hour:'2-digit',minute:'2-digit'});
   return '<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><title>CBRE Tilstandsanalyse</title>'
     +'<style>body{margin:0;padding:0;font-family:Arial,sans-serif;color:#1A2B25}@media print{@page{margin:12mm 14mm}}</style></head><body>'
@@ -5579,7 +5578,7 @@ function buildRisikoReport() {
     +'<th style="padding:7px 12px;font-size:9px;text-transform:uppercase;font-weight:700;color:#888;text-align:left;border-bottom:2px solid #f0d0d0;width:30%;border-left:1px solid #f0d0d0;">Tiltak</th>'
     +'<th style="padding:7px 12px;font-size:9px;text-transform:uppercase;font-weight:700;color:#888;text-align:left;border-bottom:2px solid #f0d0d0;width:25%;border-left:1px solid #f0d0d0;">Lukking</th>'
     +'</tr>'+highRows+'</table></div>':'';
-  var komSec=ko?'<div style="padding:14px 28px;background:#f5f7f5;border-top:2px solid #e0e8e4;"><div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#5A7268;margin-bottom:5px;">Generelle kommentarer</div><div style="font-size:12px;line-height:1.6;">'+ko+'</div></div>':'';
+  var komSec=ko?'<div style="padding:16px 28px 20px;background:#f5f7f5;border-top:2px solid #e0e8e4;">'+'<div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#5A7268;margin-bottom:8px;">Generelle kommentarer</div>'+'<div style="font-size:12px;line-height:1.7;color:#1A2B25;">'+ko+'</div></div>':'';
   var now=new Date();
   var gen=now.toLocaleDateString('no-NO',{day:'2-digit',month:'2-digit',year:'numeric'})+' kl. '+now.toLocaleTimeString('no-NO',{hour:'2-digit',minute:'2-digit'});
   return '<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><title>CBRE Risikoanalyse</title>'
@@ -5774,19 +5773,58 @@ function shareRoundFromHistory(id) {
     currentRoundId = id;
     if(round.type==='brann'){
       var prevSt=stB,prevKm=kmB,prevIg=igB;
+      var prevEi=document.getElementById('b-e').value;
+      var prevAn=document.getElementById('b-a').value;
+      var prevDa=document.getElementById('b-d').value;
+      var prevKo=document.getElementById('b-k').value;
       stB=round.st||{};kmB=round.km||{};igB=round.ig||{};
+      var m=round.meta||{};
+      document.getElementById('b-e').value=m.ei||'';
+      document.getElementById('b-a').value=m.an||'';
+      document.getElementById('b-d').value=m.da||'';
+      document.getElementById('b-k').value=m.ko||'';
       shareReport('b');
       stB=prevSt;kmB=prevKm;igB=prevIg;
+      document.getElementById('b-e').value=prevEi;
+      document.getElementById('b-a').value=prevAn;
+      document.getElementById('b-d').value=prevDa;
+      document.getElementById('b-k').value=prevKo;
     } else if(round.type==='risiko'){
       var prevSt=stR,prevKm=kmR,prevIg=igR;
+      var prevEi=document.getElementById('r-e').value;
+      var prevAn=document.getElementById('r-a').value;
+      var prevDa=document.getElementById('r-d').value;
+      var prevKo=document.getElementById('r-k').value;
       stR=round.st||{};kmR=round.km||{};igR=round.ig||{};
+      var m=round.meta||{};
+      document.getElementById('r-e').value=m.ei||'';
+      document.getElementById('r-a').value=m.an||'';
+      document.getElementById('r-d').value=m.da||'';
+      document.getElementById('r-k').value=m.ko||'';
       shareReport('r');
       stR=prevSt;kmR=prevKm;igR=prevIg;
+      document.getElementById('r-e').value=prevEi;
+      document.getElementById('r-a').value=prevAn;
+      document.getElementById('r-d').value=prevDa;
+      document.getElementById('r-k').value=prevKo;
     } else {
       var prevSt=stT,prevKm=kmT,prevIg=igT;
+      var prevEi=document.getElementById('t-e').value;
+      var prevAn=document.getElementById('t-a').value;
+      var prevDa=document.getElementById('t-d').value;
+      var prevKo=document.getElementById('t-k').value;
       stT=round.st||{};kmT=round.km||{};igT=round.ig||{};
+      var m=round.meta||{};
+      document.getElementById('t-e').value=m.ei||'';
+      document.getElementById('t-a').value=m.an||'';
+      document.getElementById('t-d').value=m.da||'';
+      document.getElementById('t-k').value=m.ko||'';
       shareReport('t');
       stT=prevSt;kmT=prevKm;igT=prevIg;
+      document.getElementById('t-e').value=prevEi;
+      document.getElementById('t-a').value=prevAn;
+      document.getElementById('t-d').value=prevDa;
+      document.getElementById('t-k').value=prevKo;
     }
     currentRoundId = prevId;
   });
