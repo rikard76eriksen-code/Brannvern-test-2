@@ -5109,7 +5109,7 @@ function shareReport(prefix) {
     +'<div><div>Lagre som PDF</div><div style="font-size:11px;font-weight:400;opacity:.75;">&#197;pner rapport — velg Lagre som PDF i utskriftsdialogen</div></div></button>'
     +'<button id="sr-share" style="width:100%;background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF;border-radius:6px;padding:13px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;text-align:left;display:flex;align-items:center;gap:10px;">'
     +'<span style="font-size:20px;">&#128228;</span>'
-    +'<div><div>Last ned og send</div><div style="font-size:11px;font-weight:400;color:#5A7268;">Laster ned HTML-rapport — legg ved i Outlook/e-post</div></div></button>'
+    +'<div><div>Send med e-post</div><div style=\"font-size:11px;font-weight:400;color:#5A7268;">iOS/Android: Del-ark med fil · PC: Laster ned HTML</div></div></button>'
     +'<button id="sr-cancel" style="width:100%;background:none;color:#5A7268;border:none;padding:8px;font-size:13px;cursor:pointer;">Avbryt</button>';
   overlay.appendChild(box);
   document.body.appendChild(overlay);
@@ -5176,22 +5176,28 @@ function shareReport(prefix) {
     close();
     var safeFn = (fn || type+'_rapport').replace(/[^\w\-_.]/g,'_')+'.html';
     var blob = new Blob([html],{type:'text/html;charset=utf-8'});
-    var file = new File([blob], safeFn, {type:'text/html'});
-    // Only use Web Share API on mobile (iOS/Android) — desktop Chrome/Outlook rejects file sharing
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if(isMobile && navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({title:'CBRE '+type, files:[file]})
-        .then(function(){showToast('Rapport delt!');})
-        .catch(function(e){
-          if(e.name!=='AbortError'){
-            fallbackDl(blob, safeFn);
-            showToast('Rapport lastet ned');
-          }
-        });
+    if(isMobile) {
+      // Mobile: use Web Share API — opens share sheet with file attached
+      // User can choose Mail, Outlook, Teams etc.
+      var file = new File([blob], safeFn, {type:'text/html'});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({title:'CBRE '+type, files:[file]})
+          .then(function(){showToast('Rapport delt!');})
+          .catch(function(e){
+            if(e.name!=='AbortError'){
+              fallbackDl(blob, safeFn);
+              showToast('Rapport lastet ned');
+            }
+          });
+      } else {
+        fallbackDl(blob, safeFn);
+        showToast('Rapport lastet ned');
+      }
     } else {
-      // Desktop: download file, show instruction toast
+      // Desktop: just download
       fallbackDl(blob, safeFn);
-      showToast('Rapport lastet ned — legg ved i e-post manuelt');
+      showToast('Rapport lastet ned');
     }
   });
 
