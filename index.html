@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CBRE Internkontroll</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>window.addEventListener('load',function(){if(window.jspdf)window.jsPDF=window.jspdf.jsPDF;});</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5077,245 +5075,93 @@ function suggestFn(prefix, type) {
 
 // ── PDF GENERATION ────────────────────────────────────────────────────────────
 function generatePDF(htmlContent, filename, callback) {
+  // Use print-to-PDF via a new window — gives natural page breaks
   showToast('Genererer rapport...');
-
-  // Safari iOS: use a visible (off-screen) iframe with onload
-  var iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:900px;height:600px;border:none;visibility:hidden;';
-  document.body.appendChild(iframe);
-
-  var done = false;
-  var timeoutId = setTimeout(function(){
-    if(done) return;
-    done = true;
-    // html2canvas timed out — fall back to HTML file share
-    if(iframe.parentNode) document.body.removeChild(iframe);
-    showToast('PDF feilet - deler som HTML');
+  var w = window.open('', '_blank');
+  if (!w) {
+    // Popup blocked — fall back to HTML download
+    showToast('Tillat popup for PDF, eller last ned HTML');
     var blob = new Blob([htmlContent],{type:'text/html;charset=utf-8'});
-    var file = new File([blob], filename+'.html', {type:'text/html'});
-    if(navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({title:'CBRE Rapport', files:[file]}).catch(function(){fallbackDl(blob,filename+'.html');});
-    } else {
-      fallbackDl(blob, filename+'.html');
-    }
-  }, 30000); // 30 second timeout
-
-  function runCanvas() {
-    if(done) return;
-    try {
-      html2canvas(iframe.contentDocument.body, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#fff',
-        width: 900,
-        windowWidth: 900,
-        logging: false
-      }).then(function(canvas){
-        if(done) return;
-        done = true;
-        clearTimeout(timeoutId);
-        if(iframe.parentNode) document.body.removeChild(iframe);
-        var imgData = canvas.toDataURL('image/jpeg', 0.85);
-        var pdf = new jsPDF('p','mm','a4');
-        var pw  = pdf.internal.pageSize.getWidth();
-        var ph  = pdf.internal.pageSize.getHeight();
-        var imgH = (canvas.height * pw) / canvas.width;
-        var y = 0;
-        while(y < imgH){
-          if(y > 0) pdf.addPage();
-          pdf.addImage(imgData,'JPEG',0,-y,pw,imgH);
-          y += ph;
-        }
-        showToast('Rapport klar!');
-        callback(pdf, filename+'.pdf');
-      }).catch(function(err){
-        if(done) return;
-        done = true;
-        clearTimeout(timeoutId);
-        if(iframe.parentNode) document.body.removeChild(iframe);
-        console.error('html2canvas error:', err);
-        showToast('PDF feilet - deler som HTML');
-        var blob = new Blob([htmlContent],{type:'text/html;charset=utf-8'});
-        fallbackDl(blob, filename+'.html');
-      });
-    } catch(e) {
-      if(done) return;
-      done = true;
-      clearTimeout(timeoutId);
-      if(iframe.parentNode) document.body.removeChild(iframe);
-      showToast('PDF feilet - laster ned HTML');
-      fallbackDl(new Blob([htmlContent],{type:'text/html'}), filename+'.html');
-    }
+    fallbackDl(blob, filename+'.html');
+    return;
   }
-
-  iframe.onload = function(){ setTimeout(runCanvas, 800); };
-  try {
-    iframe.contentDocument.open();
-    iframe.contentDocument.write(htmlContent);
-    iframe.contentDocument.close();
-  } catch(e) {
-    // Some browsers block iframe document.write — use srcdoc
-    clearTimeout(timeoutId);
-    done = true;
-    if(iframe.parentNode) document.body.removeChild(iframe);
-    showToast('Laster ned rapport...');
-    var blob = new Blob([htmlContent],{type:'text/html;charset=utf-8'});
-    var file = new File([blob], filename+'.html', {type:'text/html'});
-    if(navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({title:'CBRE Rapport', files:[file]}).catch(function(){fallbackDl(blob,filename+'.html');});
-    } else {
-      fallbackDl(blob, filename+'.html');
-    }
+  w.document.open();
+  w.document.write(htmlContent);
+  w.document.close();
+  // Wait for images to load, then print
+  var printed = false;
+  function doPrint() {
+    if (printed) return;
+    printed = true;
+    showToast('Velg "Lagre som PDF" i utskriftsdialogen');
+    setTimeout(function(){ w.focus(); w.print(); }, 400);
   }
+  // onload fires when document is ready
+  w.onload = function(){ setTimeout(doPrint, 300); };
+  // Fallback if onload already fired
+  setTimeout(doPrint, 1500);
 }
 
 function shareReport(prefix) {
   var type = prefix==='b'?'Brannvernrunde':prefix==='r'?'Risikoanalyse':'Tilstandsanalyse';
   var fn   = suggestFn(prefix, type);
-
-  // Check total image size to decide format
-  var ig   = prefix==='b' ? igB : prefix==='r' ? igR : igT;
-  var totalImgBytes = 0;
-  for(var k in ig){if(ig[k]){for(var j=0;j<ig[k].length;j++){totalImgBytes+=ig[k][j].u.length;}}}
-  var LIMIT = 8 * 1024 * 1024; // 8 MB — above this, share as HTML instead
-
-  if(totalImgBytes > LIMIT) {
-    // Too many images for PDF share — show options dialog
-    showShareOptions(prefix, type, fn, totalImgBytes);
-    return;
-  }
-
-  // Normal flow: generate and share PDF
   var html = prefix==='b' ? buildBrannReport() : prefix==='r' ? buildRisikoReport() : buildTilstandReport();
-  generatePDF(html, fn, function(pdf, pdfFn) {
-    var pdfBytes = pdf.output('arraybuffer');
-    var blob     = new Blob([pdfBytes], {type:'application/pdf'});
-    var file     = new File([blob], pdfFn, {type:'application/pdf'});
-    if(navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({title:'CBRE '+type, files:[file]})
-        .then(function(){showToast('Rapport delt!');})
-        .catch(function(e){if(e.name!=='AbortError'){fallbackDl(blob,pdfFn);}});
-    } else {
-      fallbackDl(blob, pdfFn);
-    }
-  });
-}
 
-function buildAndSharePDF(prefix, type, fn, savedImgs, ig) {
-  var html = prefix==='b' ? buildBrannReport() : prefix==='r' ? buildRisikoReport() : buildTilstandReport();
-  // Restore original images if we have them
-  if(savedImgs && ig) {
-    for(var k in savedImgs) ig[k] = savedImgs[k];
-  }
-  generatePDF(html, fn, function(pdf, pdfFn){
-    var blob = new Blob([pdf.output('arraybuffer')],{type:'application/pdf'});
-    var file = new File([blob],pdfFn,{type:'application/pdf'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      navigator.share({title:'CBRE '+type,files:[file]}).catch(function(e){if(e.name!=='AbortError')fallbackDl(blob,pdfFn);});
-    } else { fallbackDl(blob,pdfFn); }
-  });
-}
-
-function showShareOptions(prefix, type, fn, imgBytes) {
-  var mb = (imgBytes / 1024 / 1024).toFixed(1);
+  // Show options: open for print/PDF, or share as HTML file
   var overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:flex-end;justify-content:center;';
   var box = document.createElement('div');
   box.style.cssText = 'background:#fff;width:100%;max-width:500px;border-radius:12px 12px 0 0;padding:22px 20px 36px;font-family:Lato,Arial,sans-serif;';
   box.innerHTML =
     '<div style="width:36px;height:4px;background:#C8D6CF;border-radius:2px;margin:0 auto 16px;"></div>'
-    +'<div style="font-size:15px;font-weight:700;color:#1A2B25;margin-bottom:6px;">Send rapport</div>'
-    +'<div style="font-size:12px;color:#5A7268;margin-bottom:18px;line-height:1.5;">Rapporten inneholder mye bilder ('
-    +mb+' MB). Velg format for sending:</div>'
-    +'<button id="so-pdf" style="width:100%;background:#003F2D;color:#fff;border:none;border-radius:6px;padding:13px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;align-items:center;gap:10px;">'
-    +'<span style="font-size:20px;">&#128196;</span><div><div>PDF med bilder</div><div style="font-size:11px;font-weight:400;opacity:.8;">Kan ta litt tid &#8212; anbefales for arkiv</div></div></button>'
-    +'<button id="so-html" style="width:100%;background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF;border-radius:6px;padding:13px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;align-items:center;gap:10px;">'
-    +'<span style="font-size:20px;">&#128193;</span><div><div>HTML-fil med bilder</div><div style="font-size:11px;font-weight:400;color:#5A7268;">Liten fil, &#229;pnes i nettleser</div></div></button>'
-    +'<button id="so-lowq" style="width:100%;background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF;border-radius:6px;padding:13px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;align-items:center;gap:10px;">'
-    +'<span style="font-size:20px;">&#128247;</span><div><div>PDF med bilder &#8212; lav kvalitet</div><div style="font-size:11px;font-weight:400;color:#5A7268;">Bilder komprimeres ytterligere f&#248;r sending</div></div></button>'
-    +'<button id="so-noimgs" style="width:100%;background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF;border-radius:6px;padding:13px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;text-align:left;display:flex;align-items:center;gap:10px;">'
-    +'<span style="font-size:20px;">&#128197;</span><div><div>PDF uten bilder</div><div style="font-size:11px;font-weight:400;color:#5A7268;">Rask &#8212; tekst og avvik med notat om bilder</div></div></button>'
-    +'<button id="so-cancel" style="width:100%;background:none;color:#5A7268;border:none;padding:8px;font-size:13px;cursor:pointer;">Avbryt</button>';
+    +'<div style="font-size:15px;font-weight:700;color:#1A2B25;margin-bottom:6px;">Send / lagre rapport</div>'
+    +'<div style="font-size:12px;color:#5A7268;margin-bottom:18px;">'+fn+'</div>'
+    +'<button id="sr-pdf" style="width:100%;background:#003F2D;color:#fff;border:none;border-radius:6px;padding:13px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;align-items:center;gap:10px;">'
+    +'<span style="font-size:20px;">&#128196;</span>'
+    +'<div><div>Lagre som PDF</div><div style="font-size:11px;font-weight:400;opacity:.75;">&#197;pner rapport — velg Lagre som PDF i utskriftsdialogen</div></div></button>'
+    +'<button id="sr-share" style="width:100%;background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF;border-radius:6px;padding:13px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;text-align:left;display:flex;align-items:center;gap:10px;">'
+    +'<span style="font-size:20px;">&#128228;</span>'
+    +'<div><div>Del / send p&#229; e-post</div><div style="font-size:11px;font-weight:400;color:#5A7268;">Deler HTML-rapport som fil</div></div></button>'
+    +'<button id="sr-cancel" style="width:100%;background:none;color:#5A7268;border:none;padding:8px;font-size:13px;cursor:pointer;">Avbryt</button>';
   overlay.appendChild(box);
   document.body.appendChild(overlay);
-
   function close(){document.body.removeChild(overlay);}
 
-  document.getElementById('so-pdf').addEventListener('click', function(){
+  document.getElementById('sr-pdf').addEventListener('click', function(){
     close();
-    var html = prefix==='b' ? buildBrannReport() : prefix==='r' ? buildRisikoReport() : buildTilstandReport();
-    generatePDF(html, fn, function(pdf, pdfFn){
-      var blob = new Blob([pdf.output('arraybuffer')],{type:'application/pdf'});
-      var file = new File([blob],pdfFn,{type:'application/pdf'});
-      if(navigator.canShare&&navigator.canShare({files:[file]})){
-        navigator.share({title:'CBRE '+type,files:[file]}).catch(function(e){if(e.name!=='AbortError')fallbackDl(blob,pdfFn);});
-      } else { fallbackDl(blob,pdfFn); }
-    });
+    // Open in new window and trigger print
+    var w = window.open('','_blank');
+    if (!w) { showToast('Tillat popup i nettleseren'); return; }
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    var printed=false;
+    function doPrint(){if(printed)return;printed=true;setTimeout(function(){w.focus();w.print();},400);}
+    w.onload=function(){setTimeout(doPrint,300);};
+    setTimeout(doPrint,1500);
   });
 
-  document.getElementById('so-html').addEventListener('click', function(){
+  document.getElementById('sr-share').addEventListener('click', function(){
     close();
-    var html = prefix==='b' ? buildBrannReport() : prefix==='r' ? buildRisikoReport() : buildTilstandReport();
     var blob = new Blob([html],{type:'text/html;charset=utf-8'});
     var file = new File([blob], fn+'.html', {type:'text/html'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      navigator.share({title:'CBRE '+type,files:[file]}).catch(function(e){if(e.name!=='AbortError')fallbackDl(blob,fn+'.html');});
-    } else { fallbackDl(blob,fn+'.html'); }
-  });
-
-  document.getElementById('so-lowq').addEventListener('click', function(){
-    close();
-    showToast('Komprimerer bilder...');
-    // Re-compress all images to max 100KB each
-    var MAX_LQ = 100000;
-    var ig = prefix==='b' ? igB : igR;
-    var ids = Object.keys(ig);
-    var processed = 0;
-    var savedLQ = {};
-    if(ids.length === 0) {
-      buildAndSharePDF(prefix, type, fn);
-      return;
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({title:'CBRE '+type, files:[file]})
+        .then(function(){showToast('Rapport delt!');})
+        .catch(function(e){if(e.name!=='AbortError'){fallbackDl(blob,fn+'.html');}});
+    } else {
+      fallbackDl(blob, fn+'.html');
+      showToast('Rapport lastet ned');
     }
-    ids.forEach(function(id) {
-      savedLQ[id] = (ig[id]||[]).slice(); // save originals
-      var arr = ig[id]||[];
-      var done = 0;
-      if(arr.length === 0) { processed++; if(processed===ids.length) buildAndSharePDF(prefix,type,fn,savedLQ,ig); return; }
-      arr.forEach(function(imgObj, idx) {
-        compressImage(imgObj.u, MAX_LQ, function(compressed) {
-          arr[idx] = {n:imgObj.n, u:compressed};
-          done++;
-          if(done===arr.length) {
-            processed++;
-            if(processed===ids.length) buildAndSharePDF(prefix,type,fn,savedLQ,ig);
-          }
-        });
-      });
-    });
   });
 
-  document.getElementById('so-noimgs').addEventListener('click', function(){
-    close();
-    // Temporarily hide images for report build
-    var savedB = JSON.parse(JSON.stringify(igB));
-    var savedR = JSON.parse(JSON.stringify(igR));
-    for(var k in igB)igB[k]=[];
-    for(var k in igR)igR[k]=[];
-    var html = prefix==='b' ? buildBrannReport() : prefix==='r' ? buildRisikoReport() : buildTilstandReport();
-    igB = savedB; igR = savedR; // restore
-    generatePDF(html, fn, function(pdf, pdfFn){
-      var blob = new Blob([pdf.output('arraybuffer')],{type:'application/pdf'});
-      var file = new File([blob],pdfFn,{type:'application/pdf'});
-      if(navigator.canShare&&navigator.canShare({files:[file]})){
-        navigator.share({title:'CBRE '+type,files:[file]}).catch(function(e){if(e.name!=='AbortError')fallbackDl(blob,pdfFn);});
-      } else { fallbackDl(blob,pdfFn); }
-    });
-  });
-
-  document.getElementById('so-cancel').addEventListener('click', close);
+  document.getElementById('sr-cancel').addEventListener('click', close);
   overlay.addEventListener('click', function(e){if(e.target===overlay)close();});
 }
+
+
+
+
 function fallbackDl(blob,fn){
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');a.href=url;a.download=fn;
@@ -5391,7 +5237,7 @@ function buildBrannReport() {
   var now=new Date();
   var gen=now.toLocaleDateString('no-NO',{day:'2-digit',month:'2-digit',year:'numeric'})+' kl. '+now.toLocaleTimeString('no-NO',{hour:'2-digit',minute:'2-digit'});
   return '<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><title>CBRE Brannvernrunde</title>'
-    +'<style>body{margin:0;padding:0;font-family:Arial,sans-serif;color:#1A2B25}@media print{@page{margin:12mm 14mm}}</style></head><body>'
+    +'<style>body{margin:0;padding:0;font-family:Arial,sans-serif;color:#1A2B25}@media print{@page{margin:12mm 14mm}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}tr{page-break-inside:avoid}img{page-break-inside:avoid;max-width:100%!important}table{page-break-inside:auto}.sec-hdr{page-break-after:avoid}}</style></head><body>'
     +'<div style="background:#003F2D;padding:24px 28px 20px;">'
     +'<div style="font-size:10px;letter-spacing:.35em;color:#17E88F;margin-bottom:10px;font-weight:700;">\u2014 CBRE</div>'
     +'<div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:4px;">Brannvernrunde</div>'
@@ -5483,7 +5329,7 @@ function buildTilstandReport() {
   var komSec=ko?'<div style="padding:16px 28px 20px;background:#f5f7f5;border-top:2px solid #e0e8e4;">'+'<div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#5A7268;margin-bottom:8px;">Generelle kommentarer</div>'+'<div style="font-size:12px;line-height:1.7;color:#1A2B25;">'+ko+'</div></div>':'';
   var now=new Date();var gen=now.toLocaleDateString('no-NO',{day:'2-digit',month:'2-digit',year:'numeric'})+' kl. '+now.toLocaleTimeString('no-NO',{hour:'2-digit',minute:'2-digit'});
   return '<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><title>CBRE Tilstandsanalyse</title>'
-    +'<style>body{margin:0;padding:0;font-family:Arial,sans-serif;color:#1A2B25}@media print{@page{margin:12mm 14mm}}</style></head><body>'
+    +'<style>body{margin:0;padding:0;font-family:Arial,sans-serif;color:#1A2B25}@media print{@page{margin:12mm 14mm}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}tr{page-break-inside:avoid}img{page-break-inside:avoid;max-width:100%!important}table{page-break-inside:auto}.sec-hdr{page-break-after:avoid}}</style></head><body>'
     +'<div style="background:#003F2D;padding:24px 28px 20px;">'
     +'<div style="font-size:10px;letter-spacing:.35em;color:#17E88F;margin-bottom:10px;font-weight:700;">— CBRE</div>'
     +'<div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:4px;">Tilstandsanalyse</div>'
@@ -5582,7 +5428,7 @@ function buildRisikoReport() {
   var now=new Date();
   var gen=now.toLocaleDateString('no-NO',{day:'2-digit',month:'2-digit',year:'numeric'})+' kl. '+now.toLocaleTimeString('no-NO',{hour:'2-digit',minute:'2-digit'});
   return '<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><title>CBRE Risikoanalyse</title>'
-    +'<style>body{margin:0;padding:0;font-family:Arial,sans-serif;color:#1A2B25}@media print{@page{margin:12mm 14mm}}</style></head><body>'
+    +'<style>body{margin:0;padding:0;font-family:Arial,sans-serif;color:#1A2B25}@media print{@page{margin:12mm 14mm}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}tr{page-break-inside:avoid}img{page-break-inside:avoid;max-width:100%!important}table{page-break-inside:auto}.sec-hdr{page-break-after:avoid}}</style></head><body>'
     +'<div style="background:#003F2D;padding:24px 28px 20px;">'
     +'<div style="font-size:10px;letter-spacing:.35em;color:#17E88F;margin-bottom:10px;font-weight:700;">\u2014 CBRE</div>'
     +'<div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:4px;">Risikoanalyse</div>'
