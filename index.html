@@ -197,7 +197,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
         <div class="menu-card-icon">&#128293;</div>
         <div class="menu-card-body">
           <div class="menu-card-title">Brannvernrunde</div>
-          <div class="menu-card-desc">Stikkpr&#248;ver og visuelle observasjoner av brannvern og sikkerhet. 32 kontrollpunkter.</div>
+          <div class="menu-card-desc">Stikkpr&#248;ver og visuelle observasjoner av brannvern og sikkerhet. 31 kontrollpunkter.</div>
           <div class="menu-card-meta" id="brann-progress">Ikke startet</div>
         </div>
         <div class="menu-card-arrow">&#8250;</div>
@@ -1897,22 +1897,6 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
 </div>
 <div class="imgf" id="imgf-b4"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-b4"></label><div class="igrid" id="grid-b4"></div></div>
 <div class="komf" id="komf-b4"><div class="slbl red">Kommentar / avvik</div><textarea id="ta-b4" placeholder="Beskriv observasjon..."></textarea></div>
-<div class="item" id="row-b5">
-  <div class="item-top">
-    <div class="sbts">
-      <button class="sb ok" id="ok-b5">Ok</button>
-      <button class="sb av" id="av-b5">Avvik</button>
-      <button class="sb ia" id="ia-b5">I/A</button>
-    </div>
-    <div class="itxt"><div class="txt">Branndører lukker seg automatisk</div></div>
-  </div>
-  <div class="iacts">
-    <button class="ib" id="imgb-b5">Bilde</button>
-    <button class="ib" id="komb-b5">Kommentar</button>
-  </div>
-</div>
-<div class="imgf" id="imgf-b5"><div class="slbl">Bilder</div><label class="dropzone">Trykk for å velge bilder<input type="file" accept="image/*" multiple id="fi-b5"></label><div class="igrid" id="grid-b5"></div></div>
-<div class="komf" id="komf-b5"><div class="slbl red">Kommentar / avvik</div><textarea id="ta-b5" placeholder="Beskriv observasjon..."></textarea></div>
 </div>
 <div class="section" data-list="brann"><div class="sec-hdr"><span class="sec-num">03</span><span class="sec-ttl">Brannceller og brannskiller</span></div>
 <div class="item" id="row-b6">
@@ -4667,8 +4651,8 @@ function setBStatus(id, s) {
 
 function updateProgressB() {
   var done=0; for(var k in stB){if(stB[k])done++;}
-  document.getElementById('pfill-b').style.width=Math.round(done/32*100)+'%';
-  document.getElementById('ptxt-b').textContent=done+' av 32 punkter vurdert';
+  document.getElementById('pfill-b').style.width=Math.round(done/31*100)+'%';
+  document.getElementById('ptxt-b').textContent=done+' av 31 punkter vurdert';
 }
 
 // ── RISIKO SCORES ─────────────────────────────────────────────────────────────
@@ -5068,9 +5052,12 @@ function getPos(prefix) {
 
 // ── SUGGEST FILENAME ──────────────────────────────────────────────────────────
 function suggestFn(prefix, type) {
-  var e=(document.getElementById(prefix+'-e').value||'').replace(/[^\w\-\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5]/g,'_');
-  var d=document.getElementById(prefix+'-d').value||new Date().toISOString().split('T')[0];
-  return type+'_'+(e?e+'_':'')+d;
+  var eEl = document.getElementById(prefix+'-e');
+  var dEl = document.getElementById(prefix+'-d');
+  var raw = eEl ? eEl.value : '';
+  var e   = raw.replace(/[^\w\-æøåÆØÅ]/g,'_').replace(/^_+|_+$/g,'');
+  var d   = (dEl ? dEl.value : '') || new Date().toISOString().split('T')[0];
+  return e ? type+'_'+e+'_'+d : type+'_'+d;
 }
 
 // ── PDF GENERATION ────────────────────────────────────────────────────────────
@@ -5129,28 +5116,49 @@ function shareReport(prefix) {
 
   document.getElementById('sr-pdf').addEventListener('click', function(){
     close();
-    // Open in new window and trigger print
-    var w = window.open('','_blank');
-    if (!w) { showToast('Tillat popup i nettleseren'); return; }
-    w.document.open();
-    w.document.write(html);
-    w.document.close();
-    var printed=false;
-    function doPrint(){if(printed)return;printed=true;setTimeout(function(){w.focus();w.print();},400);}
-    w.onload=function(){setTimeout(doPrint,300);};
-    setTimeout(doPrint,1500);
+    // On iOS Safari: use Web Share API with HTML blob, or just open in new tab
+    var blob = new Blob([html],{type:'text/html;charset=utf-8'});
+    // Try sharing as file first (works on iOS for saving/emailing)
+    var file = new File([blob], fn+'.html', {type:'text/html'});
+    var url = URL.createObjectURL(blob);
+    // iOS Safari: try Web Share API with file
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({title:'CBRE '+type, files:[file]})
+        .then(function(){showToast('Rapport delt!');})
+        .catch(function(e){
+          if(e.name!=='AbortError'){
+            // Fallback: open in new tab
+            window.open(url,'_blank');
+            setTimeout(function(){URL.revokeObjectURL(url);},10000);
+          }
+        });
+    } else {
+      // Desktop (Chrome/Edge/Firefox): open in new tab
+      var w = window.open(url,'_blank');
+      if(!w){
+        fallbackDl(blob, fn+'.html');
+        showToast('Fil lastet ned');
+      }
+      setTimeout(function(){URL.revokeObjectURL(url);},10000);
+    }
   });
 
   document.getElementById('sr-share').addEventListener('click', function(){
     close();
+    var safeFn = (fn || type+'_rapport').replace(/[^\w\-_.]/g,'_')+'.html';
     var blob = new Blob([html],{type:'text/html;charset=utf-8'});
-    var file = new File([blob], fn+'.html', {type:'text/html'});
+    var file = new File([blob], safeFn, {type:'text/html'});
     if(navigator.canShare && navigator.canShare({files:[file]})){
       navigator.share({title:'CBRE '+type, files:[file]})
         .then(function(){showToast('Rapport delt!');})
-        .catch(function(e){if(e.name!=='AbortError'){fallbackDl(blob,fn+'.html');}});
+        .catch(function(e){
+          if(e.name!=='AbortError'){
+            fallbackDl(blob, safeFn);
+            showToast('Rapport lastet ned');
+          }
+        });
     } else {
-      fallbackDl(blob, fn+'.html');
+      fallbackDl(blob, safeFn);
       showToast('Rapport lastet ned');
     }
   });
@@ -5528,7 +5536,7 @@ function updateMenuCards() {
   var doneR=0; for(var k in stR){if(stR[k]&&(stR[k].s!==null||stR[k].k!==null))doneR++;}
   var bEl=document.getElementById('brann-progress');
   var rEl=document.getElementById('risiko-progress');
-  if(bEl) bEl.textContent = doneB>0 ? doneB+' av 32 punkter vurdert' : 'Ikke startet';
+  if(bEl) bEl.textContent = doneB>0 ? doneB+' av 31 punkter vurdert' : 'Ikke startet';
   if(rEl) rEl.textContent = doneR>0 ? doneR+' av 61 punkter vurdert' : 'Ikke startet';
   var doneT=0; for(var k in stT){if(stT[k]!==null&&stT[k]!==undefined)doneT++;}
   var tEl=document.getElementById('tilstand-progress');
