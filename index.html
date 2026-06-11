@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CBRE Internkontroll</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-<script>window.addEventListener('load',function(){if(window.jspdf)window.jsPDF=window.jspdf.jsPDF;});</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-height:100vh}
@@ -5936,6 +5937,8 @@ var today = new Date().toISOString().split('T')[0];
 document.getElementById('b-d').value = today;
 document.getElementById('r-d').value = today;
 document.getElementById('t-d').value = today;
+// Init jsPDF
+if(window.jspdf && !window.jsPDF) window.jsPDF = window.jspdf.jsPDF;
 wireUp();
 updateMenuCards();
 // Open IndexedDB on startup
