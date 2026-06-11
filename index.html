@@ -5108,7 +5108,7 @@ function shareReport(prefix) {
     +'<div><div>Lagre som PDF</div><div style="font-size:11px;font-weight:400;opacity:.75;">&#197;pner rapport — velg Lagre som PDF i utskriftsdialogen</div></div></button>'
     +'<button id="sr-share" style="width:100%;background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF;border-radius:6px;padding:13px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;text-align:left;display:flex;align-items:center;gap:10px;">'
     +'<span style="font-size:20px;">&#128228;</span>'
-    +'<div><div>Del / send p&#229; e-post</div><div style="font-size:11px;font-weight:400;color:#5A7268;">Deler HTML-rapport som fil</div></div></button>'
+    +'<div><div>Last ned og send</div><div style="font-size:11px;font-weight:400;color:#5A7268;">Laster ned HTML-rapport — legg ved i Outlook/e-post</div></div></button>'
     +'<button id="sr-cancel" style="width:100%;background:none;color:#5A7268;border:none;padding:8px;font-size:13px;cursor:pointer;">Avbryt</button>';
   overlay.appendChild(box);
   document.body.appendChild(overlay);
@@ -5116,30 +5116,87 @@ function shareReport(prefix) {
 
   document.getElementById('sr-pdf').addEventListener('click', function(){
     close();
-    // On iOS Safari: use Web Share API with HTML blob, or just open in new tab
-    var blob = new Blob([html],{type:'text/html;charset=utf-8'});
-    // Try sharing as file first (works on iOS for saving/emailing)
-    var file = new File([blob], fn+'.html', {type:'text/html'});
-    var url = URL.createObjectURL(blob);
+    showToast('Genererer PDF...');
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    // iOS: use Web Share API so user can save/share from share sheet
-    if(isMobile && navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({title:'CBRE '+type, files:[file]})
-        .then(function(){showToast('Rapport delt!');})
-        .catch(function(e){
-          if(e.name!=='AbortError'){
-            window.open(url,'_blank');
-            setTimeout(function(){URL.revokeObjectURL(url);},10000);
-          }
-        });
-    } else {
-      // Desktop: open in new tab — user can print to PDF (Ctrl+P)
-      var w = window.open(url,'_blank');
-      if(!w){
-        fallbackDl(blob, fn+'.html');
-        showToast('Fil lastet ned — åpne og trykk Ctrl+P for PDF');
+    if(isMobile) {
+      // iOS: open in new tab, user can share/save from there
+      var blob = new Blob([html],{type:'text/html;charset=utf-8'});
+      var file = new File([blob], fn+'.html', {type:'text/html'});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({title:'CBRE '+type, files:[file]})
+          .then(function(){showToast('Rapport delt!');})
+          .catch(function(e){
+            if(e.name!=='AbortError'){
+              var url=URL.createObjectURL(blob);
+              window.open(url,'_blank');
+              setTimeout(function(){URL.revokeObjectURL(url);},10000);
+            }
+          });
+      } else {
+        var url=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+        window.open(url,'_blank');
+        setTimeout(function(){URL.revokeObjectURL(url);},10000);
       }
+      return;
+    }
+    // Desktop: generate real PDF using html2canvas + jsPDF
+    var iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:900px;height:600px;border:none;visibility:hidden;';
+    document.body.appendChild(iframe);
+    var done = false;
+    var timeoutId = setTimeout(function(){
+      if(done) return; done=true;
+      if(iframe.parentNode) document.body.removeChild(iframe);
+      // Fallback: open in new tab
+      showToast('PDF feilet — åpner i ny fane');
+      var url=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+      window.open(url,'_blank');
       setTimeout(function(){URL.revokeObjectURL(url);},10000);
+    }, 25000);
+    iframe.onload = function(){
+      setTimeout(function(){
+        if(done) return;
+        try {
+          html2canvas(iframe.contentDocument.body,{
+            scale:2, useCORS:true, allowTaint:true,
+            backgroundColor:'#fff', width:900, windowWidth:900, logging:false
+          }).then(function(canvas){
+            if(done) return; done=true;
+            clearTimeout(timeoutId);
+            if(iframe.parentNode) document.body.removeChild(iframe);
+            var imgData = canvas.toDataURL('image/jpeg',0.92);
+            var pdf = new jsPDF('p','mm','a4');
+            var pw = pdf.internal.pageSize.getWidth();
+            var ph = pdf.internal.pageSize.getHeight();
+            var imgH = (canvas.height*pw)/canvas.width;
+            var y=0;
+            while(y<imgH){if(y>0)pdf.addPage();pdf.addImage(imgData,'JPEG',0,-y,pw,imgH);y+=ph;}
+            pdf.save(fn+'.pdf');
+            showToast('PDF lastet ned!');
+          }).catch(function(){
+            if(done) return; done=true;
+            clearTimeout(timeoutId);
+            if(iframe.parentNode) document.body.removeChild(iframe);
+            showToast('PDF feilet — åpner i ny fane');
+            var url=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+            window.open(url,'_blank');
+          });
+        } catch(e){
+          if(done) return; done=true;
+          clearTimeout(timeoutId);
+          if(iframe.parentNode) document.body.removeChild(iframe);
+          fallbackDl(new Blob([html],{type:'text/html;charset=utf-8'}), fn+'.html');
+        }
+      }, 800);
+    };
+    try {
+      iframe.contentDocument.open();
+      iframe.contentDocument.write(html);
+      iframe.contentDocument.close();
+    } catch(e){
+      clearTimeout(timeoutId); done=true;
+      if(iframe.parentNode) document.body.removeChild(iframe);
+      fallbackDl(new Blob([html],{type:'text/html;charset=utf-8'}), fn+'.html');
     }
   });
 
@@ -5160,14 +5217,9 @@ function shareReport(prefix) {
           }
         });
     } else {
-      // Desktop: download file + open mailto
+      // Desktop: download file, show instruction toast
       fallbackDl(blob, safeFn);
-      setTimeout(function(){
-        var subj = 'CBRE '+type+' — '+safeFn.replace('.html','');
-        window.location.href = 'mailto:?subject='+encodeURIComponent(subj)
-          +'&body='+encodeURIComponent('Rapport vedlagt som HTML-fil ('+safeFn+').');
-      }, 500);
-      showToast('Rapport lastet ned');
+      showToast('Rapport lastet ned — legg ved i e-post manuelt');
     }
   });
 
