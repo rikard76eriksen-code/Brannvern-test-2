@@ -1872,7 +1872,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
       <button class="sb av" id="av-b3">Avvik</button>
       <button class="sb ia" id="ia-b3">I/A</button>
     </div>
-    <div class="itxt"><div class="txt">Alle nødutganger er merket og fri for hindringer</div><div class="note">Inkluder dører, korridorer og trapperom</div></div>
+    <div class="itxt"><div class="txt">Alle nødutganger er merket, fri for hindringer og tilbakerømning er mulig</div><div class="note">Inkluder dører, korridorer og trapperom</div></div>
   </div>
   <div class="iacts">
     <button class="ib" id="imgb-b3">Bilde</button>
@@ -5121,23 +5121,23 @@ function shareReport(prefix) {
     // Try sharing as file first (works on iOS for saving/emailing)
     var file = new File([blob], fn+'.html', {type:'text/html'});
     var url = URL.createObjectURL(blob);
-    // iOS Safari: try Web Share API with file
-    if(navigator.canShare && navigator.canShare({files:[file]})){
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    // iOS: use Web Share API so user can save/share from share sheet
+    if(isMobile && navigator.canShare && navigator.canShare({files:[file]})){
       navigator.share({title:'CBRE '+type, files:[file]})
         .then(function(){showToast('Rapport delt!');})
         .catch(function(e){
           if(e.name!=='AbortError'){
-            // Fallback: open in new tab
             window.open(url,'_blank');
             setTimeout(function(){URL.revokeObjectURL(url);},10000);
           }
         });
     } else {
-      // Desktop (Chrome/Edge/Firefox): open in new tab
+      // Desktop: open in new tab — user can print to PDF (Ctrl+P)
       var w = window.open(url,'_blank');
       if(!w){
         fallbackDl(blob, fn+'.html');
-        showToast('Fil lastet ned');
+        showToast('Fil lastet ned — åpne og trykk Ctrl+P for PDF');
       }
       setTimeout(function(){URL.revokeObjectURL(url);},10000);
     }
@@ -5148,7 +5148,9 @@ function shareReport(prefix) {
     var safeFn = (fn || type+'_rapport').replace(/[^\w\-_.]/g,'_')+'.html';
     var blob = new Blob([html],{type:'text/html;charset=utf-8'});
     var file = new File([blob], safeFn, {type:'text/html'});
-    if(navigator.canShare && navigator.canShare({files:[file]})){
+    // Only use Web Share API on mobile (iOS/Android) — desktop Chrome/Outlook rejects file sharing
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if(isMobile && navigator.canShare && navigator.canShare({files:[file]})){
       navigator.share({title:'CBRE '+type, files:[file]})
         .then(function(){showToast('Rapport delt!');})
         .catch(function(e){
@@ -5158,8 +5160,9 @@ function shareReport(prefix) {
           }
         });
     } else {
+      // Desktop: just download the file
       fallbackDl(blob, safeFn);
-      showToast('Rapport lastet ned');
+      showToast('Rapport lastet ned — legg ved i e-post manuelt');
     }
   });
 
