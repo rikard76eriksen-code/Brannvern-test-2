@@ -248,7 +248,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
     <div class="cl-acts">
       <button class="btng" id="btn-reset-t" style="font-size:11px;padding:7px 12px;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2);">Nullstill</button>
       <button class="bsave" id="btn-save-t">Lagre fremdrift</button>
-      <button class="bsp" id="btn-share-t">Send rapport</button>
+      <button class="bsp" id="btn-share-t">Lagre rapport</button>
     </div>
   </div>
   <div class="ss-bar">
@@ -1773,7 +1773,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
     <textarea id="t-k" style="width:100%;border:1px solid #C8D6CF;border-radius:2px;padding:9px;font-family:Lato,Arial,sans-serif;font-size:14px;resize:vertical;min-height:70px;outline:none;background:#F5F7F5;" placeholder="&#216;vrige kommentarer..."></textarea></div>
     <div class="acts">
       <button class="btng" id="btn-reset-t">Nullstill</button>
-      <button class="btnp" id="btn-share2-t">Send rapport</button>
+      <button class="btnp" id="btn-share2-t">Lagre rapport</button>
     </div>
   </div>
   <div class="footer">&#169; CBRE &#183; Tilstandsanalyse &#183; cbre.com/no</div>
@@ -1800,7 +1800,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
     <div class="cl-acts">
       <button class="btng" id="btn-reset-b" style="font-size:11px;padding:7px 12px;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2);">Nullstill</button>
       <button class="bsave" id="btn-save-b">Lagre fremdrift</button>
-      <button class="bsp" id="btn-share-b">Send rapport</button>
+      <button class="bsp" id="btn-share-b">Lagre rapport</button>
     </div>
   </div>
   <div class="ss-bar">
@@ -2332,7 +2332,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
     <textarea id="b-k" style="width:100%;border:1px solid #C8D6CF;border-radius:2px;padding:9px;font-family:Lato,Arial,sans-serif;font-size:14px;resize:vertical;min-height:70px;outline:none;background:#F5F7F5;" placeholder="&#216;vrige observasjoner..."></textarea></div>
     <div class="acts">
       <button class="btng" id="btn-reset-b">Nullstill</button>
-      <button class="btnp" id="btn-share2-b">Send rapport</button>
+      <button class="btnp" id="btn-share2-b">Lagre rapport</button>
     </div>
   </div>
   <div class="footer">&#169; CBRE &#183; Brannvernrunde &#183; cbre.com/no</div>
@@ -2345,7 +2345,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
     <div class="cl-acts">
       <button class="btng" id="btn-reset-r" style="font-size:11px;padding:7px 12px;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2);">Nullstill</button>
       <button class="bsave" id="btn-save-r">Lagre fremdrift</button>
-      <button class="bsp" id="btn-share-r">Send rapport</button>
+      <button class="bsp" id="btn-share-r">Lagre rapport</button>
     </div>
   </div>
   <div class="ss-bar">
@@ -4526,7 +4526,7 @@ body{font-family:Lato,Arial,sans-serif;background:#F5F7F5;color:#1A2B25;min-heig
     <textarea id="r-k" style="width:100%;border:1px solid #C8D6CF;border-radius:2px;padding:9px;font-family:Lato,Arial,sans-serif;font-size:14px;resize:vertical;min-height:70px;outline:none;background:#F5F7F5;" placeholder="&#216;vrige kommentarer..."></textarea></div>
     <div class="acts">
       <button class="btng" id="btn-reset-r">Nullstill</button>
-      <button class="btnp" id="btn-share2-r">Send rapport</button>
+      <button class="btnp" id="btn-share2-r">Lagre rapport</button>
     </div>
   </div>
   <div class="footer">&#169; CBRE &#183; Risikoanalyse &#183; cbre.com/no</div>
@@ -5102,14 +5102,14 @@ function shareReport(prefix) {
   box.style.cssText = 'background:#fff;width:100%;max-width:500px;border-radius:12px 12px 0 0;padding:22px 20px 36px;font-family:Lato,Arial,sans-serif;';
   box.innerHTML =
     '<div style="width:36px;height:4px;background:#C8D6CF;border-radius:2px;margin:0 auto 16px;"></div>'
-    +'<div style="font-size:15px;font-weight:700;color:#1A2B25;margin-bottom:6px;">Send / lagre rapport</div>'
+    +'<div style="font-size:15px;font-weight:700;color:#1A2B25;margin-bottom:6px;">Lagre rapport</div>'
     +'<div style="font-size:12px;color:#5A7268;margin-bottom:18px;">'+fn+'</div>'
     +'<button id="sr-pdf" style="width:100%;background:#003F2D;color:#fff;border:none;border-radius:6px;padding:13px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;align-items:center;gap:10px;">'
     +'<span style="font-size:20px;">&#128196;</span>'
     +'<div><div>Lagre som PDF</div><div style="font-size:11px;font-weight:400;opacity:.75;">&#197;pner rapport — velg Lagre som PDF i utskriftsdialogen</div></div></button>'
     +'<button id="sr-share" style="width:100%;background:#F5F7F5;color:#003F2D;border:1px solid #C8D6CF;border-radius:6px;padding:13px;font-family:Lato,Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;text-align:left;display:flex;align-items:center;gap:10px;">'
     +'<span style="font-size:20px;">&#128228;</span>'
-    +'<div><div>Send med e-post</div><div style=\"font-size:11px;font-weight:400;color:#5A7268;">iOS/Android: Del-ark med fil · PC: Laster ned HTML</div></div></button>'
+    +'<div><div>Last ned HTML</div><div style=\"font-size:11px;font-weight:400;color:#5A7268;">HTML-fil som kan åpnes i nettleser</div></div></button>'
     +'<button id="sr-cancel" style="width:100%;background:none;color:#5A7268;border:none;padding:8px;font-size:13px;cursor:pointer;">Avbryt</button>';
   overlay.appendChild(box);
   document.body.appendChild(overlay);
